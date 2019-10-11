@@ -2,7 +2,7 @@
 export ZSH="$HOME/.oh-my-zsh"
 
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="cobalt2"
+ZSH_THEME="robbyrussell"
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -53,7 +53,6 @@ HIST_STAMPS="dd.mm.yyyy"
 
 plugins=(
   git
-  composer
   npm
   ng
   docker
@@ -101,6 +100,3 @@ export FORMAT="ID\t{{.ID}}\nNAME\t{{.Names}}\nIMAGE\t{{.Image}}\nPORTS\t{{.Ports
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias python=python3
-alias pip=pip3
-alias tmux=tmux-next
