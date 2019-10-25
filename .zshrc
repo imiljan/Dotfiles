@@ -58,7 +58,6 @@ plugins=(
   docker
   docker-compose
   sudo
-  web-search
   zsh-autosuggestions
   zsh-syntax-highlighting
 )
@@ -67,6 +66,7 @@ plugins=(
 # git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 
 source $ZSH/oh-my-zsh.sh
+source $HOME/.profile
 
 # User configuration
 
@@ -87,10 +87,6 @@ source $ZSH/oh-my-zsh.sh
 
 # ssh
 # export SSH_KEY_PATH="~/.ssh/rsa_id"
-
-#Docker format
-export FORMAT="ID\t{{.ID}}\nNAME\t{{.Names}}\nIMAGE\t{{.Image}}\nPORTS\t{{.Ports}}\nCOMMAND\t{{.Command}}\nCREATED\t{{.CreatedAt}}\nSTATUS\t{{.Status}}\n"
-
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
