@@ -25,4 +25,5 @@
 [help]
     autocorrect = 1
 [core]
-     = vim
+    editor = vim
+
