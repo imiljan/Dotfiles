@@ -1,6 +1,6 @@
 [user]
-	name = Miljan
-	email = miljan.ignjatovic.96@gmail.com
+    name = Miljan
+    email = miljan.ignjatovic.96@gmail.com
 [color]
     diff = auto
     status = auto
@@ -18,8 +18,11 @@
     st = status
     pushom = push origin master
     pullom = pull origin master
+    pushod = push origin develop
+    pullod = pull origin develop
 [credential]
     helper = cache --timeout 28800
 [help]
     autocorrect = 1
-
+[core]
+     = vim
