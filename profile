@@ -29,6 +29,3 @@ export PATH=/opt/firefox/firefox:$PATH
 # Alias
 alias python=python3
 alias pip=pip3
-
-alias start-docker='sudo systemctl start docker.service'
-alias stop-docker='sudo systemctl stop docker.service'
