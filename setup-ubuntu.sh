@@ -4,7 +4,7 @@ mkdir temp
 cd temp
 sudo apt update && sudo apt upgrade -y
 
-sudo apt install curl vim git wget -y
+sudo apt install curl vim-gtk3 git wget -y
 sudo apt install gnome-tweaks -y
 curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
 sudo install -o root -g root -m 644 packages.microsoft.gpg /usr/share/keyrings/
@@ -51,13 +51,12 @@ su - ${USER}
   # Install Docker Compose
 export LATEST_COMPOSE_VERSION=$(curl -sSL "https://api.github.com/repos/docker/compose/releases/latest" | grep -o -P '(?<="tag_name": ").+(?=")')
 sudo curl -sSL "https://github.com/docker/compose/releases/download/${LATEST_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-# sudo curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
-sudo apt install zsh
-chsh -s $(which zsh)
+# sudo apt install zsh
+# chsh -s $(which zsh)
 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+# sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
 cd ~/
 rm -rf temp
