@@ -5,25 +5,42 @@
     diff = auto
     status = auto
     branch = auto
+    ui = true
 [alias]
     d = diff
     br = branch --all
-    ci = commit
     co = checkout
+    cob = checkout -b
     dh = diff HEAD
-    lg = log --graph --pretty=format:'%Cred%h..%Creset - %s %Cgreen(%cr)%Creset - %an' --abbrev-commit --date=relative
+    lg = log --graph --pretty=format:'%C(bold red)%h%Creset -%C(bold yellow)%d%Creset %s %C(bold green)(%cr) %C(bold blue)<%an>%Creset %C(yellow)%ad%Creset' --abbrev-commit --date=short
+    lgr = log --reverse --pretty=format:'%C(bold red)%h%Creset -%C(bold yellow)%d%Creset %s %C(bold green)(%cr) %C(bold blue)<%an>%Creset %C(yellow)%ad%Creset' --abbrev-commit --date=short
     lgn = log --pretty=oneline --abbrev-commit --show-notes=*
     mnff = merge --no-ff
     rh = reset --soft HEAD^
     st = status
-    pushom = push origin master
-    pullom = pull origin master
-    pushod = push origin develop
-    pullod = pull origin develop
 [credential]
     helper = cache --timeout 28800
 [help]
     autocorrect = 1
 [core]
     editor = vim
+    autocrlf = input
+    pager = diff-so-fancy | less --tabs=4 -RFX
+[push]
+    autoSetupRemote = true
+[interactive]
+    diffFilter = diff-so-fancy --patch
+[color "diff-highlight"]
+    oldNormal = red bold
+    oldHighlight = red bold 52
+    newNormal = green bold
+    newHighlight = green bold 22
+[color "diff"]
+    meta = 11
+    frag = magenta bold
+    func = 146 bold
+    commit = yellow bold
+    old = red bold
+    new = green bold
+    whitespace = red reverse
 
