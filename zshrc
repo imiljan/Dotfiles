@@ -55,6 +55,7 @@ plugins=(
   git
   npm
   ng
+  nvm
   docker
   docker-compose
   sudo

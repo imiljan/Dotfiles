@@ -22,11 +22,13 @@ export FORMAT="ID\t{{.ID}}\nNAME\t{{.Names}}\nIMAGE\t{{.Image}}\nPORTS\t{{.Ports
 # Alias
 alias python=python3
 alias pip=pip3
+alias dps="docker ps"
 alias dc=docker-compose
 alias dcud="docker-compose up -d"
 alias dcu="docker-compose up"
 alias dcd="docker-compose down"
 alias dvols="docker volume ls"
-alias dnets="docker netowrk ls"
-alias dimags="docker image ls"
-alias dclogs="docker-compose logs -f"
+alias dnets="docker network ls"
+alias dimgs="docker image ls"
+alias dclf="docker-compose logs -f"
+alias rmnm="find . -name "node_modules" -type d -prune -exec rm -rf '{}' +"

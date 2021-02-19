@@ -6,9 +6,9 @@
 
 ########## Variables
 
-dir=~/Dotfiles                                   # dotfiles directory
-olddir=~/Dotfiles_old                            # old dotfiles backup directory
-files="zshrc profile gitconfig tmux.conf vimrc"  # list of files/folders to symlink in homedir
+dir=~/Dotfiles                                             # dotfiles directory
+olddir=~/Dotfiles_old                                      # old dotfiles backup directory
+files="zshrc profile gitconfig tmux.conf vimrc ideavimrc"  # list of files/folders to symlink in homedir
 
 ##########
 
@@ -30,9 +30,9 @@ for file in $files; do
     ln -s $dir/$file ~/.$file
 done
 
-if [[ $(echo $SHELL) == $(which bash) ]]; then
-    echo "source $HOME/.profile" >> ~/.bashrc
-fi
+# if [[ $(echo $SHELL) == $(which bash) ]]; then
+#     echo "source $HOME/.profile" >> ~/.bashrc
+# fi
 
 
  install_zsh () {
