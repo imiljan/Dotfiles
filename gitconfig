@@ -22,6 +22,10 @@
     pullom = pull origin master
     pushod = push origin develop
     pullod = pull origin develop
+    pushoq = push origin qa
+    pulloq = pull origin qa
+    pushos = push origin staging
+    pullos = pull origin staging
 [credential]
     helper = cache --timeout 28800
 [help]
