@@ -1,5 +1,5 @@
 [user]
-    name = Miljan
+    name = Miljan Ignjatovic
     email = miljan.ignjatovic.96@gmail.com
 [color]
     diff = auto
@@ -23,7 +23,7 @@
 [help]
     autocorrect = 1
 [core]
-    editor = vim
+    editor = nvim
     autocrlf = input
     pager = diff-so-fancy | less --tabs=4 -RFX
 [push]
