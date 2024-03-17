@@ -51,8 +51,9 @@ alias dclf="docker-compose logs -f"
 
 alias rmnm="find . -name "node_modules" -type d -prune -exec rm -rf '{}' +"
 alias wstorml='wstorm -e'
-alias cat="bat --paging=never"
-# alias cat="bat"
+alias vim='nvim'
+# alias cat="bat --paging=never"
+alias cat="bat --style plain"
 
 fcd() {
     local dir
@@ -89,11 +90,11 @@ export M2=$M2_HOME/bin
 export PATH=$PATH:$M2_HOME/bin
 
 # Android
-# export ANDROID_HOME=$HOME/Library/Android/sdk
-# export PATH=$PATH:$ANDROID_HOME/emulator
-# export PATH=$PATH:$ANDROID_HOME/tools
-# export PATH=$PATH:$ANDROID_HOME/tools/bin
-# export PATH=$PATH:$ANDROID_HOME/platform-tools
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
+export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 # Android studio
 export CAPACITOR_ANDROID_STUDIO_PATH=~/Applications/Android\ Studio.app
