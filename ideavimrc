@@ -1,5 +1,115 @@
-set clipboard+=unnamed
-set showmode
-set surround
-set multiple-cursors
 let mapleader = " "
+
+set clipboard+=unnamed
+set number relativenumber
+set showmode
+
+set ignorecase
+set smartcase
+
+set hlsearch
+set incsearch
+map <Esc> :nohlsearch<CR>
+inoremap <C-c> :nohlsearch<CR>
+
+set ideajoin
+set idearefactormode=keep
+
+vnoremap < <gv
+vnoremap > >gv
+
+""" Plugins
+Plug 'preservim/nerdtree'
+Plug 'tpope/vim-commentary'
+Plug 'terryma/vim-multiple-cursors'
+Plug 'tpope/vim-surround'
+Plug 'machakann/vim-highlightedyank'
+
+set NERDTree
+set commentary
+set multiple-cursors
+set surround
+
+nnoremap <Leader>en :action EditSourceInNewWindow<CR>
+nnoremap <Leader>n :action NextWindow<CR>
+
+nnoremap \e :e ~/.ideavimrc<CR>
+nnoremap \r :action IdeaVim.ReloadVimRc.reload<CR>
+
+nnoremap <c-z> :action ToggleDistractionFreeMode<CR>
+
+map <C-c> <Esc>
+imap <C-c> <Esc>
+map <C-d> <C-d>zz
+map <C-u> <C-u>zz
+map n nzzzv
+map N Nzzzv
+
+"""Splits
+sethandler <c-j> a:vim
+sethandler <c-k> a:vim
+nnoremap <C-h> <C-w>h
+nnoremap <C-l> <C-w>l
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+
+""" Tabs
+nnoremap <TAB> :action PreviousTab<CR>
+nnoremap <S-TAB> :action NextTab<CR>
+
+""" Telescope
+map <leader>sf <Action>(GotoFile)
+map <C-p> <Action>(GotoFile)
+map <leader>sw <Action>(FindInPath)
+map <leader>sg <Action>(FindInPath)
+
+
+map <leader><leader> <Action>(RecentChangedFiles)
+map <leader>s. <Action>(RecentFiles)
+map <leader>sc <Action>(GotoAction)
+"map <leader>sh <Action>()
+"map <leader>sk <Action>()
+"map <leader>sr <Action>()
+
+"map <leader>ss <Action>()
+
+map <leader>/ <Action>(Find)
+map <leader>r/ <Action>(Replace)
+
+" Idea Custom
+map <leader>wc <Action>(GotoClass)
+map <leader>sl <Action>(RecentLocations)
+
+""" Existing https://github.com/JetBrains/ideavim/blob/master/src/main/java/com/maddyhome/idea/vim/package-info.java
+
+""" LSP
+"map gd <Action>(GotoDeclaration)
+map gr <Action>(GotoDeclaration) "goto references the same as GotoDeclaration
+map gI <Action>(GotoImplementation)
+"map <leader>D Type Definition ???
+map <leader>ds <Action>(GotoSymbol)
+map <leader>ws <Action>(GotoSymbol)
+map <leader>sd <Action>(ActivateProblemsViewToolWindow) "Does it work after restart?
+
+map <leader>rn <Action>(RenameElement)
+map <leader>ca <Action>(ProblemsView.QuickFixes)
+map <leader>f <Action>(ReformatCode)
+map K <Action>(QuickJavaDoc)
+"map gD <Action>(GotoDeclaration)
+
+map <leader>rr <Action>(RefactoringMenu)
+
+" TODO Diagnostic keymap
+"map [d
+"map ]d
+"map <leader>e
+"map <leader>q
+
+imap <C-h> <Action>(ParameterInfo)
+
+""" TODO Trouble
+
+""" TODO Git
+
+""" Debugging
+nnoremap <leader>b :action ToggleLineBreakpoint<CR>

@@ -1,15 +1,14 @@
 #!/bin/bash
-############################
-# .make.sh
-# This script creates symlinks from the home directory to any desired dotfiles in ~/Dotfiles
-############################
 
 ########## Variables
+dir=~/Dotfiles
+olddir=~/Dotfiles_old
+files="zshrc profile gitconfig vimrc ideavimrc alias"
 
-dir=~/Dotfiles                                             # dotfiles directory
-olddir=~/Dotfiles_old                                      # old dotfiles backup directory
-files="zshrc profile gitconfig tmux.conf vimrc ideavimrc"  # list of files/folders to symlink in homedir
+config=~/.config
+dirs="nvim lazygit"
 
+bins="tmux-sessionizer fix-tilde"
 ##########
 
 # create dotfiles_old in homedir
@@ -22,12 +21,25 @@ echo -n "Changing to the $dir directory ..."
 cd $dir
 echo "done"
 
-# move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks from the homedir to any files in the ~/dotfiles directory specified in $files
-for file in $files; do
+for f in $files; do
     echo "Moving any existing dotfiles from ~ to $olddir"
-    mv ~/.$file ~/Dotfiles_old/
-    echo "Creating symlink to $file in home directory."
-    ln -s $dir/$file ~/.$file
+    mv ~/.$f ~/Dotfiles_old/
+    echo "Creating symlink to $f in home directory."
+    ln -s $dir/$f ~/.$f
+done
+
+for d in $dirs; do
+    echo "Creating symlink to $d in ~/.config directory."
+    ln -s $dir/$d ~/.config/$d
+done
+
+mkdir ~/.config/tmux
+ln -s $dir/tmux.conf ~/.config/tmux/tmux.conf
+git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
+
+for b in $bins; do
+    echo "Creating symlink to $b in ~/.local/bin directory."
+    ln -s $dir/bin/$b ~/.local/bin/$b
 done
 
  install_zsh () {
@@ -62,9 +74,9 @@ done
  fi
  }
 
-
 install_zsh
 
 # Add zsh plugins
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+
