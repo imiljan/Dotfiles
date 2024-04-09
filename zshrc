@@ -27,7 +27,7 @@ ZSH_THEME="cobalt2"
 # ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
+COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
@@ -40,7 +40,8 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 # "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
 # or set a custom format using the strftime function format specifications,
 # see 'man strftime' for details.
-HIST_STAMPS="dd.mm.yyyy"
+# HIST_STAMPS="dd.mm.yyyy"
+HIST_STAMPS="yyyy-mm-dd"
 
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
@@ -51,20 +52,27 @@ HIST_STAMPS="dd.mm.yyyy"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 
+HIST_IGNORE_SPACE="true"
+
 source $HOME/.profile
 
 plugins=(
   brew
   git
+  gh
   npm
   nvm
   jenv
   pyenv
   pip
+  gcloud
   docker
   docker-compose
   sudo
+  jira
   vi-mode
+  tmux
+  fzf
   zsh-autosuggestions
   zsh-syntax-highlighting
 )
@@ -74,13 +82,13 @@ plugins=(
 
 FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 source $ZSH/oh-my-zsh.sh
+source $HOME/.alias
 
 # User configuration
-
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
-# export LANG=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
@@ -104,16 +112,3 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# LS replacement
-# general use
-alias ls='exa'                                                         # ls
-alias l='exa -lbF --git'                                               # list, size, type, git
-alias ll='exa -lbGF --git'                                             # long list
-alias llm='exa -lbGd --git --sort=modified'                            # long list, modified date sort
-alias la='exa -lbhHigUmuSa --time-style=long-iso --git --color-scale'  # all list
-alias lx='exa -lbhHigUmuSa@ --time-style=long-iso --git --color-scale' # all + extended list
-# specialty views
-alias lS='exa -1'                                                      # one column, just names
-alias lt='exa --tree --level=2'                                        # tree

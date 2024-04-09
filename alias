@@ -1,0 +1,33 @@
+alias python="python3"
+
+alias dps="docker ps"
+alias dvols="docker volume ls"
+alias dnets="docker network ls"
+alias dimgs="docker image ls"
+
+alias dc="docker compose"
+alias dcud="docker compose up -d"
+alias dcu="docker compose up"
+alias dcd="docker compose down"
+alias dclf="docker compose logs -f"
+
+alias ls="eza --icons=always"
+alias l="eza -lbF --icons=always --git"
+alias la="eza -lbhHigUmuSa --time-style=long-iso --git --color-scale"
+alias lS="eza --icons=always -1"
+alias lt="eza --tree --level=2 --icons=always"
+
+# Not used, probably remove
+alias llm="eza -lbGd --git --sort=modified"
+alias ll="eza -lbGF --git"
+alias lx="eza -lbhHigUmuSa@ --time-style=long-iso --git --color-scale"
+
+alias cat="bat --style=plain"
+# alias cat="bat --paging=never"
+# alias cat="bat"
+
+alias rmnm="find . -name "node_modules" -type d -prune -exec rm -rf '{}' +"
+alias wstorml='wstorm -e'
+alias vim='nvim'
+alias c="clear"
+alias lg="lazygit"

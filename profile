@@ -1,3 +1,5 @@
+export XDG_CONFIG_HOME=$HOME/.config
+
 # set PATH so it includes user's private bin if it exists
 if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
@@ -37,55 +39,95 @@ load-nvmrc() {
 add-zsh-hook chpwd load-nvmrc
 load-nvmrc
 
-# Alias
-alias dps="docker ps"
-alias dvols="docker volume ls"
-alias dnets="docker network ls"
-alias dimgs="docker image ls"
 
-alias dc="docker-compose"
-alias dcud="docker-compose up -d"
-alias dcu="docker-compose up"
-alias dcd="docker-compose down"
-alias dclf="docker-compose logs -f"
+# ----- Bat (better cat) -----
+# Setup 
+# mkdir -p "$(bat --config-dir)/themes"
+# cd $(bat --config-dir)/themes
+# curl -O https://raw.githubusercontent.com/folke/tokyonight.nvim/main/extras/sublime/tokyonight_night.tmTheme
+# bat cache --build
+export BAT_THEME=tokyonight_night
 
-alias rmnm="find . -name "node_modules" -type d -prune -exec rm -rf '{}' +"
-alias wstorml='wstorm -e'
-alias vim='nvim'
-# alias cat="bat --paging=never"
-alias cat="bat --style plain"
+# FZF
+eval "$(fzf --zsh)"
+
+# TokioNight Night for fzf
+export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
+--color=fg:#c0caf5,bg:#1a1b26,hl:#ff9e64 \
+--color=fg+:#c0caf5,bg+:#292e42,hl+:#ff9e64 \
+--color=info:#7aa2f7,prompt:#7dcfff,pointer:#7dcfff \
+--color=marker:#9ece6a,spinner:#9ece6a,header:#9ece6a"
+
+# -- Use fd instead of fzf --
+# CTRL-T For Files and Directories
+export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
+# ALT-C for Directories
+export FZF_ALT_C_COMMAND="fd --type d --hidden --strip-cwd-prefix --exclude .git"
+
+# FROM https://github.com/junegunn/fzf?tab=readme-ov-file#settings
+export FZF_COMPLETION_TRIGGER='~~'
+
+_fzf_compgen_path() {
+  fd --hidden --follow --exclude ".git" . "$1"
+}
+
+_fzf_compgen_dir() {
+  fd --type d --hidden --follow --exclude ".git" . "$1"
+}
+
+# https://github.com/junegunn/fzf?tab=readme-ov-file#key-bindings-for-command-line
+export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always --line-range :500 {}'"
+export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
+
+_fzf_comprun() {
+  local command=$1
+  shift
+
+  case "$command" in
+    cd)           fzf --preview 'eza --tree --color=always {} | head -200'   "$@" ;;
+    export|unset) fzf --preview "eval 'echo \$'{}"                           "$@" ;;
+    ssh)          fzf --preview 'dig {}'                                     "$@" ;;
+    *)            fzf --preview "bat -n --color=always --line-range :500 {}" "$@" ;;
+  esac
+}
+# END FZF
 
 fcd() {
     local dir
-    dir=$(find ${1:-.} -type d -not -path '*/\.*' 2> /dev/null | fzf +m) && cd "$dir"
+    dir=$(find ${1:-.} -maxdepth 2 -type d -not -path '*/\.*' 2> /dev/null | fzf +m) && cd "$dir"
 }
 
-# Homebrew
+ccd() {
+  local dir
+  dir=$(find ~/Code ~/Code/expense-robot ~/ -mindepth 1 -maxdepth 1 -type d | fzf) && cd "$dir"
+}
+
+# OpenSSL
 # export PATH="/opt/homebrew/opt/openssl@1.1/bin:$PATH"
 
-# libpq is keg-only, which means it was not symlinked into /opt/homebrew,
-# because conflicts with postgres formula.
-# If you need to have libpq first in your PATH uncomment next line
-
+# libpq
 # export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+
+# GIT GPG signing
+export GPG_TTY=$(tty)
 
 # Docker format
 export FORMAT="ID\t{{.ID}}\nNAME\t{{.Names}}\nIMAGE\t{{.Image}}\nPORTS\t{{.Ports}}\nCOMMAND\t{{.Command}}\nCREATED\t{{.CreatedAt}}\nSTATUS\t{{.Status}}\n"
-export LANG=en_US.UTF-8
 
 # GCloud - Add gcloud completion
-# source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
-# source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 
-# Java - JEnv (This is replaced by jenv zsh plugin)
+# This is replaced by jenv zsh plugin
+# Java - JEnv
 # export PATH="$HOME/.jenv/bin:$PATH"
 # eval "$(jenv init -)"
 # export PATH="$HOME/.jenv/plugins:$PATH"
-# To setup JAVA_HOME run 'jenv enable-plugin export'
-# Check other plugins 'jenv plugins'
 
 # Maven
-export M2_HOME=/opt/homebrew/Cellar/maven/3.9.6/libexec
+export M2_HOME=/opt/homebrew/Cellar/maven/3.9.3/libexec
 export M2=$M2_HOME/bin
 export PATH=$PATH:$M2_HOME/bin
 
@@ -105,5 +147,24 @@ export CAPACITOR_ANDROID_STUDIO_PATH=~/Applications/Android\ Studio.app
 
 # Python - PyEnv
 export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PAYH"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
+
+# Ngrok
+if command -v ngrok &>/dev/null; then
+  eval "$(ngrok completion)"
+fi
+
+# TMUX-SESSIONIZER
+# bindkey -s ^f "tmux-sessionizer\n"
+# bindkey -s F1 "tmux-sessionizer\n"
+
+goWork() {
+    cp ~/.npm_work_rc ~/.npmrc
+    cp ~/.ssh_config_work ~/.ssh/config
+}
+
+goPersonal() {
+    cp ~/.npm_personal_rc ~/.npmrc
+    cp ~/.ssh_config_personal ~/.ssh/config
+}
