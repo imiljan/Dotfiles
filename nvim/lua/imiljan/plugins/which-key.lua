@@ -6,24 +6,32 @@ return {
 
     wk.setup()
     wk.register({
-      ["<leader>T"] = { name = "Test" },
+      ["<leader>S"] = { name = "Spectre" },
 
+      ["<leader>b"] = { name = "Bufferline" },
       ["<leader>c"] = { name = "Code" },
       ["<leader>d"] = { name = "Document/Debug/Delete" },
       ["<leader>f"] = { name = "Telescope File Browser" },
-      ["<leader>g"] = { name = "LazyGit" },
       ["<leader>h"] = { name = "Hunks (Git)" },
-      ["<leader>l"] = { name = "Location list" },
-      ["<leader>p"] = { name = "Prime" },
-      ["<leader>q"] = { name = "Quickfix list" },
+      ["<leader>ht"] = { name = "Hunks toggle (Git)" },
+      ["<leader>l"] = { name = "Location list/LazyGit" },
+      ["<leader>m"] = { name = "Harpoon" },
+      ["<leader>o"] = { name = "Outline" },
+      ["<leader>q"] = { name = "Quickfix list / Persistence" },
       ["<leader>r"] = { name = "Rename" },
       ["<leader>s"] = { name = "Search" },
-      ["<leader>t"] = { name = "Tabs" },
-      ["<leader>w"] = { name = "Workspace" },
+      ["<leader>t"] = { name = "Test/Tab" },
+      ["<leader>u"] = { name = "UndoTree" },
+      ["<leader>w"] = { name = "LSP Workspace search"  },
       ["<leader>x"] = { name = "Trouble" },
+      ["<leader>z"] = { name = "Zen" },
 
       ["["] = { name = "Previous ..." },
       ["]"] = { name = "Next ..." },
     })
+
+    wk.register({
+      ["<leader>h"] = { "Hunks (Git)" },
+    }, { mode = "v" })
   end,
 }

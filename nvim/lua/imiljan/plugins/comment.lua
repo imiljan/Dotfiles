@@ -1,7 +1,8 @@
 return {
-  "numToStr/Comment.nvim",
-  opts = {},
-  lazy = false,
+  -- :h commenting
+  -- "numToStr/Comment.nvim",
+  -- opts = {},
+  -- lazy = false,
 }
 
 --[[

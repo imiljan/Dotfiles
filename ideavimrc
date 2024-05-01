@@ -1,115 +1,191 @@
+""" Options
 let mapleader = " "
 
-set clipboard+=unnamed
+set visualbell
+set noerrorbells
+
+" set clipboard+=unnamed
 set number relativenumber
 set showmode
 
 set ignorecase
 set smartcase
 
+set scrolloff=10
 set hlsearch
 set incsearch
-map <Esc> :nohlsearch<CR>
-inoremap <C-c> :nohlsearch<CR>
 
 set ideajoin
 set idearefactormode=keep
 
+"""Remaps
+nnoremap <Esc> :nohl<CR>
+inoremap <C-c> <Esc>
+
+noremap <leader>y "+y
+noremap <leader>Y "+Y
+noremap <leader>p "+p
+xnoremap <leader>P "_dP
+
+nmap <C-w><Up> <Action>(StretchSplitToTop)
+nmap <C-w><Down> <Action>(StretchSplitToBottom)
+nmap <C-w><Right> <Action>(StretchSplitToRight)
+nmap <C-w><Left> <Action>(StretchSplitToLeft)
+
+vmap K <Action>(MoveLineUp)
+vmap J <Action>(MoveLineDown)
+
 vnoremap < <gv
 vnoremap > >gv
 
-""" Plugins
-Plug 'preservim/nerdtree'
-Plug 'tpope/vim-commentary'
-Plug 'terryma/vim-multiple-cursors'
-Plug 'tpope/vim-surround'
-Plug 'machakann/vim-highlightedyank'
+"nnoremap <leader>en :action EditSourceInNewWindow<CR>
+"nnoremap <leader>n :action NextWindow<CR>
 
-set NERDTree
-set commentary
-set multiple-cursors
-set surround
+"nnoremap <leader>n :action ActivateProjectToolWindow<CR>
 
-nnoremap <Leader>en :action EditSourceInNewWindow<CR>
-nnoremap <Leader>n :action NextWindow<CR>
+" built-in navigation to navigated items works better
+nnoremap <C-o> :action Back<cr>
+nnoremap <C-i> :action Forward<cr>
+" but preserve ideavim defaults
+nnoremap <C-S-o> <C-o>
+nnoremap <C-S-i> <C-i>
 
 nnoremap \e :e ~/.ideavimrc<CR>
 nnoremap \r :action IdeaVim.ReloadVimRc.reload<CR>
 
-nnoremap <c-z> :action ToggleDistractionFreeMode<CR>
+""" Plugins
+Plug 'preservim/nerdtree'
+Plug 'tpope/vim-commentary'
+"Plug 'terryma/vim-multiple-cursors'
+Plug 'tpope/vim-surround'
+Plug 'machakann/vim-highlightedyank'
 
-map <C-c> <Esc>
-imap <C-c> <Esc>
-map <C-d> <C-d>zz
-map <C-u> <C-u>zz
-map n nzzzv
-map N Nzzzv
+""" https://raw.githubusercontent.com/wiki/JetBrains/ideavim/NERDTree-support.md
+"set NERDTree
+"set commentary
+"set multiple-cursors
+"set surround
+"set highlightedyank
+
+nnoremap <C-n> :NERDTreeToggle<CR>
+
+" Remap multiple-cursors shortcuts to match terryma/vim-multiple-cursors
+"nmap <C-n> <Plug>NextWholeOccurrence
+"xmap <C-n> <Plug>NextWholeOccurrence
+"nmap g<C-n> <Plug>NextOccurrence
+"xmap g<C-n> <Plug>NextOccurrence
+"xmap <C-x> <Plug>SkipOccurrence
+"xmap <C-p> <Plug>RemoveOccurrence
+"nmap <S-C-n> <Plug>AllWholeOccurrences
+"xmap <S-C-n> <Plug>AllWholeOccurrences
+"nmap g<S-C-n> <Plug>AllOccurrences
+"xmap g<S-C-n> <Plug>AllOccurrences
 
 """Splits
-sethandler <c-j> a:vim
-sethandler <c-k> a:vim
+sethandler <C-j> a:vim
+sethandler <C-k> a:vim
+
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 
-""" Tabs
-nnoremap <TAB> :action PreviousTab<CR>
-nnoremap <S-TAB> :action NextTab<CR>
+nnoremap <C-w>q :q<CR>
 
-""" Telescope
-map <leader>sf <Action>(GotoFile)
-map <C-p> <Action>(GotoFile)
-map <leader>sw <Action>(FindInPath)
-map <leader>sg <Action>(FindInPath)
+""" Tab
+nnoremap <leader>tq :action CloseActiveTab<CR>
+nnoremap <leader>tp :action PreviousTab<CR>
+nnoremap <leader>tn :action NextTab<CR>
 
+""" Project Windows
+nnoremap <leader>Tn :action NextProjectWindow<CR>
+nnoremap <leader>Tp :action PreviousProjectWindow<CR>
 
-map <leader><leader> <Action>(RecentChangedFiles)
-map <leader>s. <Action>(RecentFiles)
-map <leader>sc <Action>(GotoAction)
-"map <leader>sh <Action>()
-"map <leader>sk <Action>()
-"map <leader>sr <Action>()
-
-"map <leader>ss <Action>()
-
-map <leader>/ <Action>(Find)
-map <leader>r/ <Action>(Replace)
-
-" Idea Custom
-map <leader>wc <Action>(GotoClass)
-map <leader>sl <Action>(RecentLocations)
+""" Keep the cursor centred
+map <C-d> <C-d>zz
+map <C-u> <C-u>zz
+map n nzz
+map N Nzz
+map { {zz
+map } }zz
 
 """ Existing https://github.com/JetBrains/ideavim/blob/master/src/main/java/com/maddyhome/idea/vim/package-info.java
 
+nmap <leader>R <Action>(Run)
+nmap <leader>X <Action>(Resume)
+nmap <leader>Q <Action>(Stop)
+
 """ LSP
 "map gd <Action>(GotoDeclaration)
-map gr <Action>(GotoDeclaration) "goto references the same as GotoDeclaration
-map gI <Action>(GotoImplementation)
-"map <leader>D Type Definition ???
-map <leader>ds <Action>(GotoSymbol)
-map <leader>ws <Action>(GotoSymbol)
-map <leader>sd <Action>(ActivateProblemsViewToolWindow) "Does it work after restart?
-
-map <leader>rn <Action>(RenameElement)
-map <leader>ca <Action>(ProblemsView.QuickFixes)
-map <leader>f <Action>(ReformatCode)
-map K <Action>(QuickJavaDoc)
 "map gD <Action>(GotoDeclaration)
+nmap K <Action>(QuickJavaDoc)
+nmap gr <Action>(GotoDeclaration)
+nmap gI <Action>(GotoImplementation)
 
-map <leader>rr <Action>(RefactoringMenu)
+nmap <leader>D <Action>(GotoTypeDeclaration)
+nmap <leader>ds <Action>(GotoSymbol)
+nmap <leader>ws <Action>(GotoSymbol)
+nmap <leader>sd <Action>(ActivateProblemsViewToolWindow)
 
-" TODO Diagnostic keymap
-"map [d
-"map ]d
-"map <leader>e
-"map <leader>q
+nmap <leader>rn <Action>(RenameElement)
+" map <leader>ca <Action>(ProblemsView.QuickFixes)
+nmap <leader>ca <Action>(ShowIntentionActions)
+nmap <leader>ff <Action>(ReformatCode)
+imap <C-s> <Action>(ParameterInfo)
 
-imap <C-h> <Action>(ParameterInfo)
+nmap <leader>rf <Action>(RefactoringMenu)
+"nmap <leader>rn <Action>(RefactoringMenu)
+
+""" Telescope
+nmap <C-p> <Action>(GotoFile)
+nmap <leader>sf <Action>(GotoFile)
+nmap <leader>sw <Action>(FindInPath)
+nmap <leader>sg <Action>(FindInPath)
+nmap <leader>wc <Action>(GotoClass)
+
+nmap <leader><leader> <Action>(RecentChangedFiles)
+nmap <leader>s. <Action>(RecentFiles)
+nmap <leader>sc <Action>(GotoAction)
+"map <leader>sh <Action>()
+"map <leader>sm <Action>()
+"map <leader>" <Action>()
+"map <leader>sk <Action>()
+"map <leader>sr <Action>()
+nmap <leader>sl <Action>(RecentLocations)
+
+"map <leader>cs <Action>()
+nmap <leader>/ <Action>(Find)
+nmap <leader>r/ <Action>(Replace)
+
+"map <leader>ss <Action>()
+
+" Diagnostic keymap
+map ]d <Action>(GotoNextError)
+map [d <Action>(GotoPreviousError)
+map <C-W>d <Action>(ShowErrorDescription)
+map <leader>e <Action>(ShowErrorDescription)
+map <leader>qq <Action>(ActivateProblemsViewToolWindow)
+
+""" Treesitter
+nmap ]f <Action>(MethodDown)
+nmap [f <Action>(MethodUp)
 
 """ TODO Trouble
 
 """ TODO Git
+map <leader>lg <Action>(ActivateCommitToolWindow)
+
+nnoremap [h :action VcsShowPrevChangeMarker<cr>
+nnoremap ]h :action VcsShowNextChangeMarker<cr>
 
 """ Debugging
-nnoremap <leader>b :action ToggleLineBreakpoint<CR>
+nnoremap <leader>db :action ToggleLineBreakpoint<CR>
+nnoremap <leader>de :action EvaluateExpression<CR>
+nnoremap <leader>dt :action Stop<CR>
+
+""" Testing
+map <leader>tr <Action>(RunClass)
+
+""" Zen Mde
+nnoremap <leader>zz :action ToggleDistractionFreeMode<CR>
+nnoremap <leader>zZ :action ToggleZenMode<CR>
