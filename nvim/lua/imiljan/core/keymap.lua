@@ -1,57 +1,63 @@
 vim.keymap.set("n", "<leader>pv", vim.cmd.Ex, { desc = "Open netrw" })
 
-vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
-vim.keymap.set("i", "<C-c>", "<Esc>")
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Remove highlight" })
+vim.keymap.set("n", "Q", "<nop>", { desc = "Disable EX mode on Q" })
+vim.keymap.set("i", "<C-c>", "<Esc>", { desc = "Exit insert mode" })
+vim.keymap.set("n", "<F1>", "<cmd>silent !tmux neww tmux-sessionizer<CR>", { desc = "TmuxSessionizer" })
 
--- Disable arrow keys in normal mode
-vim.keymap.set("n", "<left>", '<cmd>echo "Use h to move!!"<CR>')
-vim.keymap.set("n", "<right>", '<cmd>echo "Use l to move!!"<CR>')
-vim.keymap.set("n", "<up>", '<cmd>echo "Use k to move!!"<CR>')
-vim.keymap.set("n", "<down>", '<cmd>echo "Use j to move!!"<CR>')
+vim.keymap.set("n", "<C-w><up>", "<cmd>resize +10<CR>", { desc = "Resize +" })
+vim.keymap.set("n", "<C-w><down>", "<cmd>resize -10<CR>", { desc = "Resize -" })
+vim.keymap.set("n", "<C-w><right>", "<cmd>vertical resize +10<CR>", { desc = "Resize vertical +" })
+vim.keymap.set("n", "<C-w><left>", "<cmd>vertical resize -10<CR>", { desc = "Resize vertical -" })
 
--- tab managemen
-vim.keymap.set("n", "<leader>tt", "<cmd>tabnew<CR>", { desc = "open new tab" })
-vim.keymap.set("n", "<leader>tq", "<cmd>tabclose<CR>", { desc = "close current tab" })
-vim.keymap.set("n", "<leader>tn", "<cmd>tabn<CR>", { desc = "go to next tab" })
-vim.keymap.set("n", "<leader>tp", "<cmd>tabp<CR>", { desc = "go to prev tab" })
-vim.keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "open current buffer in new tab" })
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move highlighted line down" })
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move highlighted line up" })
 
--- Move highlighted lines UP or DOWN
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+vim.keymap.set("n", "J", "mzJ`z", { desc = "Keeps cursor in the same place after appending" })
 
--- Keeps cursor in the same place after appending
-vim.keymap.set("n", "J", "mzJ`z")
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Better half page down" })
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Better half page up" })
+vim.keymap.set("n", "n", "nzz", { desc = "Better next search" })
+vim.keymap.set("n", "N", "Nzz", { desc = "Better previous search" })
+-- vim.keymap.set("n", "}", "}zz", { desc = "Better next paragraph" })
+-- vim.keymap.set("n", "{", "{zz", { desc = "Better previous paragraph" })
+-- vim.keymap.set("n", "<C-i>", "<C-i>zz", { desc = "Better next location" })
+-- vim.keymap.set("n", "<C-o>", "<C-o>zz", { desc = "Better previous location" })
+-- vim.keymap.set("n", "%", "%zz", { desc = "Better matching brackets" })
+-- vim.keymap.set("n", "*", "*zz", { desc = "Better next word search" })
+-- vim.keymap.set("n", "#", "#zz", { desc = "Better previous word search" })
 
--- Better scroling, keep curror at the middle
-vim.keymap.set("n", "<C-d>", "<C-d>zz")
-vim.keymap.set("n", "<C-u>", "<C-u>zz")
-vim.keymap.set("n", "n", "nzzzv")
-vim.keymap.set("n", "N", "Nzzzv")
+vim.keymap.set({ "n", "v" }, "<leader>p", [["+p]], { desc = "Paste from system clipboard" })
+vim.keymap.set("x", "<leader>P", [["_dP]], { desc = "Paste without changing the pastebuffer" })
 
--- Paste over something without changing the pastebuffer
-vim.keymap.set("x", "<leader>p", [["_dP]], { desc = "Paste without changing the pastebuffer" })
+vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to system clipboard" })
+vim.keymap.set("n", "<leader>Y", [["+Y]], { desc = "Yank line to system clipbloadr" })
 
--- Copy into system clipboard, when clipboard is not unnamedplus
--- vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
--- vim.keymap.set("n", "<leader>Y", [["+Y]])
-
--- Delete to void
 vim.keymap.set({ "n", "v" }, "<leader>dd", [["_d]], { desc = "Delete to void" })
 
--- Replace current word in whole buffer
-vim.keymap.set("n", "<leader>rr", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
+vim.keymap.set(
+  "n",
+  "<leader>rr",
+  [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+  { desc = "Replace current word" }
+)
 
--- Disable EX mode on Q
-vim.keymap.set("n", "Q", "<nop>")
+vim.keymap.set("n", "<leader>tt", "<cmd>tabnew<CR>", { desc = "TAB: open new" })
+vim.keymap.set("n", "<leader>tq", "<cmd>tabclose<CR>", { desc = "TAB: close current" })
+vim.keymap.set("n", "<leader>tn", "<cmd>tabn<CR>", { desc = "TAB: go to next" })
+vim.keymap.set("n", "<leader>tp", "<cmd>tabp<CR>", { desc = "TAB: go to prev" })
+-- vim.keymap.set("n", "<leader>to", "<cmd>tabnew %<CR>", { desc = "TAB: open current buffer in new" })
 
--- Navigate to other repo with ease in new tmux session
-vim.keymap.set("n", "<F1>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
+vim.keymap.set("n", "<leader>qo", "<cmd>copen<CR>", { desc = "QuickFix: open" })
+vim.keymap.set("n", "<leader>qx", "<cmd>cclose<CR>", { desc = "QuickFix: close" })
+vim.keymap.set("n", "<leader>qn", "<cmd>cnext<CR>zz", { desc = "QuickFix: next" })
+vim.keymap.set("n", "<leader>qp", "<cmd>cprev<CR>zz", { desc = "QuickFix: prev" })
+vim.keymap.set("n", "<M-j>", "<cmd>cnext<CR>zz", { desc = "QuickFix: next" })
+vim.keymap.set("n", "<M-k>", "<cmd>cprev<CR>zz", { desc = "QuickFix: prev" })
 
--- Quickfix navigation
-vim.keymap.set("n", "<leader>qn", "<cmd>cnext<CR>zz", { desc = "Quickfix next" })
-vim.keymap.set("n", "<leader>qp", "<cmd>cprev<CR>zz", { desc = "Quickfix prev" })
-
--- Location list navigation
-vim.keymap.set("n", "<leader>ln", "<cmd>lnext<CR>zz", { desc = "LocationList next" })
-vim.keymap.set("n", "<leader>lp", "<cmd>lprev<CR>zz", { desc = "LocationList prev" })
+vim.keymap.set("n", "<leader>lo", "<cmd>lopen<CR>", { desc = "LocationList: open" })
+vim.keymap.set("n", "<leader>lx", "<cmd>lclose<CR>", { desc = "LocationList: close" })
+vim.keymap.set("n", "<leader>ln", "<cmd>lnext<CR>zz", { desc = "LocationList: next" })
+vim.keymap.set("n", "<leader>lp", "<cmd>lprev<CR>zz", { desc = "LocationList: prev" })
+vim.keymap.set("n", "<M-h>", "<cmd>lnext<CR>zz", { desc = "LocationList: next" })
+vim.keymap.set("n", "<M-l>", "<cmd>lprev<CR>zz", { desc = "LocationList: prev" })

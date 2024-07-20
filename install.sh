@@ -8,15 +8,13 @@ files="zshrc profile gitconfig vimrc ideavimrc alias"
 config=~/.config
 dirs="nvim lazygit"
 
-bins="tmux-sessionizer fix-tilde"
+bins="tmux-sessionizer tmux-chooser fix-tilde"
 ##########
 
-# create dotfiles_old in homedir
 echo -n "Creating $olddir for backup of any existing dotfiles in ~ ..."
 mkdir -p $olddir
 echo "done"
 
-# change to the dotfiles directory
 echo -n "Changing to the $dir directory ..."
 cd $dir
 echo "done"
@@ -34,7 +32,9 @@ for d in $dirs; do
 done
 
 mkdir ~/.config/tmux
+echo "Creating symlink to $dit/tmux.conf ~/.config/tmux"
 ln -s $dir/tmux.conf ~/.config/tmux/tmux.conf
+echo "Installing tpm"
 git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
 
 for b in $bins; do
@@ -74,9 +74,26 @@ done
  fi
  }
 
+echo "Installing zsh/oh-my-zsh"
 install_zsh
 
-# Add zsh plugins
+# Brew
+echo "Installing brew"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+echo "Installing brew packages from Brewfile"
+brew bundle install --no-lock
+
+
+echo "Installing zsh plugins"
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+
+echo "Installing bat theme"
+mkdir -p "$(bat --config-dir)/themes"
+cd $(bat --config-dir)/themes
+curl -O https://raw.githubusercontent.com/folke/tokyonight.nvim/main/extras/sublime/tokyonight_night.tmTheme
+bat cache --build
+
+echo "DONE!"
 

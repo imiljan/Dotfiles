@@ -1,6 +1,7 @@
 return {
   "nvim-neo-tree/neo-tree.nvim",
   branch = "v3.x",
+  event = "VeryLazy",
   dependencies = {
     "nvim-lua/plenary.nvim",
     "nvim-tree/nvim-web-devicons",
@@ -15,8 +16,15 @@ return {
       },
       filesystem = {
         filtered_items = {
+          visible = true,
           hide_dotfiles = false,
           hide_gitignored = false,
+          hide_by_name = { "node_modules", ".git", ".husky", ".idea" },
+          hide_by_pattern = {},
+          always_show = {},
+          always_show_by_pattern = {},
+          never_show = { ".DS_Store" },
+          never_show_by_pattern = {},
         },
         follow_current_file = {
           enabled = true,
@@ -25,6 +33,6 @@ return {
       },
     })
 
-    vim.keymap.set("n", "<C-n>", ":Neotree toggle<CR>", { desc = "NeoTree Toggle" })
+    vim.keymap.set("n", "<C-n>", ":Neotree toggle<CR>", { desc = "NeoTree: Toggle" })
   end,
 }

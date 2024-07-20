@@ -1,20 +1,27 @@
 return {
   "folke/trouble.nvim",
-  cmd = { "TroubleToggle", "Trouble" },
+  cmd = "Trouble",
   dependencies = { "nvim-tree/nvim-web-devicons" },
-  opts = { use_diagnostic_signs = true },
+  opts = {},
+  -- stylua: ignore
   keys = {
-    { "<leader>xx", "<cmd>TroubleToggle<cr>",                       desc = "Trouble: Toggle" },
-    { "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Trouble: Workspace Diagnostics" },
-    { "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>",  desc = "Trouble: Document Diagnostics" },
-    { "<leader>xq", "<cmd>TroubleToggle quickfix<cr>",              desc = "Trouble: Quickfix List" },
-    { "<leader>xl", "<cmd>TroubleToggle loclist<cr>",               desc = "Trouble: Location List" },
-    { "gR",         "<cmd>TroubleToggle lsp_references<cr>",        desc = "Trouble: LSP References" },
+    { "<leader>xx", "<cmd>Trouble<cr>",                                                desc = "Trouble" },
+
+    { "<leader>xd", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",                desc = "Trouble: Buffer Diagnostics" },
+    { "<leader>xD", "<cmd>Trouble diagnostics toggle<cr>",                             desc = "Trouble: Diagnostics" },
+
+    { "<leader>xr", "<cmd>Trouble lsp_references focus=false<cr>",                     desc = "Trouble: LSP References" },
+    { "<leader>xL", "<cmd>Trouble lsp toggle focus=false<cr>",                         desc = "Trouble: LSP", },
+
+    { "<leader>xs", "<cmd>Trouble symbols toggle win.position=bottom focus=false<cr>", desc = "Trouble: Symbols" },
+
+    { "<leader>xq", "<cmd>Trouble qflist toggle<cr>",                                  desc = "Trouble: Quickfix List" },
+    { "<leader>xl", "<cmd>Trouble loclist toggle<cr>",                                 desc = "Trouble: Location List" },
     {
       "[x",
       function()
         if require("trouble").is_open() then
-          require("trouble").previous({ skip_groups = true, jump = true })
+          require("trouble").prev({ skip_groups = true, jump = true })
         else
           local ok, err = pcall(vim.cmd.cprev)
           if not ok then

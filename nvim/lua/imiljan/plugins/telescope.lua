@@ -13,14 +13,24 @@ return {
       "nvim-tree/nvim-web-devicons",
     },
     config = function()
-      local trouble = require("trouble.providers.telescope")
+      local telescope_actions = require("telescope.actions")
+      local trouble = require("trouble.sources.telescope")
 
       require("telescope").setup({
         defaults = {
-          path_display = { "smart" },
+          path_display = { "truncate" },
+          dynamic_preview_title = true,
           mappings = {
-            i = { ["<c-t>"] = trouble.open_with_trouble },
-            n = { ["<c-t>"] = trouble.open_with_trouble },
+            i = {
+              ["<C-j>"] = telescope_actions.cycle_history_next,
+              ["<C-k>"] = telescope_actions.cycle_history_prev,
+              ["<C-t>"] = trouble.open,
+            },
+            n = {
+              ["<C-j>"] = telescope_actions.cycle_history_next,
+              ["<C-k>"] = telescope_actions.cycle_history_prev,
+              ["<C-t>"] = trouble.open,
+            },
           },
         },
         extensions = {
@@ -37,52 +47,57 @@ return {
       pcall(require("telescope").load_extension, "fzf")
       pcall(require("telescope").load_extension, "ui-select")
       pcall(require("telescope").load_extension, "file_browser")
+      pcall(require("telescope").load_extension, "harpoon")
 
       local builtin = require("telescope.builtin")
 
-      -- File Pickers https://github.com/nvim-telescope/telescope.nvim?tab=readme-ov-file#file-pickers
-      vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "Search Files" })
-      vim.keymap.set("n", "<C-p>", builtin.git_files, { desc = "Search Git Files" })
-      vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "Search current Word" })
-      vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "Search by Grep" })
-      vim.keymap.set("n", "<leader>sp", function()
+      vim.keymap.set("n", "<C-p>", function()
+        builtin.git_files({ use_git_root = false, show_untracked = true })
+      end, { desc = "SEARCH: Git Files" })
+      vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "SEARCH: Files" })
+      vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "SEARCH: Current Word" })
+      vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "SEARCH: Grep" })
+
+      vim.keymap.set("n", "<leader>sG", function()
         builtin.grep_string({ search = vim.fn.input("Grep > ") })
-      end, { desc = "Search by Grep with input" })
+      end, { desc = "SEARCH: Grep with input" })
+      vim.keymap.set("n", "<leader>sd", function()
+        builtin.live_grep({ search_dirs = { vim.fn.input("Directory > ") }, prompt_title = "Live Grep in Directory" })
+      end, { desc = "SEARCH: Live Grep in Directory" })
+
       vim.keymap.set("n", "<leader>s/", function()
-        builtin.live_grep({
-          grep_open_files = true,
-          prompt_title = "Live Grep in Open Files",
-        })
-      end, { desc = "Search [/] in Open Files" })
+        builtin.live_grep({ grep_open_files = true, prompt_title = "Live Grep in Open Files" })
+      end, { desc = "SEARCH: Live Grep in Open Files" })
 
-      -- Vim Pickers https://github.com/nvim-telescope/telescope.nvim?tab=readme-ov-file#vim-pickers
-      vim.keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "Find existing buffers" })
-      vim.keymap.set("n", "<leader>s.", builtin.oldfiles, { desc = 'Search Recent Files ("." for repeat)' })
-      vim.keymap.set("n", "<leader>sc", builtin.commands, { desc = "Search Commands" })
-      vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "Search Help" })
-      vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "Search Keymaps" })
+      vim.keymap.set("n", "<leader>s.", builtin.oldfiles, { desc = "SEARCH: Recent Files" })
+      vim.keymap.set("n", '<leader>s"', builtin.registers, { desc = "SEARCH: Registers" })
+      vim.keymap.set("n", "<leader>sb", builtin.buffers, { desc = "SEARCH: Existing buffers" })
+      vim.keymap.set("n", "<leader>sc", builtin.commands, { desc = "SEARCH: Commands" })
+      vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "SEARCH: Help" })
+      vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "SEARCH: Keymaps" })
+      vim.keymap.set("n", "<leader>sm", builtin.marks, { desc = "SEARCH: Marks" })
+      vim.keymap.set("n", "<leader>sr", builtin.resume, { desc = "SEARCH: Resume" })
+
       vim.keymap.set("n", "<leader>/", function()
-        builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
-          winblend = 10,
-          previewer = false,
-        }))
-      end, { desc = "[/] Fuzzily search in current buffer" })
-      vim.keymap.set("n", "<leader>sr", builtin.resume, { desc = "Search Resume" })
+        builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({ previewer = false }))
+      end, { desc = "SEARCH: in current buffer" })
 
-      -- Lists Picker https://github.com/nvim-telescope/telescope.nvim?tab=readme-ov-file#neovim-lsp-pickers
-      vim.keymap.set("n", "<leader>ss", builtin.builtin, { desc = "Search Select Telescope" })
+      vim.keymap.set("n", "<leader>ss", builtin.builtin, { desc = "SEARCH: Select Telescope" })
+      vim.keymap.set("n", "<leader>sn", function()
+        builtin.find_files({ cwd = vim.fn.stdpath("config") })
+      end, { desc = "SEARCH: Neovim files" })
+
+      vim.keymap.set("n", "<leader>cs", builtin.spell_suggest, { desc = "SEARCH: Spell Suggestions" })
 
       -- TODO: Git Pickers https://github.com/nvim-telescope/telescope.nvim?tab=readme-ov-file#git-pickers
 
-      -- Shortcut for searching your neovim configuration files
-      vim.keymap.set("n", "<leader>sn", function()
-        builtin.find_files({ cwd = vim.fn.stdpath("config") })
-      end, { desc = "Search Neovim files" })
-
-      -- Telescope file browser
+      -- Extensions
       vim.keymap.set("n", "<space>fb", function()
         require("telescope").extensions.file_browser.file_browser()
-      end)
+      end, { desc = "Telescope: FileBrowser" })
+      vim.keymap.set("n", "<space>fa", function()
+        require("telescope").extensions.harpoon.marks()
+      end, { desc = "Telescope: Harpoon" })
     end,
   },
 }

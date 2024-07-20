@@ -7,11 +7,8 @@ set clipboard=unnamedplus,unnamed,autoselect
 set mouse=a
 set bs=2     " make backspace behave like normal again
 
-" Bind nohl
-" Removes highlight of your last search
-noremap <C-n> :nohl<CR>
-vnoremap <C-n> :nohl<CR>
-inoremap <C-n> :nohl<CR>
+noremap <C-c> :nohl<CR>
+noremap <Esc> <C-c>
 
 " Useful settings
 set history=700
