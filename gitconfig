@@ -8,16 +8,17 @@
     ui = true
 [alias]
     d = diff
+    dh = diff HEAD
+    st = status
     br = branch --all
     co = checkout
     cob = checkout -b
-    dh = diff HEAD
+    undo = reset --soft HEAD^
+    undo-hard = reset --hard HEAD^
     lg = log --graph --pretty=format:'%C(bold red)%h%Creset -%C(bold yellow)%d%Creset %s %C(bold green)(%cr) %C(bold blue)<%an>%Creset %C(yellow)%ad%Creset' --abbrev-commit --date=short
     lgr = log --reverse --pretty=format:'%C(bold red)%h%Creset -%C(bold yellow)%d%Creset %s %C(bold green)(%cr) %C(bold blue)<%an>%Creset %C(yellow)%ad%Creset' --abbrev-commit --date=short
     lgn = log --pretty=oneline --abbrev-commit --show-notes=*
     mnff = merge --no-ff
-    rh = reset --soft HEAD^
-    st = status
 [credential]
     helper = cache --timeout 28800
 [help]
