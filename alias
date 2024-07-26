@@ -33,23 +33,55 @@ alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
 alias lg="lazygit"
 alias lzd="lazydocker"
 
+# https://github.com/junegunn/fzf/wiki/examples#changing-directory
 fcd() {
     local dir
-    dir=$(find ${1:-.} -maxdepth 2 -type d -not -path '*/\.*' 2> /dev/null | fzf +m) && cd "$dir"
+    dir=$(find ${1:-.} -path '*/\.*' -prune -o -type d -print \
+            -maxdepth 2 2> /dev/null | \
+            fzf +m \
+            --preview 'eza --tree --level=2 --icons --color=always {} | head -200' \
+            --bind 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up' \
+        )
+    cd "$dir"
 }
 
 ccd() {
   local dir
-  dir=$(find ~/Code ~/Code/expense-robot ~ -mindepth 1 -maxdepth 1 -type d | fzf) && cd "$dir"
+  dir=$(\
+        find \
+            ~/Code \
+            ~/Dotfiles \
+            ~ \
+            -mindepth 1 -maxdepth 1 -type d | \
+            fzf \
+                --preview 'eza --tree --level=1 --icons --color=always {} | head -200' \
+                --bind 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up' \
+        )
+  cd "$dir"
+}
+
+export-vars() {
+  if [ -f "$1" ]; then
+    while IFS='=' read -r key value; do
+      # Skip empty lines or lines where the key is empty
+      if [ -n "$key" ] && [ -n "$value" ]; then
+        export "$key=$value"
+      fi
+    done < "$1"
+  else
+    echo "File not found: $1"
+  fi
 }
 
 goWork() {
     cp ~/.npm_work_rc ~/.npmrc
     cp ~/.ssh_config_work ~/.ssh/config
+    ssh-add -d ~/.ssh/id_ed25519_personal
 }
 
 goPersonal() {
     cp ~/.npm_personal_rc ~/.npmrc
     cp ~/.ssh_config_personal ~/.ssh/config
+    ssh-add ~/.ssh/id_ed25519_personal
 }
 

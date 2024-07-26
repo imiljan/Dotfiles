@@ -18,6 +18,23 @@ return {
 
       require("telescope").setup({
         defaults = {
+          sorting_strategy = "ascending",
+          layout_strategy = "horizontal",
+          layout_config = {
+            horizontal = {
+              height = 0.9,
+              preview_cutoff = 120,
+              prompt_position = "top",
+              width = 0.8,
+            },
+            vertical = {
+              height = 0.9,
+              preview_cutoff = 40,
+              prompt_position = "top",
+              width = 0.8,
+            },
+          },
+          border = true,
           path_display = { "truncate" },
           dynamic_preview_title = true,
           mappings = {
