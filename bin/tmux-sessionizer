@@ -3,7 +3,16 @@
 if [[ $# -eq 1 ]]; then
     selected=$1
 else
-    selected=$(find ~/Code ~/ -mindepth 1 -maxdepth 1 -type d | fzf)
+    selected=$(\
+        find \
+            ~/Code \
+            ~/Dotfiles \
+            ~ \
+            -mindepth 1 -maxdepth 1 -type d | \
+            fzf \
+                --preview 'eza --tree --level=1 --icons --color=always {} | head -200' \
+                --bind 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up' \
+            )
 fi
 
 if [[ -z $selected ]]; then

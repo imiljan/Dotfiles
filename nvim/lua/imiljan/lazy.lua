@@ -7,19 +7,5 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
   spec = "imiljan.plugins",
-  rocks = {
-    enabled = false,
-    hererocks = false,
-  },
-  checker = {
-    enabled = false,
-    concurrency = nil,
-    notify = true,
-    frequency = 3600 * 24,
-    check_pinned = false,
-  },
-  change_detection = {
-    enabled = false,
-    notify = false,
-  },
+  change_detection = { notify = false },
 })

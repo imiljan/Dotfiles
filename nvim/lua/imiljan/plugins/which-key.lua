@@ -16,7 +16,7 @@ return {
     { "<leader>c", group = "Code" },
     { "<leader>d", group = "Document/Debug/Delete" },
     { "<leader>f", group = "Telescope File Browser" },
-    { "<leader>h", group = "Hunks (Git)" },
+    { "<leader>h", group = "Hunks (Git)", mode = { "n", "v" } },
     { "<leader>ht", group = "Hunks toggle (Git)" },
     { "<leader>l", group = "Location list/LazyGit" },
     { "<leader>m", group = "Harpoon" },
@@ -31,7 +31,5 @@ return {
     { "<leader>z", group = "Zen" },
     { "[", group = "Previous ..." },
     { "]", group = "Next ..." },
-
-    { "<leader>h", desc = "Hunks (Git)", mode = "v" },
   },
 }

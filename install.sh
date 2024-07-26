@@ -8,7 +8,7 @@ files="zshrc profile gitconfig vimrc ideavimrc alias"
 config=~/.config
 dirs="nvim lazygit"
 
-bins="tmux-sessionizer tmux-chooser fix-tilde"
+bins="fix-tilde irg tmux-chooser tmux-sessionizer"
 ##########
 
 echo -n "Creating $olddir for backup of any existing dotfiles in ~ ..."

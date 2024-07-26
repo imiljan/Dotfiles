@@ -4,7 +4,7 @@ no_of_terminals=$(tmux list-sessions | wc -l)
 
 if [[ $no_of_terminals -eq "0" ]]; then
 	echo "Creating new session"
-	tmux new-session -t main
+	tmux new-session -s "main"
 	exit 0
 fi
 

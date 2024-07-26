@@ -10,8 +10,30 @@ return {
         { "<leader>du", function() require("dapui").toggle({}) end,                  desc = "DAP: UI", },
         { "<leader>de", function() require("dapui").eval() end,                      desc = "DAP: Eval",           mode = { "n", "v" }, },
         { "<leader>dE", function() require("dapui").eval(nil, { enter = true }) end, desc = "DAP: Eval and enter", mode = { "n", "v" } },
+        {
+          "<leader>dx",
+          function()
+            require("dapui").eval(vim.fn.input("Eval Expression > "), { enter = true })
+          end,
+          desc = "DAP: Eval Expression",
+          mode = { "n", "v" },
+        },
       },
-      opts = {},
+      opts = {
+        controls = {
+          icons = {
+            play = " (5)",
+            step_into = " (7)",
+            step_over = " (8)",
+            step_out = " (9)",
+            disconnect = "",
+            pause = "",
+            run_last = "",
+            step_back = "",
+            terminate = "",
+          },
+        },
+      },
       config = function(_, opts)
         local dap = require("dap")
         local dapui = require("dapui")
