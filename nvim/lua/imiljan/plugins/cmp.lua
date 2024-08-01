@@ -61,9 +61,9 @@ return {
       }),
       sources = cmp.config.sources({
         { name = "nvim_lsp" },
-        { name = "path", { max_item_count = 3 } },
-        { name = "buffer", { max_item_count = 3 } },
-        { name = "luasnip", { max_item_count = 3 } },
+        { name = "path", max_item_count = 3 },
+        { name = "buffer", max_item_count = 3 },
+        { name = "luasnip", max_item_count = 3 },
         { name = "lazydev", group_index = 0 },
       }),
       formatting = {
@@ -81,16 +81,16 @@ return {
     cmp.setup.cmdline("/", {
       mapping = cmp.mapping.preset.cmdline(),
       sources = {
-        { name = "buffer" },
+        { name = "buffer", max_item_count = 5 },
       },
     })
 
     cmp.setup.cmdline(":", {
       mapping = cmp.mapping.preset.cmdline(),
       sources = cmp.config.sources({
-        { name = "path" },
+        { name = "path", max_item_count = 3 },
       }, {
-        { name = "cmdline" },
+        { name = "cmdline", max_item_count = 5 },
       }),
       matching = { disallow_symbol_nonprefix_matching = false },
     })

@@ -2,6 +2,7 @@ return {
   {
     "neovim/nvim-lspconfig",
     dependencies = {
+      "nvim-telescope/telescope.nvim",
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
       "williamboman/mason-nvim-dap.nvim",
@@ -133,7 +134,6 @@ return {
           end
 
           -- LSP specific overrides
-
           if client and client.name == "lua_ls" then
             client.server_capabilities.documentFormattingProvider = false
           end
@@ -142,16 +142,16 @@ return {
             client.server_capabilities.documentFormattingProvider = false
 
             vim.api.nvim_create_autocmd("BufWritePre", {
-              pattern = { "*.ts" },
+              group = vim.api.nvim_create_augroup("imiljan-OrganizeImports", {}),
+              buffer = e.buf,
               desc = "TypeScript - On Save",
-              group = vim.api.nvim_create_augroup("imiljan-OrganizeImports", { clear = true }),
-              callback = function()
-                -- print("Organize Imports " .. vim.api.nvim_buf_get_name(0))
-                vim.lsp.buf.execute_command({
+              callback = function(e2)
+                local params = {
                   command = "_typescript.organizeImports",
                   arguments = { vim.api.nvim_buf_get_name(0) },
                   title = "TypeScript Organize Imports",
-                })
+                }
+                vim.lsp.buf_request_sync(e2.buf, "workspace/executeCommand", params, 500)
               end,
             })
 
@@ -167,85 +167,13 @@ return {
             --   })
             -- end,{ buffer = e.buf, desc = "LSP TS: Goto Source Definition" })
 
-            -- This exists in vtsls
-            -- vim.keymap.set("n", "gR", function ()
+            -- vim.keymap.set("n", "<leader>co", function()
             --   vim.lsp.buf.execute_command({
-            --     command = "_typescript.findAllFileReferences",
-            --     arguments = { vim.uri_from_bufnr(0) },
-            --     open = true,
-            --     title = "TypeScript Find All File References",
+            --     command = "_typescript.organizeImports",
+            --     arguments = { vim.api.nvim_buf_get_name(0) },
+            --     title = "TypeScript Organize Imports",
             --   })
-            -- end, { buffer = e.buf, desc = "LSP TS: File References" })
-
-            vim.keymap.set("n", "<leader>co", function()
-              vim.lsp.buf.execute_command({
-                command = "_typescript.organizeImports",
-                arguments = { vim.api.nvim_buf_get_name(0) },
-                title = "TypeScript Organize Imports",
-              })
-            end, { buffer = e.buf, desc = "LSP TS: Organize Imports" })
-
-            -- https://github.com/typescript-language-server/typescript-language-server?tab=readme-ov-file#features
-
-            vim.keymap.set("n", "<leader>cD", function()
-              vim.lsp.buf.code_action({
-                apply = true,
-                context = {
-                  only = { "source.fixAll.ts" },
-                  diagnostics = {},
-                },
-              })
-            end, { desc = "LSP TS: Fix all diagnostics" })
-
-            vim.keymap.set("n", "<leader>cu", function()
-              vim.lsp.buf.code_action({
-                apply = true,
-                context = {
-                  only = { "source.removeUnused.ts" },
-                  diagnostics = {},
-                },
-              })
-            end, { desc = "LSP TS: Remove Unused Imports" })
-
-            vim.keymap.set("n", "<leader>cm", function()
-              vim.lsp.buf.code_action({
-                apply = true,
-                context = {
-                  only = { "source.addMissingImports.ts" },
-                  diagnostics = {},
-                },
-              })
-            end, { desc = "LSP TS: Add Missing Imports" })
-
-            vim.keymap.set("n", "<leader>cx", function()
-              vim.lsp.buf.code_action({
-                apply = true,
-                context = {
-                  only = { "source.removeUnusedImports.ts" },
-                  diagnostics = {},
-                },
-              })
-            end, { desc = "LSP TS: Remove Unused Imports" })
-
-            vim.keymap.set("n", "<leader>cS", function()
-              vim.lsp.buf.code_action({
-                apply = true,
-                context = {
-                  only = { "source.sortImports.ts" },
-                  diagnostics = {},
-                },
-              })
-            end, { desc = "LSP TS: Sort Imports" })
-
-            -- vim.keymap.set("n", "<leader>co", function ()
-            --   vim.lsp.buf.code_action({
-            --     apply = true,
-            --     context = {
-            --       only = { "source.organizeImports.ts" },
-            --       diagnostics = {},
-            --     },
-            --   })
-            -- end, { desc = "LSP TS: Organize Imports" })
+            -- end, { buffer = e.buf, desc = "LSP TS: Organize Imports" })
           end
 
           if client and client.name == "pyright" then
@@ -519,14 +447,26 @@ return {
 
       local ensure_installed = vim.tbl_keys(servers or {})
 
-      local linters =
-        { "eslint_d", "flake8", "codespell", "actionlint", "checkmake", "hadolint", "yamllint", "markdownlint_cli2" }
-      local formatters = { "stylua", "prettierd", "black", "isort", "jq" }
-      local debuggers = { "debugpy" } -- js-debug-addapter installed manually, not working here
+      local none_ls = {
+        "stylua",
+        "prettierd",
+        "black",
+        "isort",
+        "shfmt",
 
-      vim.list_extend(ensure_installed, linters)
-      vim.list_extend(ensure_installed, formatters)
-      vim.list_extend(ensure_installed, debuggers)
+        "eslint_d",
+        "codespell",
+        "flake8",
+        "actionlint",
+        "checkmake",
+        "hadolint",
+        "yamllint",
+        "markdownlint_cli2",
+      }
+      local dap = { "debugpy" } -- js-debug-addapter installed manually, not working here
+
+      vim.list_extend(ensure_installed, none_ls)
+      vim.list_extend(ensure_installed, dap)
 
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
@@ -538,7 +478,6 @@ return {
           function(server_name)
             local server = servers[server_name] or {}
             server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-            -- https://www.lazyvim.org/plugins/lsp#nvim-lspconfig
             server.inlay_hints = { enabled = true }
             server.codelens = { enabled = false }
 

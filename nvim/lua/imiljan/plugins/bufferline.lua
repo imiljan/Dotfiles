@@ -5,7 +5,7 @@ return {
   opts = {
     options = {
       mode = "tabs",
-      separator_style = "slant",
+      tab_size = 5,
       offsets = {
         {
           filetype = "neo-tree",
@@ -15,6 +15,7 @@ return {
           text_align = "left",
         },
       },
+      separator_style = "slant",
     },
   },
   keys = {
