@@ -11,6 +11,7 @@ return {
       "nvim-telescope/telescope-ui-select.nvim",
       "nvim-telescope/telescope-file-browser.nvim",
       "nvim-tree/nvim-web-devicons",
+      "folke/trouble.nvim",
     },
     config = function()
       local telescope_actions = require("telescope.actions")

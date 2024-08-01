@@ -1,13 +1,10 @@
 return {
+  { "tpope/vim-fugitive", cmd = { "G", "Git" } },
   {
     "kdheepak/lazygit.nvim",
     cmd = { "LazyGit", "LazyGitConfig", "LazyGitCurrentFile", "LazyGitFilter", "LazyGitFilterCurrentFile" },
     keys = { { "<leader>lg", ":LazyGit<CR>", desc = "Open LazyGit" } },
     dependencies = { "nvim-lua/plenary.nvim" },
-  },
-  {
-    "tpope/vim-fugitive",
-    cmd = { "G", "Git" },
   },
   {
     "lewis6991/gitsigns.nvim",
