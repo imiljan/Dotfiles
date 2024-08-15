@@ -6,7 +6,7 @@ olddir=~/Dotfiles_old
 files="zshrc profile gitconfig vimrc ideavimrc alias"
 
 config=~/.config
-dirs="nvim lazygit"
+dirs="aerospace alacritty nvim lazygit starship"
 
 bins="fix-tilde irg tmux-chooser tmux-sessionizer"
 ##########
@@ -27,19 +27,16 @@ for f in $files; do
 done
 
 for d in $dirs; do
-	echo "Creating symlink to $d in ~/.config directory."
+	echo "Creating symlink to $d in $config directory."
 	ln -s $dir/"$d" $config/"$d"
 done
 
-mkdir ~/.config/tmux
-echo "Creating symlink to $dir/tmux.conf ~/.config/tmux/tmux.conf"
-ln -s $dir/tmux.conf ~/.config/tmux/tmux.conf
-echo "Installing tpm"
-git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
+mkdir $config/tmux
+echo "Creating symlink to $dir/tmux.conf $config/tmux/tmux.conf"
+ln -s $dir/tmux.conf $config/tmux/tmux.conf
 
-mkdir ~/.config/alacritty
-echo "Creating symlink to $dir/alacritty.toml ~/.config/alacritty/alacritty.toml"
-ln -s $dir/alacritty.toml ~/.config/alacritty/alacritty.toml
+echo "Installing tpm"
+git clone https://github.com/tmux-plugins/tpm $config/tmux/plugins/tpm
 
 for b in $bins; do
 	echo "Creating symlink to $b in ~/.local/bin directory."

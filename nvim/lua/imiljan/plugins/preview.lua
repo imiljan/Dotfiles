@@ -9,6 +9,7 @@ return {
   },
   {
     "vinnymeller/swagger-preview.nvim",
+    cmd = { "SwaggerPreviewToggle", "SwaggerPreview", "SwaggerPreviewStop" },
     build = "npm install -g swagger-ui-watcher",
     config = true,
   },

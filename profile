@@ -1,15 +1,24 @@
 FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
-export XDG_CONFIG_HOME=$HOME/.config
-export XDG_STATE_HOME=$HOME/.local/state
-export EDITOR="nvim"
-
-session-widget() { tmux-sessionizer }
-zle -N session-widget
-bindkey "^[OP" session-widget # ^[OP == F1
 
 if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
+
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+export XDG_CONFIG_HOME=$HOME/.config
+export XDG_STATE_HOME=$HOME/.local/state
+export EDITOR="nvim"
+
+export STARSHIP_CONFIG=$XDG_CONFIG_HOME/starship/starship.toml
+
+# https://github.com/zsh-users/zsh-autosuggestions?tab=readme-ov-file#key-bindings
+bindkey '^ ' autosuggest-accept
+
+session-widget() { tmux-sessionizer }
+zle -N session-widget
+bindkey "^[OP" session-widget # ^[OP == F1
 
 # NVM
 export NVM_DIR="$HOME/.nvm"
@@ -40,15 +49,10 @@ add-zsh-hook chpwd load-nvmrc
 load-nvmrc
 
 # Bat
-# mkdir -p "$(bat --config-dir)/themes"
-# cd $(bat --config-dir)/themes
-# curl -O https://raw.githubusercontent.com/folke/tokyonight.nvim/main/extras/sublime/tokyonight_night.tmTheme
-# bat cache --build
 export BAT_THEME=tokyonight_night
 
 # FZF
-export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
-export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS 
+FZF_DEFAULT_OPTS="
   --height 90%
   --tmux 90%,80%
   --highlight-line
@@ -59,7 +63,7 @@ export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS
 "
 
 # https://github.com/folke/tokyonight.nvim/blob/main/extras/fzf/tokyonight_night.sh
-export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS
+FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS
   --color=bg+:#283457
   --color=bg:#16161e
   --color=border:#27a1b9
@@ -81,6 +85,9 @@ export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS
 # https://github.com/junegunn/fzf?tab=readme-ov-file#key-bindings-for-command-line
 PERVIEW_BIND="--bind 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up'"
 # PERVIEW_BIND="--bind 'ctrl-y:preview-up,ctrl-e:preview-down,ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up'"
+
+export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
+export FZF_DEFAULT_OPTS
 
 # CTRL-T For Files and Directories
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"

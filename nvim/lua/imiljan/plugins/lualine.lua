@@ -1,6 +1,9 @@
 return {
   "nvim-lualine/lualine.nvim",
-  dependencies = { "nvim-tree/nvim-web-devicons", "folke/trouble.nvim" },
+  dependencies = {
+    "nvim-tree/nvim-web-devicons",
+    "folke/trouble.nvim",
+  },
   config = function()
     local trouble = require("trouble")
     local symbols = trouble.statusline({
@@ -18,9 +21,21 @@ return {
         globalstatus = true,
       },
       sections = {
+        lualine_a = { "mode" },
+        lualine_b = { "branch", "diff", "diagnostics" },
         lualine_c = { { "filename", path = 1 }, { symbols.get, cond = symbols.has } },
+        lualine_x = { "encoding", "filetype" },
+        lualine_y = { "progress" },
+        lualine_z = { "location" },
       },
-      extensions = { "neo-tree", "lazy" },
+      extensions = {
+        "lazy",
+        "mason",
+        "neo-tree",
+        "nvim-dap-ui",
+        "quickfix",
+        "trouble",
+      },
     })
   end,
 }

@@ -15,9 +15,10 @@
     cob = checkout -b
     undo = reset --soft HEAD^
     undo-hard = reset --hard HEAD^
-    lg = log --graph --pretty=format:'%C(bold red)%h%Creset -%C(bold yellow)%d%Creset %s %C(bold green)(%cr) %C(bold blue)<%an>%Creset %C(yellow)%ad%Creset' --abbrev-commit --date=short
-    lgr = log --reverse --pretty=format:'%C(bold red)%h%Creset -%C(bold yellow)%d%Creset %s %C(bold green)(%cr) %C(bold blue)<%an>%Creset %C(yellow)%ad%Creset' --abbrev-commit --date=short
-    lgn = log --pretty=oneline --abbrev-commit --show-notes=*
+    l = log --oneline
+    lg = log --graph --date=short --pretty=format:'%C(bold red)%h%Creset -%C(bold yellow)%d%Creset %s %C(bold green)(%cr) %C(bold blue)<%an>%Creset %C(yellow)%ad%Creset'
+    lgr = log --reverse --date=short --pretty=format:'%C(bold red)%h%Creset -%C(bold yellow)%d%Creset %s %C(bold green)(%cr) %C(bold blue)<%an>%Creset %C(yellow)%ad%Creset'
+    m = merge
     mnff = merge --no-ff
 [credential]
     helper = cache --timeout 28800

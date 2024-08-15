@@ -1,0 +1,81 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+add_newline = false
+
+format = """
+[░▒▓](#a3aed2)\
+[  ](bg:#a3aed2 fg:#090c0c)\
+[](bg:#769ff0 fg:#a3aed2)\
+$directory\
+[](fg:#769ff0 bg:#394260)\
+$git_branch\
+$git_commit\
+$git_state\
+$git_status\
+[](fg:#394260 bg:#212736)\
+$nodejs\
+$python\
+$lua\
+[](fg:#212736 bg:#1d2230)\
+$time\
+[ ](fg:#1d2230)\
+$character
+"""
+
+right_format = """
+$gcloud\
+"""
+
+[directory]
+truncation_length = 5
+truncate_to_repo = true
+format = "[ $path ]($style)"
+style = "fg:#e3e5e5 bg:#769ff0"
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+
+[git_branch]
+format = '[[ $symbol $branch ](fg:#769ff0 bg:#394260)]($style)'
+symbol = ""
+style = "bg:#394260"
+
+[git_commit]
+only_detached = true
+tag_disabled = false
+
+[git_state]
+disabled = false
+
+[git_status]
+format = '[[($all_status$ahead_behind )](fg:#769ff0 bg:#394260)]($style)'
+style = "bg:#394260"
+
+[nodejs]
+format = '[[ $symbol ($version)](fg:#769ff0 bg:#212736)]($style)'
+symbol = ""
+style = "bg:#212736"
+
+[python]
+format = '[[ $symbol $pyenv_prefix($version)(\($virtualenv\))](fg:#769ff0 bg:#212736)]($style)'
+symbol = ""
+style = "bg:#212736"
+pyenv_version_name = false
+
+[lua]
+format = '[[ $symbol ($version)](fg:#769ff0 bg:#212736)]($style)'
+symbol = ""
+style = "bg:#212736"
+
+[time]
+format = '[[  $time ](fg:#a0a9cb bg:#1d2230)]($style)'
+time_format = "%T" # https://docs.rs/chrono/0.4.7/chrono/format/strftime/index.htmlstyle = "bg:#1d2230"
+disabled = false
+
+[gcloud]
+format = '[[ $symbol $account(@$domain)(\($region\))](fg:#769ff0 bg:#212736)]($style)'
+symbol = "󱇶"

@@ -24,8 +24,6 @@ return {
     { "<leader>bo", "<Cmd>BufferLineCloseOthers<CR>", desc = "BufLine: Delete Other Buffers" },
     { "<leader>br", "<Cmd>BufferLineCloseRight<CR>", desc = "BufLine: Delete Buffers to the Right" },
     { "<leader>bl", "<Cmd>BufferLineCloseLeft<CR>", desc = "BufLine: Delete Buffers to the Left" },
-    { "<S-h>", "<cmd>BufferLineCyclePrev<cr>", desc = "BufLine: Prev Buffer" },
-    { "<S-l>", "<cmd>BufferLineCycleNext<cr>", desc = "BufLine: Next Buffer" },
     { "[b", "<cmd>BufferLineCyclePrev<cr>", desc = "BufLine: Prev Buffer" },
     { "]b", "<cmd>BufferLineCycleNext<cr>", desc = "BufLine: Next Buffer" },
     { "[B", "<cmd>BufferLineMovePrev<cr>", desc = "BufLine: Move buffer prev" },
