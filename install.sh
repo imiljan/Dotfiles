@@ -3,7 +3,7 @@
 ########## Variables
 dir=~/Dotfiles
 olddir=~/Dotfiles_old
-files="zshrc profile gitconfig vimrc ideavimrc alias"
+files="zshrc profile gitconfig gitignore vimrc ideavimrc alias"
 
 config=~/.config
 dirs="aerospace alacritty nvim lazygit starship"

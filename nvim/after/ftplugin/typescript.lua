@@ -1,5 +1,6 @@
 -- https://github.com/typescript-language-server/typescript-language-server?tab=readme-ov-file#features
 
+-- despite the name, fixes a couple of specific issues: unreachable code, await in non-async functions, incorrectly implemented interface
 vim.keymap.set("n", "<leader>cD", function()
   vim.lsp.buf.code_action({
     apply = true,
@@ -10,7 +11,8 @@ vim.keymap.set("n", "<leader>cD", function()
   })
 end, { desc = "LSP TS: Fix all" })
 
-vim.keymap.set("n", "<leader>cu", function()
+-- removes declared but unused variables
+vim.keymap.set("n", "<leader>cU", function()
   vim.lsp.buf.code_action({
     apply = true,
     context = {
@@ -20,6 +22,7 @@ vim.keymap.set("n", "<leader>cu", function()
   })
 end, { desc = "LSP TS: Remove Unused" })
 
+-- adds imports for used but not imported symbols
 vim.keymap.set("n", "<leader>cm", function()
   vim.lsp.buf.code_action({
     apply = true,
@@ -30,7 +33,8 @@ vim.keymap.set("n", "<leader>cm", function()
   })
 end, { desc = "LSP TS: Add Missing Imports" })
 
-vim.keymap.set("n", "<leader>cx", function()
+-- removes unused imports
+vim.keymap.set("n", "<leader>cu", function()
   vim.lsp.buf.code_action({
     apply = true,
     context = {
@@ -40,6 +44,7 @@ vim.keymap.set("n", "<leader>cx", function()
   })
 end, { desc = "LSP TS: Remove Unused Imports" })
 
+-- sorts imports
 vim.keymap.set("n", "<leader>cS", function()
   vim.lsp.buf.code_action({
     apply = true,
@@ -50,6 +55,7 @@ vim.keymap.set("n", "<leader>cS", function()
   })
 end, { desc = "LSP TS: Sort Imports" })
 
+-- organizes and removes unused imports
 vim.keymap.set("n", "<leader>co", function()
   vim.lsp.buf.code_action({
     apply = true,

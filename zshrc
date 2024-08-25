@@ -13,10 +13,8 @@ plugins=(
 )
 
 # https://github.com/ohmyzsh/ohmyzsh/wiki/Settings#completion-settings
-COMPLETION_WAITING_DOTS=true
 
 # https://github.com/ohmyzsh/ohmyzsh/wiki/Settings#library-settings
-ENABLE_CORRECTION=true
 DISABLE_UNTRACKED_FILES_DIRTY=true
 HIST_STAMPS="yyyy-mm-dd"
 

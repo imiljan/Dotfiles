@@ -1,0 +1,118 @@
+return {
+  {
+    "vim-test/vim-test",
+    ft = { "typescript", "javascript" },
+    dependencies = { "preservim/vimux" },
+    cmd = { "TestNearest", "TestFile", "TestSuite", "TestLast", "TestVisit" },
+    config = function()
+      vim.cmd("let test#strategy = 'vimux'")
+
+      vim.keymap.set("n", "<leader>tt", ":TestFile<CR>", { desc = "Test: Run File" })
+      vim.keymap.set("n", "<leader>tr", ":TestNearest<CR>", { desc = "Test: Run Nearest" })
+      vim.keymap.set("n", "<leader>ta", ":TestSuite<CR>", { desc = "Test: Run All" })
+      vim.keymap.set("n", "<leader>tl", ":TestLast<CR>", { desc = "Test: Run Last" })
+      vim.keymap.set("n", "<leader>tv", ":TestVisit<CR>", { desc = "Test: Visit last test" })
+      --  For Mocha, use Debug Mocha Tests dap configuration - F5
+    end,
+  },
+  {
+    "nvim-neotest/neotest",
+    ft = { "python" },
+    dependencies = {
+      "nvim-neotest/nvim-nio",
+      "nvim-lua/plenary.nvim",
+      "antoinemadec/FixCursorHold.nvim",
+      "nvim-treesitter/nvim-treesitter",
+
+      "nvim-neotest/neotest-plenary",
+      "nvim-neotest/neotest-python",
+      -- "nvim-neotest/neotest-vim-test",
+    },
+    config = function()
+      require("neotest").setup({
+        adapters = {
+          require("neotest-plenary"),
+          require("neotest-python"),
+          -- https://github.com/nvim-neotest/neotest-vim-test?tab=readme-ov-file#issues
+          -- require("neotest-vim-test")({
+          --   ignore_file_types = { "python", "vim", "lua" },
+          -- }),
+        },
+        output = {
+          enabled = true,
+          open_on_run = true,
+        },
+        status = {
+          enabled = true,
+          signs = true,
+          virtual_text = false,
+        },
+      })
+    end,
+    keys = {
+      {
+        "<leader>tt",
+        function()
+          require("neotest").run.run(vim.fn.expand("%"))
+        end,
+        desc = "Test: Run File",
+      },
+      {
+        "<leader>tr",
+        function()
+          require("neotest").run.run()
+        end,
+        desc = "Test: Run Nearest",
+      },
+      {
+        "<leader>ta",
+        function()
+          require("neotest").run.run(vim.uv.cwd())
+        end,
+        desc = "Test: Run All",
+      },
+      {
+        "<leader>tl",
+        function()
+          require("neotest").run.run_last()
+        end,
+        desc = "Test: Run Last",
+      },
+      {
+        "<leader>ts",
+        function()
+          require("neotest").summary.toggle()
+        end,
+        desc = "Test: Toggle Summary",
+      },
+      {
+        "<leader>tO",
+        function()
+          require("neotest").output_panel.toggle()
+        end,
+        desc = "Test: Toggle Output Panel",
+      },
+      {
+        "<leader>tS",
+        function()
+          require("neotest").run.stop()
+        end,
+        desc = "Test: Stop",
+      },
+      {
+        "<leader>td",
+        function()
+          require("neotest").run.run({ strategy = "dap" })
+        end,
+        desc = "Test: Debug Nearest",
+      },
+      {
+        "<leader>to",
+        function()
+          require("neotest").output.open({ enter = true, auto_close = true })
+        end,
+        desc = "Test: Show Output",
+      },
+    },
+  },
+}

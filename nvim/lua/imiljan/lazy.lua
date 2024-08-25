@@ -6,6 +6,18 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-  spec = "imiljan.plugins",
+  spec = "imiljan.plugins", -- Plugin Spec https://lazy.folke.io/spec
+  install = { missing = true },
+  checker = {
+    enabled = false,
+    concurrency = nil,
+    notify = true,
+    frequency = 86400,
+    check_pinned = false,
+  },
   change_detection = { notify = false },
+  rocks = {
+    enabled = false,
+    hererocks = false,
+  },
 })

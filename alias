@@ -12,7 +12,7 @@ alias dclf="docker compose logs -f"
 alias ls="eza --icons"
 alias l="eza -lbhF --group-directories-first --icons --git" # "eza --long --binary --header --classify --group-directories-first --icons --git"
 alias la="l -a"
-alias lt="eza --tree --level=2 --long --icons --git"
+alias lt="eza --group-directories-first --tree --level=2 --long --icons --git"
 alias lta="lt -a"
 
 alias lx="eza -lbhHigUmuSa@ --time-style=long-iso --git --color-scale" # eza --long --binary --header --links --inode --group --created --modified --accessed --blocksize --all --extended --time-style...
@@ -24,7 +24,8 @@ alias llm="eza -lbGd --git --sort=modified" # eza --long --binary --grid --list-
 
 alias cat="bat --style=plain --paging=never"
 
-alias rmnm="find . -name "node_modules" -type d -prune -exec rm -rf '{}' +"
+alias rmnm="find . -name "node_modules" -type d -maxdepth 2 -prune -exec rm -rf '{}' +"
+alias shownm="find . -name "node_modules" -type d -maxdepth 2 -prune"
 alias wstorml='wstorm -e'
 alias t=tmux-chooser
 alias vim='nvim'
@@ -32,6 +33,7 @@ alias c="clear"
 alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
 alias lg="lazygit"
 alias lzd="lazydocker"
+alias format-toml="prettier --plugin=/Users/$USER/.nvm/versions/node/v18.20.2/lib/node_modules/prettier-plugin-toml/lib/index.js --print-width 120 --write"
 
 # https://github.com/junegunn/fzf/wiki/examples#changing-directory
 fcd() {

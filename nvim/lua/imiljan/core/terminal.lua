@@ -1,18 +1,16 @@
-local set = vim.opt_local
-
 -- Set local settings for terminal buffers
 vim.api.nvim_create_autocmd("TermOpen", {
   group = vim.api.nvim_create_augroup("imiljan-TermOpen", {}),
   callback = function()
-    set.number = false
-    set.relativenumber = false
-    set.scrolloff = 0
+    vim.opt_local.number = false
+    vim.opt_local.relativenumber = false
+    vim.opt_local.scrolloff = 0
   end,
 })
 
 -- Easily hit escape in terminal mode.
--- vim.keymap.set("t", "<esc><esc>", "<c-\\><c-n>")
 -- breaks ESC in LazyGit
+-- vim.keymap.set("t", "<esc><esc>", "<c-\\><c-n>")
 
 -- Open a terminal at the bottom of the screen with a fixed height.
 vim.keymap.set("n", "<leader>`", function()

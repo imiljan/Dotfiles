@@ -2,13 +2,17 @@
 
 tmux_running=$(pgrep tmux)
 if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
-	tmux new-session -s "main" -c "main"
+	# tmux new-session -s "main" -c "main"
+	# Just use tmux-resurrect
+	tmux
 	exit 0
 fi
 
 no_of_terminals=$(tmux list-sessions | wc -l)
 if [[ $no_of_terminals -eq "0" ]]; then
-	tmux new-session -s "main" -c "main"
+	# tmux new-session -s "main" -c "main"
+	# Just use tmux-resurrect
+	tmux
 	exit 0
 fi
 

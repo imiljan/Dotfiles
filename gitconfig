@@ -20,16 +20,20 @@
     lgr = log --reverse --date=short --pretty=format:'%C(bold red)%h%Creset -%C(bold yellow)%d%Creset %s %C(bold green)(%cr) %C(bold blue)<%an>%Creset %C(yellow)%ad%Creset'
     m = merge
     mnff = merge --no-ff
-[credential]
-    helper = cache --timeout 28800
+    patch = !git --no-pager diff --no-color
 [help]
     autocorrect = 1
 [core]
     editor = nvim
     autocrlf = input
-    pager = diff-so-fancy | less --tabs=4 -RFX
+    pager = diff-so-fancy | less --tabs=4 -RF
+    excludesfile = /Users/imiljan/.gitignore
 [push]
     autoSetupRemote = true
+[diff]
+    tool = nvimdiff
+[merge]
+    tool = nvimdiff
 [interactive]
     diffFilter = diff-so-fancy --patch
 [color "diff-highlight"]
@@ -45,4 +49,3 @@
     old = red bold
     new = green bold
     whitespace = red reverse
-

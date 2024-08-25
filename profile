@@ -20,6 +20,10 @@ session-widget() { tmux-sessionizer }
 zle -N session-widget
 bindkey "^[OP" session-widget # ^[OP == F1
 
+chooser-widget() { tmux-chooser }
+zle -N chooser-widget
+bindkey "^[OQ" chooser-widget # ^[OQ == F2
+
 # NVM
 export NVM_DIR="$HOME/.nvm"
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
@@ -187,9 +191,8 @@ eval "$(rbenv init - zsh)"
 export PATH="$HOME/.rbenv/bin:$PATH"
 
 # Ngrok
-if command -v ngrok &>/dev/null; then
-  eval "$(ngrok completion)"
-fi
-
+# if command -v ngrok &>/dev/null; then
+#   eval "$(ngrok completion)"
+# fi
 
 

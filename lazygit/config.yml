@@ -1,11 +1,10 @@
-git:
-  paging:
-    colorArg: always
-    pager: diff-so-fancy
+# https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md
 
 # From https://github.com/folke/tokyonight.nvim/blob/main/extras/lazygit/tokyonight_storm.conf
 gui:
-  nerdFontsVersion: "3"
+  scrollHeight: 8
+  sidePanelWidth: 0.25
+  expandFocusedSidePanel: true
   theme:
     activeBorderColor:
       - "#ff9e64"
@@ -31,3 +30,9 @@ gui:
       - "#db4b4b"
     defaultFgColor:
       - "#c0caf5"
+  nerdFontsVersion: "3"
+
+git:
+  paging:
+    colorArg: always
+    pager: diff-so-fancy

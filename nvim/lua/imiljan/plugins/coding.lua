@@ -6,8 +6,8 @@ return {
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
       "williamboman/mason-nvim-dap.nvim",
-      "williamboman/mason-null-ls.nvim",
       "WhoIsSethDaniel/mason-tool-installer.nvim",
+      { "smjonas/inc-rename.nvim", cmd = "IncRename", opts = {} },
       {
         "folke/lazydev.nvim",
         dependencies = {
@@ -32,24 +32,26 @@ return {
       },
     },
     config = function()
+      local ts = require("imiljan.util.typescript")
+
       vim.api.nvim_create_autocmd("LspAttach", {
         group = vim.api.nvim_create_augroup("imiljan-LspAttach", { clear = true }),
         callback = function(e)
           local builtin = require("telescope.builtin")
 
+          vim.keymap.set("n", "<leader>cl", "<cmd>LspInfo<cr>", { buffer = e.buf, desc = "LSP: INFO" })
+
           vim.keymap.set("n", "gd", builtin.lsp_definitions, { buffer = e.buf, desc = "LSP: Definitions" })
           vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = e.buf, desc = "LSP: Declaration" })
-          vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = e.buf, desc = "LSP: Documentation" })
           vim.keymap.set("n", "gr", builtin.lsp_references, { buffer = e.buf, desc = "LSP: References" })
           vim.keymap.set("n", "gI", builtin.lsp_implementations, { buffer = e.buf, desc = "LSP: Implementations" })
-          vim.keymap.set("n", "gT", builtin.lsp_type_definitions, { buffer = e.buf, desc = "LSP: Type Definition" })
+          vim.keymap.set("n", "gy", builtin.lsp_type_definitions, { buffer = e.buf, desc = "LSP: Type Definition" })
 
-          vim.keymap.set(
-            "n",
-            "<leader>ds",
-            builtin.lsp_document_symbols,
-            { buffer = e.buf, desc = "LSP: Document Symbols" }
-          )
+          vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = e.buf, desc = "LSP: Documentation" })
+          vim.keymap.set("n", "gK", vim.lsp.buf.signature_help, { buffer = e.buf, desc = "LSP: Signature Help" })
+          vim.keymap.set("i", "<C-S>", vim.lsp.buf.signature_help, { buffer = e.buf, desc = "LSP: Signature Help" })
+
+          vim.keymap.set("n", "<leader>ds", builtin.lsp_document_symbols, { buffer = e.buf, desc = "LSP: Document Symbols" })
           vim.keymap.set(
             "n",
             "<leader>ws",
@@ -57,128 +59,89 @@ return {
             { buffer = e.buf, desc = "LSP: Dynamic Workspace Symbols" }
           )
           vim.keymap.set("n", "<leader>wS", function()
-            builtin.lsp_workspace_symbols({ query = vim.fn.input("Workspace Symbols > ") })
+            vim.ui.input({ prompt = "Workspace Symbols > " }, function(input)
+              builtin.lsp_workspace_symbols({ query = input })
+            end)
           end, { buffer = e.buf, desc = "LSP: Workspace Symbols with input" })
 
-          vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { buffer = e.buf, desc = "LSP: Rename" })
-          vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { buffer = e.buf, desc = "LSP: Code Action" })
-          vim.keymap.set("n", "<leader>ff", function()
-            vim.lsp.buf.format({
-              filter = function(c)
-                return c.name == "null-ls"
-              end,
+          -- vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { buffer = e.buf, desc = "LSP: Rename Symbol" })
+          vim.keymap.set("n", "<leader>rn", function()
+            return ":IncRename " .. vim.fn.expand("<cword>")
+          end, { buffer = e.buf, expr = true, desc = "LSP: Rename Symbol" })
+
+          vim.keymap.set({ "n", "x" }, "<leader>ca", vim.lsp.buf.code_action, { buffer = e.buf, desc = "LSP: Code Action" })
+          vim.keymap.set("n", "<leader>cx", function()
+            vim.lsp.buf.code_action({
+              apply = true,
+              context = {
+                only = { "source" },
+                diagnostics = {},
+              },
             })
-          end, { buffer = e.buf, desc = "LSP: Format File" })
-          vim.keymap.set("i", "<C-S>", vim.lsp.buf.signature_help, { buffer = e.buf, desc = "LSP: Signature Help" })
+          end, { desc = "LSP: Source Action" })
 
           vim.keymap.set("n", "<leader>wd", builtin.diagnostics, { buffer = e.buf, desc = "Diagnostic: Workspace" })
           vim.keymap.set("n", "<leader>fd", function()
             builtin.diagnostics({ bufnr = 0 })
           end, { buffer = e.buf, desc = "Diagnostic: Document" })
+
           vim.keymap.set("n", "[d", function()
             vim.diagnostic.goto_prev({ float = false })
-          end, { buffer = e.buf, desc = "Diagnostic: Go to previous" })
+          end, { buffer = e.buf, desc = "Diagnostic: prev" })
           vim.keymap.set("n", "]d", function()
             vim.diagnostic.goto_next({ float = false })
-          end, { buffer = e.buf, desc = "Diagnostic: Go to next" })
-          vim.keymap.set(
-            "n",
-            "<leader>e",
-            vim.diagnostic.open_float,
-            { buffer = e.buf, desc = "Diagnostic: Show messages" }
-          )
-          vim.keymap.set(
-            "n",
-            "<leader>qq",
-            vim.diagnostic.setqflist,
-            { buffer = e.buf, desc = "Diagnostic: Open QuickFix list" }
-          )
-          vim.keymap.set(
-            "n",
-            "<leader>ll",
-            vim.diagnostic.setloclist,
-            { buffer = e.buf, desc = "Diagnostic: Open Location list" }
-          )
+          end, { buffer = e.buf, desc = "Diagnostic: next" })
+
+          vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { buffer = e.buf, desc = "Diagnostic: Messages" })
 
           -- For list of capabilities
-          -- :lua =vim.lsp.get_active_clients()[1].server_capabilities
+          -- :lua vim.print(vim.lsp.get_active_clients()[1].server_capabilities)
           local client = vim.lsp.get_client_by_id(e.data.client_id)
+          if client then
+            if client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
+              vim.keymap.set("n", "<leader>lh", function()
+                vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({}))
+              end, { buffer = e.buf, desc = "LSP: Toggle Inlay Hints" })
+            end -- end inlay_hint
 
-          if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
-            vim.keymap.set("n", "<leader>lh", function()
-              vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({}))
-            end, { buffer = e.buf, desc = "LSP: Toggle Inlay Hints" })
-          end
+            if client.server_capabilities.documentHighlightProvider then
+              local highlight_augroup = vim.api.nvim_create_augroup("imiljan-LspHighlight", { clear = false })
+              vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+                group = highlight_augroup,
+                buffer = e.buf,
+                callback = vim.lsp.buf.document_highlight,
+              })
 
-          if client and client.server_capabilities.documentHighlightProvider then
-            local highlight_augroup = vim.api.nvim_create_augroup("imiljan-LspHighlight", { clear = false })
-            vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-              buffer = e.buf,
-              group = highlight_augroup,
-              callback = vim.lsp.buf.document_highlight,
-            })
+              vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+                group = highlight_augroup,
+                buffer = e.buf,
+                callback = vim.lsp.buf.clear_references,
+              })
 
-            vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-              buffer = e.buf,
-              group = highlight_augroup,
-              callback = vim.lsp.buf.clear_references,
-            })
+              vim.api.nvim_create_autocmd("LspDetach", {
+                group = vim.api.nvim_create_augroup("imiljan-LspDetach", { clear = true }),
+                callback = function(e2)
+                  vim.lsp.buf.clear_references()
+                  vim.api.nvim_clear_autocmds({ group = "imiljan-LspHighlight", buffer = e2.buf })
+                end,
+              })
+            end -- end documentHighlightProvider
 
-            vim.api.nvim_create_autocmd("LspDetach", {
-              group = vim.api.nvim_create_augroup("imiljan-LspDetach", { clear = true }),
-              callback = function(e2)
-                vim.lsp.buf.clear_references()
-                vim.api.nvim_clear_autocmds({ group = "imiljan-LspHighlight", buffer = e2.buf })
-              end,
-            })
-          end
+            -- LSP specific overrides
+            if client.name == "ts_ls" then
+              vim.api.nvim_create_autocmd("BufWritePre", {
+                group = vim.api.nvim_create_augroup("imiljan-OrganizeImports", {}),
+                buffer = e.buf,
+                desc = "TypeScript - On Save",
+                callback = function(e2)
+                  ts.organize_imports(e2.buf)
+                end,
+              })
 
-          -- LSP specific overrides
-          if client and client.name == "lua_ls" then
-            client.server_capabilities.documentFormattingProvider = false
-          end
-
-          if client and client.name == "tsserver" then
-            client.server_capabilities.documentFormattingProvider = false
-
-            vim.api.nvim_create_autocmd("BufWritePre", {
-              group = vim.api.nvim_create_augroup("imiljan-OrganizeImports", {}),
-              buffer = e.buf,
-              desc = "TypeScript - On Save",
-              callback = function(e2)
-                local params = {
-                  command = "_typescript.organizeImports",
-                  arguments = { vim.api.nvim_buf_get_name(0) },
-                  title = "TypeScript Organize Imports",
-                }
-                vim.lsp.buf_request_sync(e2.buf, "workspace/executeCommand", params, 500)
-              end,
-            })
-
-            -- https://github.com/typescript-language-server/typescript-language-server?tab=readme-ov-file#workspace-commands-workspaceexecutecommand
-
-            -- vim.keymap.set("n", "g...", function ()
-            --   local params = vim.lsp.util.make_position_params()
-            --   vim.lsp.buf.execute_command({
-            --     command = "_typescript.goToSourceDefinition",
-            --     arguments = { params.textDocument.uri, params.position },
-            --     open = true,
-            --     title = "TypeScript Organize Imports",
-            --   })
-            -- end,{ buffer = e.buf, desc = "LSP TS: Goto Source Definition" })
-
-            -- vim.keymap.set("n", "<leader>co", function()
-            --   vim.lsp.buf.execute_command({
-            --     command = "_typescript.organizeImports",
-            --     arguments = { vim.api.nvim_buf_get_name(0) },
-            --     title = "TypeScript Organize Imports",
-            --   })
-            -- end, { buffer = e.buf, desc = "LSP TS: Organize Imports" })
-          end
-
-          if client and client.name == "pyright" then
-            client.server_capabilities.documentFormattingProvider = false
-          end
+              vim.keymap.set("n", "gs", ts.go_to_source_definition, { buffer = e.buf, desc = "LSP TS: Go To Source Definition" })
+              vim.keymap.set("n", "<leader>rf", ts.rename_file, { buffer = e.buf, desc = "LSP TS: Rename File" })
+            end -- end tsserver
+          end -- end if client
         end,
       })
 
@@ -236,7 +199,8 @@ return {
           },
         },
 
-        tsserver = { -- https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md#configuration
+        ts_ls = {
+          -- https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md#configuration
           init_options = { -- https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md#initializationoptions
             -- hostInfo = "",
             -- completionDisableFilterText = false,
@@ -403,23 +367,10 @@ return {
           },
           -- from https://neovim.io/doc/user/lsp.html#vim.lsp.ClientConfig
           -- {commands} (table<string,fun(command: lsp.Command, ctx: table)>)
-          -- Table that maps string of clientside commands to user-defined functions.
-          -- Commands passed to start_client take precedence over the global command registry.
-          -- Each key must be a unique command name, and the value is a function which is called
-          -- if any LSP action (code action, code lenses, ...) triggers the command.
           commands = {
-            -- https://github.com/typescript-language-server/typescript-language-server/tree/master?tab=readme-ov-file#workspace-commands-workspaceexecutecommand
-            -- https://github.com/typescript-language-server/typescript-language-server/blob/master/README.md#organize-imports
-            OrganizeImports = {
-              function()
-                vim.lsp.buf.execute_command({
-                  command = "_typescript.organizeImports",
-                  arguments = { vim.api.nvim_buf_get_name(0) },
-                  title = "TypeScript Organize Imports",
-                })
-              end,
-              description = "Organize Imports",
-            },
+            OrganizeImports = { ts.organize_imports, description = "Organize Imports" },
+            RenameFile = { ts.rename_file, description = "Rename File" },
+            GoToSourceDefinition = { ts.go_to_source_definition, description = "Go To Source Definition" },
           },
         },
 
@@ -427,7 +378,7 @@ return {
         --   root_dir = require("lspconfig.util").root_pattern("angular.json", "project.json"),
         -- },
 
-        pyright = { -- Just for example
+        pyright = {
           -- settings = {
           --   pyright = { -- https://microsoft.github.io/pyright/#/settings?id=pyright-settings
           --     disableLanguageServices = false,
@@ -438,34 +389,55 @@ return {
           -- },
         },
 
+        eslint = {
+          enabled = true,
+          lintTask = {
+            enable = true,
+          },
+          run = "onSave",
+          format = { enable = false },
+          codeActionsOnSave = {
+            mode = "all",
+          },
+        },
+
+        html = { filetypes = { "html" } },
+        cssls = {},
+        sqlls = {},
+        jsonls = {},
+        yamlls = {},
         bashls = {},
         terraformls = {},
         dockerls = {},
         docker_compose_language_service = {},
-        marksman = {},
+        -- marksman = {},
       }
 
-      local ensure_installed = vim.tbl_keys(servers or {})
-
-      local none_ls = {
+      local linter_and_formaters = {
         "stylua",
         "prettierd",
+        "prettier",
         "black",
         "isort",
         "shfmt",
 
         "eslint_d",
-        "codespell",
         "flake8",
         "actionlint",
         "checkmake",
         "hadolint",
         "yamllint",
-        "markdownlint_cli2",
+        "markdownlint-cli2",
+        "tflint",
+        "jsonlint",
+
+        "vale",
+        "codespell",
       }
       local dap = { "debugpy" } -- js-debug-addapter installed manually, not working here
 
-      vim.list_extend(ensure_installed, none_ls)
+      local ensure_installed = vim.tbl_keys(servers or {})
+      vim.list_extend(ensure_installed, linter_and_formaters)
       vim.list_extend(ensure_installed, dap)
 
       local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -477,6 +449,7 @@ return {
         handlers = {
           function(server_name)
             local server = servers[server_name] or {}
+
             server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
             server.inlay_hints = { enabled = true }
             server.codelens = { enabled = false }
@@ -484,6 +457,267 @@ return {
             require("lspconfig")[server_name].setup(server)
           end,
         },
+      })
+    end,
+  },
+  {
+    "nvim-treesitter/nvim-treesitter",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter-textobjects",
+      -- "nvim-treesitter/nvim-treesitter-context",
+    },
+    build = ":TSUpdate",
+    config = function()
+      require("nvim-treesitter.configs").setup({
+        modules = {},
+        ensure_installed = {
+          "angular",
+          "bash",
+          "diff",
+          "gitcommit",
+          "git_rebase",
+          "html",
+          "javascript",
+          "json",
+          "jsonc",
+          "lua",
+          "scss",
+          "python",
+          "tmux",
+          "toml",
+          "typescript",
+          "vim",
+          "vimdoc",
+          "xml",
+          "yaml",
+        },
+        sync_install = false,
+        auto_install = true,
+        ignore_install = {},
+        highlight = { enable = true },
+        indent = { enable = true },
+        incremental_selection = {
+          enable = true,
+          keymaps = {
+            init_selection = "<C-space>",
+            node_incremental = "<C-space>",
+            scope_incremental = false,
+            node_decremental = false,
+          },
+        },
+        textobjects = {
+          select = {
+            enable = true,
+            lookahead = true,
+            keymaps = {
+              ["af"] = { query = "@function.outer", desc = "Select outer part of the function region" },
+              ["if"] = { query = "@function.inner", desc = "Select the inner part of the function region" },
+              ["ac"] = { query = "@class.outer", desc = "Select outer part of the class region" },
+              ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
+            },
+            selection_modes = {
+              ["@parameter.outer"] = "v", -- charwise
+              ["@function.outer"] = "V", -- linewise
+              ["@class.outer"] = "<c-v>", -- blockwise
+            },
+            include_surrounding_whitespace = true,
+          },
+          swap = {
+            enable = true,
+            swap_next = { ["<leader>pn"] = "@parameter.inner" },
+            swap_previous = { ["<leader>pp"] = "@parameter.inner" },
+          },
+          move = {
+            enable = true,
+            set_jumps = true, -- whether to set jumps in the jumplist
+            goto_next_start = { ["]f"] = "@function.outer", ["]c"] = "@class.outer", ["]a"] = "@parameter.inner" },
+            goto_next_end = { ["]F"] = "@function.outer", ["]C"] = "@class.outer", ["]A"] = "@parameter.inner" },
+            goto_previous_start = { ["[f"] = "@function.outer", ["[c"] = "@class.outer", ["[a"] = "@parameter.inner" },
+            goto_previous_end = { ["[F"] = "@function.outer", ["[C"] = "@class.outer", ["[A"] = "@parameter.inner" },
+            goto_next = { ["]i"] = "@conditional.outer" },
+            goto_previous = { ["[i"] = "@conditional.outer" },
+          },
+        },
+      })
+
+      vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
+        pattern = { "*.component.html", "*.container.html" },
+        callback = function()
+          vim.treesitter.start(nil, "angular")
+        end,
+      })
+    end,
+  },
+  {
+    "hrsh7th/nvim-cmp",
+    version = false,
+    event = { "InsertEnter", "CmdlineEnter" },
+    dependencies = {
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer",
+      "hrsh7th/cmp-path",
+      "hrsh7th/cmp-cmdline",
+      {
+        "garymjr/nvim-snippets",
+        dependencies = { "rafamadriz/friendly-snippets" },
+        opts = { friendly_snippets = true },
+        keys = {
+          {
+            "<Tab>",
+            function()
+              return vim.snippet.active({ direction = 1 }) and "<cmd>lua vim.snippet.jump(1)<cr>" or "<Tab>"
+            end,
+            expr = true,
+            silent = true,
+            mode = { "i", "s" },
+          },
+          {
+            "<S-Tab>",
+            function()
+              return vim.snippet.active({ direction = -1 }) and "<cmd>lua vim.snippet.jump(-1)<cr>" or "<S-Tab>"
+            end,
+            expr = true,
+            silent = true,
+            mode = { "i", "s" },
+          },
+        },
+      },
+      "onsails/lspkind.nvim",
+    },
+    config = function()
+      local cmp = require("cmp")
+      local defaults = require("cmp.config.default")()
+      local lspkind = require("lspkind")
+
+      -- vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
+
+      cmp.setup({
+        snippet = {
+          expand = function(args)
+            vim.snippet.expand(args.body)
+          end,
+        },
+        preselect = cmp.PreselectMode.None,
+        completion = { completeopt = "menu,menuone,noselect,popup" },
+        window = {
+          completion = cmp.config.window.bordered(),
+          documentation = cmp.config.window.bordered(),
+        },
+        mapping = cmp.mapping.preset.insert({
+          ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+          ["<C-f>"] = cmp.mapping.scroll_docs(4),
+          ["<C-Space>"] = cmp.mapping.complete(),
+          ["<C-e>"] = cmp.mapping.abort(),
+          ["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+          ["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+          ["<C-y>"] = cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Insert }),
+          ["<CR>"] = cmp.mapping.confirm({ select = false, behavior = cmp.ConfirmBehavior.Insert }),
+          ["<S-CR>"] = cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Replace }),
+        }),
+        sources = cmp.config.sources({
+          { name = "nvim_lsp" },
+          { name = "snippets", max_item_count = 3 },
+          { name = "path", max_item_count = 3 },
+          { name = "lazydev", group_index = 0 },
+        }, {
+          { name = "buffer", max_item_count = 3 },
+        }),
+        formatting = {
+          expandable_indicator = true,
+          fields = { "abbr", "menu", "kind" },
+          format = lspkind.cmp_format({
+            mode = "symbol_text",
+            maxwidth = 50,
+            ellipsis_char = "...",
+            show_labelDetails = true,
+          }),
+        },
+        -- experimental = {
+        --   ghost_text = {
+        --     hl_group = "CmpGhostText",
+        --   },
+        -- },
+        sorting = defaults.sorting,
+      })
+
+      cmp.setup.cmdline("/", {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = {
+          { name = "buffer", max_item_count = 15 },
+        },
+      })
+
+      cmp.setup.cmdline(":", {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = cmp.config.sources({
+          { name = "path", max_item_count = 5 },
+        }, {
+          { name = "cmdline", max_item_count = 15 },
+        }),
+        matching = { disallow_symbol_nonprefix_matching = false },
+      })
+    end,
+  },
+  {
+    "stevearc/conform.nvim",
+    event = { "BufWritePre" },
+    cmd = { "ConformInfo" },
+    keys = {
+      {
+        "<leader>ff",
+        function()
+          require("conform").format({ async = true, lsp_format = "fallback" })
+        end,
+        mode = "",
+        desc = "Format File",
+      },
+    },
+    opts = {
+      formatters_by_ft = {
+        lua = { "stylua" },
+        python = { "black", "isort" },
+        javascript = { "prettierd", "prettier", stop_after_first = true },
+        typescript = { "prettierd", "prettier", stop_after_first = true },
+        sh = { "shfmt" },
+        bash = { "shfmt" },
+        zsh = { "shfmt" },
+      },
+      default_format_opts = {
+        lsp_format = "fallback",
+      },
+      format_on_save = {
+        timeout_ms = 500,
+        lsp_format = "fallback",
+      },
+      notify_on_error = false,
+    },
+  },
+  {
+    "mfussenegger/nvim-lint",
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      local lint = require("lint")
+
+      lint.linters_by_ft = {
+        javascript = { "eslint_d" },
+        typescript = { "eslint_d" },
+        python = { "flake8" },
+        -- yaml = { "actionlint" },
+        make = { "checkmake" },
+        dockerfile = { "hadolint" },
+        yaml = { "yamllint" },
+        -- markdown = { "markdownlint-cli2" },
+        terraform = { "tflint" },
+        json = { "jsonlint" },
+        text = { "vale" },
+      }
+
+      vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+        group = vim.api.nvim_create_augroup("imiljan-lint", { clear = true }),
+        callback = function()
+          lint.try_lint()
+          lint.try_lint("codespell")
+        end,
       })
     end,
   },

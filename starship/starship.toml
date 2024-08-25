@@ -43,6 +43,8 @@ truncation_symbol = "…/"
 format = '[[ $symbol $branch ](fg:#769ff0 bg:#394260)]($style)'
 symbol = ""
 style = "bg:#394260"
+truncation_length = 20
+truncation_symbol = ''
 
 [git_commit]
 only_detached = true
@@ -73,9 +75,11 @@ style = "bg:#212736"
 
 [time]
 format = '[[  $time ](fg:#a0a9cb bg:#1d2230)]($style)'
-time_format = "%T" # https://docs.rs/chrono/0.4.7/chrono/format/strftime/index.htmlstyle = "bg:#1d2230"
+time_format = "%T"                                      # https://docs.rs/chrono/0.4.7/chrono/format/strftime/index.html
+style = "bg:#1d2230"
 disabled = false
 
 [gcloud]
-format = '[[ $symbol $account(@$domain)(\($region\))](fg:#769ff0 bg:#212736)]($style)'
+format = '[ $symbol $project(\($region\))]($style)'
+# format = '[[ $symbol $account(@$domain)(\($region\))](fg:#769ff0 bg:#212736)]($style)'
 symbol = "󱇶"

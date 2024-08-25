@@ -8,12 +8,16 @@ vim.g.loaded_node_provider = 0
 vim.g.loaded_perl_provider = 0
 
 vim.opt.mouse = "a"
+vim.opt.showmode = false
 vim.opt.termguicolors = true
 
 vim.opt.number = true
 vim.opt.relativenumber = true
 
 vim.opt.cursorline = true
+vim.opt.signcolumn = "yes"
+vim.opt.colorcolumn = "120"
+vim.opt.scrolloff = 8
 
 vim.opt.tabstop = 2
 vim.opt.softtabstop = 2
@@ -32,21 +36,19 @@ vim.opt.undofile = true
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
-vim.opt.signcolumn = "yes"
-
-vim.opt.updatetime = 50
--- vim.opt.timeoutlen = 300
+vim.opt.updatetime = 250
+vim.opt.timeoutlen = 300
 
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
 vim.opt.inccommand = "split"
 
-vim.opt.scrolloff = 8
-vim.opt.colorcolumn = "120"
-
 vim.opt.hlsearch = true
 vim.opt.incsearch = true
+
+vim.opt.list = true
+vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
 vim.opt.isfname:append("@-@")
 
@@ -56,4 +58,10 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   callback = function()
     vim.highlight.on_yank()
   end,
+})
+
+vim.filetype.add({
+  extension = {
+    ["http"] = "http",
+  },
 })

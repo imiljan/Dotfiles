@@ -12,7 +12,7 @@ option_as_alt = "Both"
 
 [font]
 normal = { family = "CaskaydiaCove Nerd Font", style = "Regular" }
-bold =   { family = "CaskaydiaCove Nerd Font", style = "Bold" }
+bold = { family = "CaskaydiaCove Nerd Font", style = "Bold" }
 italic = { family = "CaskaydiaCove Nerd Font", style = "Italic" }
 size = 16
 
@@ -55,10 +55,9 @@ bindings = [
   { mods = "Control", key = "Slash", chars = "\u001f" },
 
   { mods = "Control", key = "Back", chars = "\u0015" },
-  { mods = "Alt", key= "Back", chars= "\u001b\u007f" },
+  { mods = "Alt", key = "Back", chars = "\u001b\u007f" },
 
 ]
 
 [selection]
 save_to_clipboard = true
-
