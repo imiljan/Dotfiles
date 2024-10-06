@@ -33,7 +33,7 @@ return {
       },
       opts = {
         controls = {
-          element = "scopes",
+          -- element = "scopes",
           enabld = true,
           icons = {
             play = " (5)",

@@ -58,7 +58,6 @@ return {
         dashboard.button("SPC s f", "󰈞  Find files"),
         dashboard.button("SPC s g", "󰈬  Find word"),
         dashboard.button("SPC s .", "󰊄  Recently opened files"),
-        dashboard.button("SPC s m", "  Jump to marks"),
         dashboard.button("SPC q l", "  Open last session"),
         dashboard.button("SPC s n", "  Config"),
       }
@@ -104,11 +103,17 @@ return {
       },
     },
     keys = {
+      { "<leader>bn", "<cmd>tabnew<cr>", desc = "BufLine: New" },
+      { "<leader>bq", "<cmd>tabclose<cr>", desc = "BufLine: Close Current" },
+
       { "<leader>bp", "<cmd>BufferLineTogglePin<cr>", desc = "BufLine: Toggle Pin" },
       { "<leader>bP", "<cmd>BufferLineGroupClose ungrouped<cr>", desc = "BufLine: Delete Non-Pinned" },
       { "<leader>bo", "<cmd>BufferLineCloseOthers<cr>", desc = "BufLine: Delete Other" },
       { "<leader>br", "<cmd>BufferLineCloseRight<cr>", desc = "BufLine: Delete to the Right" },
       { "<leader>bl", "<cmd>BufferLineCloseLeft<cr>", desc = "BufLine: Delete to the Left" },
+
+      { "<S-h>", "<cmd>BufferLineCyclePrev<cr>", desc = "BufLine: Prev" },
+      { "<S-l>", "<cmd>BufferLineCycleNext<cr>", desc = "BufLine: Next" },
 
       { "[b", "<cmd>BufferLineCyclePrev<cr>", desc = "BufLine: Prev" },
       { "]b", "<cmd>BufferLineCycleNext<cr>", desc = "BufLine: Next" },
@@ -172,9 +177,8 @@ return {
       },
     },
   },
-  { -- echasnovski/mini
+  {
     "echasnovski/mini.indentscope",
-    version = false, -- wait till new 0.7.0 release to put it back on semver
     event = { "BufReadPost", "BufNewFile", "BufWritePre" }, -- LazyFile
     opts = {
       -- symbol = "▏",

@@ -2,11 +2,10 @@ return {
   {
     "neovim/nvim-lspconfig",
     dependencies = {
-      "nvim-telescope/telescope.nvim",
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
-      "williamboman/mason-nvim-dap.nvim",
       "WhoIsSethDaniel/mason-tool-installer.nvim",
+      "nvim-telescope/telescope.nvim",
       { "smjonas/inc-rename.nvim", cmd = "IncRename", opts = {} },
       {
         "folke/lazydev.nvim",
@@ -32,6 +31,8 @@ return {
       },
     },
     config = function()
+      require("mason").setup()
+
       local ts = require("imiljan.util.typescript")
 
       vim.api.nvim_create_autocmd("LspAttach", {
@@ -39,26 +40,19 @@ return {
         callback = function(e)
           local builtin = require("telescope.builtin")
 
-          vim.keymap.set("n", "<leader>cl", "<cmd>LspInfo<cr>", { buffer = e.buf, desc = "LSP: INFO" })
-
           vim.keymap.set("n", "gd", builtin.lsp_definitions, { buffer = e.buf, desc = "LSP: Definitions" })
           vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = e.buf, desc = "LSP: Declaration" })
           vim.keymap.set("n", "gr", builtin.lsp_references, { buffer = e.buf, desc = "LSP: References" })
           vim.keymap.set("n", "gI", builtin.lsp_implementations, { buffer = e.buf, desc = "LSP: Implementations" })
-          vim.keymap.set("n", "gy", builtin.lsp_type_definitions, { buffer = e.buf, desc = "LSP: Type Definition" })
+          vim.keymap.set("n", "gT", builtin.lsp_type_definitions, { buffer = e.buf, desc = "LSP: Type Definition" })
 
           vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = e.buf, desc = "LSP: Documentation" })
           vim.keymap.set("n", "gK", vim.lsp.buf.signature_help, { buffer = e.buf, desc = "LSP: Signature Help" })
           vim.keymap.set("i", "<C-S>", vim.lsp.buf.signature_help, { buffer = e.buf, desc = "LSP: Signature Help" })
 
-          vim.keymap.set("n", "<leader>ds", builtin.lsp_document_symbols, { buffer = e.buf, desc = "LSP: Document Symbols" })
-          vim.keymap.set(
-            "n",
-            "<leader>ws",
-            builtin.lsp_dynamic_workspace_symbols,
-            { buffer = e.buf, desc = "LSP: Dynamic Workspace Symbols" }
-          )
-          vim.keymap.set("n", "<leader>wS", function()
+          vim.keymap.set("n", "<leader>ss", builtin.lsp_document_symbols, { buffer = e.buf, desc = "LSP: Document Symbols" })
+          vim.keymap.set("n", "<leader>sS", builtin.lsp_dynamic_workspace_symbols, { buffer = e.buf, desc = "LSP: Dynamic Workspace Symbols" })
+          vim.keymap.set("n", "<leader>Ss", function()
             vim.ui.input({ prompt = "Workspace Symbols > " }, function(input)
               builtin.lsp_workspace_symbols({ query = input })
             end)
@@ -80,19 +74,19 @@ return {
             })
           end, { desc = "LSP: Source Action" })
 
-          vim.keymap.set("n", "<leader>wd", builtin.diagnostics, { buffer = e.buf, desc = "Diagnostic: Workspace" })
           vim.keymap.set("n", "<leader>fd", function()
             builtin.diagnostics({ bufnr = 0 })
           end, { buffer = e.buf, desc = "Diagnostic: Document" })
+          vim.keymap.set("n", "<leader>fD", builtin.diagnostics, { buffer = e.buf, desc = "Diagnostic: Workspace" })
 
-          vim.keymap.set("n", "[d", function()
-            vim.diagnostic.goto_prev({ float = false })
-          end, { buffer = e.buf, desc = "Diagnostic: prev" })
-          vim.keymap.set("n", "]d", function()
-            vim.diagnostic.goto_next({ float = false })
-          end, { buffer = e.buf, desc = "Diagnostic: next" })
-
-          vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { buffer = e.buf, desc = "Diagnostic: Messages" })
+          -- Default!
+          -- vim.keymap.set("n", "[d", function()
+          --   vim.diagnostic.goto_prev({ float = false })
+          -- end, { buffer = e.buf, desc = "Diagnostic: prev" })
+          -- vim.keymap.set("n", "]d", function()
+          --   vim.diagnostic.goto_next({ float = false })
+          -- end, { buffer = e.buf, desc = "Diagnostic: next" })
+          -- vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { buffer = e.buf, desc = "Diagnostic: Messages" })
 
           -- For list of capabilities
           -- :lua vim.print(vim.lsp.get_active_clients()[1].server_capabilities)
@@ -140,7 +134,7 @@ return {
 
               vim.keymap.set("n", "gs", ts.go_to_source_definition, { buffer = e.buf, desc = "LSP TS: Go To Source Definition" })
               vim.keymap.set("n", "<leader>rf", ts.rename_file, { buffer = e.buf, desc = "LSP TS: Rename File" })
-            end -- end tsserver
+            end -- end ts_ls
           end -- end if client
         end,
       })
@@ -211,6 +205,8 @@ return {
             -- plugins = {}, -- https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md#plugins-option
             -- tsserver = {}, -- https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md#tsserver-options
             preferences = { -- https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md#preferences-options
+              -- DEFAULT PREFERENCES https://github.com/typescript-language-server/typescript-language-server/blob/b224b878652438bcdd639137a6b1d1a6630129e4/src/features/fileConfigurationManager.ts#L25
+
               -- autoImportFileExcludePatterns = [],
               -- disableSuggestions = false,
               -- quotePreference = "auto",
@@ -350,9 +346,9 @@ return {
               --   showOnAllFunctions = true,
               -- },
             },
-            -- completions = {
-            --   completeFunctionCalls = false,
-            -- },
+            completions = {
+              completeFunctionCalls = true,
+            },
             -- diagnostics = {
             --   ignoredCodes = {},
             -- },
@@ -375,7 +371,7 @@ return {
         },
 
         -- angularls = {
-        --   root_dir = require("lspconfig.util").root_pattern("angular.json", "project.json"),
+        --   root_dir = require("lspconfig.util").root_pattern("nx.json", "angular.json", "project.json"),
         -- },
 
         pyright = {
@@ -389,15 +385,37 @@ return {
           -- },
         },
 
+        -- 1.4GB ????
         eslint = {
-          enabled = true,
-          lintTask = {
-            enable = true,
+          codeAction = {
+            disableRuleComment = {
+              enable = true,
+              location = "separateLine",
+            },
+            showDocumentation = {
+              enable = true,
+            },
           },
-          run = "onSave",
-          format = { enable = false },
-          codeActionsOnSave = {
+          codeActionOnSave = {
+            enable = false,
             mode = "all",
+          },
+          experimental = {
+            useFlatConfig = false,
+          },
+          format = false,
+          nodePath = "",
+          onIgnoredFiles = "off",
+          problems = {
+            shortenToSingleLine = false,
+          },
+          quiet = false,
+          rulesCustomizations = {},
+          run = "onSave",
+          useESLintClass = false,
+          validate = "on",
+          workingDirectory = {
+            mode = "location",
           },
         },
 
@@ -413,12 +431,29 @@ return {
         -- marksman = {},
       }
 
+      if vim.g.enable_ng == 1 then
+        local angularls_path = require("mason-registry").get_package("angular-language-server"):get_install_path()
+        vim.print(angularls_path)
+
+        servers["ts_ls"]["root_dir"] = require("lspconfig.util").root_pattern("nx.json", "tsconfig.json")
+        servers["ts_ls"]["init_options"]["plugins"] = {
+          {
+            name = "@angular/language-server",
+            location = angularls_path .. "/node_modules/@angular/language-server",
+          },
+        }
+        servers["angularls"] = {
+          root_dir = require("lspconfig.util").root_pattern("nx.json", "angular.json", "project.json"),
+        }
+      end
+
       local linter_and_formaters = {
         "stylua",
         "prettierd",
         "prettier",
         "black",
         "isort",
+        "yamlfmt",
         "shfmt",
 
         "eslint_d",
@@ -443,9 +478,9 @@ return {
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
 
-      require("mason").setup()
       require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
       require("mason-lspconfig").setup({
+        automatic_installation = true,
         handlers = {
           function(server_name)
             local server = servers[server_name] or {}
@@ -506,27 +541,28 @@ return {
           },
         },
         textobjects = {
-          select = {
-            enable = true,
-            lookahead = true,
-            keymaps = {
-              ["af"] = { query = "@function.outer", desc = "Select outer part of the function region" },
-              ["if"] = { query = "@function.inner", desc = "Select the inner part of the function region" },
-              ["ac"] = { query = "@class.outer", desc = "Select outer part of the class region" },
-              ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
-            },
-            selection_modes = {
-              ["@parameter.outer"] = "v", -- charwise
-              ["@function.outer"] = "V", -- linewise
-              ["@class.outer"] = "<c-v>", -- blockwise
-            },
-            include_surrounding_whitespace = true,
-          },
-          swap = {
-            enable = true,
-            swap_next = { ["<leader>pn"] = "@parameter.inner" },
-            swap_previous = { ["<leader>pp"] = "@parameter.inner" },
-          },
+          -- Testing only Mini.AI
+          -- select = {
+          --   enable = true,
+          --   lookahead = true,
+          --   keymaps = {
+          --     ["af"] = { query = "@function.outer", desc = "Select outer part of the function region" },
+          --     ["if"] = { query = "@function.inner", desc = "Select the inner part of the function region" },
+          --     ["ac"] = { query = "@class.outer", desc = "Select outer part of the class region" },
+          --     ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
+          --   },
+          --   selection_modes = {
+          --     ["@parameter.outer"] = "v", -- charwise
+          --     ["@function.outer"] = "V", -- linewise
+          --     ["@class.outer"] = "<c-v>", -- blockwise
+          --   },
+          --   include_surrounding_whitespace = true,
+          -- },
+          -- swap = {
+          --   enable = true,
+          --   swap_next = { ["<leader>pn"] = "@parameter.inner" },
+          --   swap_previous = { ["<leader>pp"] = "@parameter.inner" },
+          -- },
           move = {
             enable = true,
             set_jumps = true, -- whether to set jumps in the jumplist
@@ -550,13 +586,13 @@ return {
   },
   {
     "hrsh7th/nvim-cmp",
-    version = false,
     event = { "InsertEnter", "CmdlineEnter" },
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-cmdline",
+      "petertriho/cmp-git",
       {
         "garymjr/nvim-snippets",
         dependencies = { "rafamadriz/friendly-snippets" },
@@ -589,8 +625,6 @@ return {
       local defaults = require("cmp.config.default")()
       local lspkind = require("lspkind")
 
-      -- vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
-
       cmp.setup({
         snippet = {
           expand = function(args)
@@ -616,11 +650,11 @@ return {
         }),
         sources = cmp.config.sources({
           { name = "nvim_lsp" },
-          { name = "snippets", max_item_count = 3 },
-          { name = "path", max_item_count = 3 },
+          { name = "snippets" },
+          { name = "path" },
           { name = "lazydev", group_index = 0 },
         }, {
-          { name = "buffer", max_item_count = 3 },
+          { name = "buffer" },
         }),
         formatting = {
           expandable_indicator = true,
@@ -632,30 +666,35 @@ return {
             show_labelDetails = true,
           }),
         },
-        -- experimental = {
-        --   ghost_text = {
-        --     hl_group = "CmpGhostText",
-        --   },
-        -- },
         sorting = defaults.sorting,
       })
 
       cmp.setup.cmdline("/", {
         mapping = cmp.mapping.preset.cmdline(),
         sources = {
-          { name = "buffer", max_item_count = 15 },
+          { name = "buffer" },
         },
       })
 
       cmp.setup.cmdline(":", {
         mapping = cmp.mapping.preset.cmdline(),
         sources = cmp.config.sources({
-          { name = "path", max_item_count = 5 },
+          { name = "path" },
         }, {
-          { name = "cmdline", max_item_count = 15 },
+          { name = "cmdline" },
         }),
         matching = { disallow_symbol_nonprefix_matching = false },
       })
+
+      cmp.setup.filetype("gitcommit", {
+        sources = cmp.config.sources({
+          { name = "git" },
+        }, {
+          { name = "buffer" },
+        }),
+      })
+
+      require("cmp_git").setup()
     end,
   },
   {
@@ -675,19 +714,26 @@ return {
     opts = {
       formatters_by_ft = {
         lua = { "stylua" },
-        python = { "black", "isort" },
+        python = { "isort", "black" },
         javascript = { "prettierd", "prettier", stop_after_first = true },
         typescript = { "prettierd", "prettier", stop_after_first = true },
+        html = { "prettierd", "prettier", stop_after_first = true },
+        json = { "prettierd", "prettier", stop_after_first = true },
+        markdown = { "prettierd", "prettier", stop_after_first = true },
+        yaml = { "yamlfmt" },
         sh = { "shfmt" },
         bash = { "shfmt" },
         zsh = { "shfmt" },
+
+        ["*"] = { "codespell" },
+        ["_"] = { "trim_whitespace" },
       },
       default_format_opts = {
         lsp_format = "fallback",
       },
       format_on_save = {
-        timeout_ms = 500,
         lsp_format = "fallback",
+        timeout_ms = 500,
       },
       notify_on_error = false,
     },
@@ -699,9 +745,11 @@ return {
       local lint = require("lint")
 
       lint.linters_by_ft = {
+        -- lua = { "luacheck" },
+        python = { "flake8" },
         javascript = { "eslint_d" },
         typescript = { "eslint_d" },
-        python = { "flake8" },
+
         -- yaml = { "actionlint" },
         make = { "checkmake" },
         dockerfile = { "hadolint" },
@@ -712,7 +760,8 @@ return {
         text = { "vale" },
       }
 
-      vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+      vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+        -- vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
         group = vim.api.nvim_create_augroup("imiljan-lint", { clear = true }),
         callback = function()
           lint.try_lint()

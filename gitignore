@@ -2,4 +2,4 @@
 .env
 .env.docker
 out*
-*temp*
+temp*

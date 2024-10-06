@@ -2,13 +2,10 @@ return {
   {
     "tpope/vim-fugitive",
     cmd = { "G", "Git" },
-    dependencies = { "nvim-telescope/telescope.nvim" },
     keys = {
       { "<leader>gs", ":Git<CR>", desc = "Fugitive: Status" },
       { "<leader>gfp", ":Git pull<CR>", desc = "Fugitive: Pull" },
       { "<leader>gfP", ":Git push<CR>", desc = "Fugitive: Push" },
-      -- { "gh", "<cmd>diffget //2<CR>", desc = "Fugitive: Diff Take LEFT" },
-      -- { "gl", "<cmd>diffget //3<CR>", desc = "Fugitive: Diff take RIGHT" },
     },
     config = function()
       vim.keymap.set("n", "gh", "<cmd>diffget //2<CR>", { desc = "Fugitive: Diff Take Left" })
@@ -23,6 +20,7 @@ return {
   },
   {
     "lewis6991/gitsigns.nvim",
+    dependencies = { "nvim-telescope/telescope.nvim" },
     config = function()
       require("gitsigns").setup({
         signs = {
@@ -90,16 +88,16 @@ return {
       vim.keymap.set("n", "<leader>gBp", "<cmd>silent !gh pr view --web<cr>", { desc = "Git: Browser PR" })
 
       local telescope_builtin = require("telescope.builtin")
-      vim.keymap.set("n", "<leader>sGc", telescope_builtin.git_commits, { desc = "SEARCH GIT: Commits" })
-      vim.keymap.set("n", "<leader>sGC", telescope_builtin.git_bcommits, { desc = "SEARCH GIT: Buffer Commits" })
-      vim.keymap.set("n", "<leader>sGb", telescope_builtin.git_branches, { desc = "SEARCH GIT: Branches " })
-      vim.keymap.set("n", "<leader>sGs", telescope_builtin.git_status, { desc = "SEARCH GIT: Status" })
-      vim.keymap.set("n", "<leader>sGS", telescope_builtin.git_stash, { desc = "SEARCH GIT: Stash" })
+      vim.keymap.set("n", "<leader>Gc", telescope_builtin.git_commits, { desc = "SEARCH GIT: Commits" })
+      vim.keymap.set("n", "<leader>GC", telescope_builtin.git_bcommits, { desc = "SEARCH GIT: Buffer Commits" })
+      vim.keymap.set("n", "<leader>Gb", telescope_builtin.git_branches, { desc = "SEARCH GIT: Branches " })
+      vim.keymap.set("n", "<leader>Gs", telescope_builtin.git_status, { desc = "SEARCH GIT: Status" })
+      vim.keymap.set("n", "<leader>GS", telescope_builtin.git_stash, { desc = "SEARCH GIT: Stash" })
 
       local telescope = require("telescope")
-      vim.keymap.set("n", "<leader>sGp", telescope.extensions.gh.pull_request, { desc = "SEARCH GH: Pull Requests" })
-      vim.keymap.set("n", "<leader>sGf", telescope.extensions.gh.pull_request_files, { desc = "SEARCH GH: Pull Requests Files" })
-      vim.keymap.set("n", "<leader>sGr", telescope.extensions.gh.run, { desc = "SEARCH GH: Run" })
+      vim.keymap.set("n", "<leader>Gp", telescope.extensions.gh.pull_request, { desc = "SEARCH GH: Pull Requests" })
+      vim.keymap.set("n", "<leader>Gf", telescope.extensions.gh.pull_request_files, { desc = "SEARCH GH: Pull Requests Files" })
+      vim.keymap.set("n", "<leader>Gr", telescope.extensions.gh.run, { desc = "SEARCH GH: Run" })
     end,
   },
 }

@@ -7,8 +7,8 @@ return {
     config = function()
       vim.cmd("let test#strategy = 'vimux'")
 
-      vim.keymap.set("n", "<leader>tt", ":TestFile<CR>", { desc = "Test: Run File" })
       vim.keymap.set("n", "<leader>tr", ":TestNearest<CR>", { desc = "Test: Run Nearest" })
+      vim.keymap.set("n", "<leader>tf", ":TestFile<CR>", { desc = "Test: Run File" })
       vim.keymap.set("n", "<leader>ta", ":TestSuite<CR>", { desc = "Test: Run All" })
       vim.keymap.set("n", "<leader>tl", ":TestLast<CR>", { desc = "Test: Run Last" })
       vim.keymap.set("n", "<leader>tv", ":TestVisit<CR>", { desc = "Test: Visit last test" })
@@ -51,7 +51,7 @@ return {
     end,
     keys = {
       {
-        "<leader>tt",
+        "<leader>tf",
         function()
           require("neotest").run.run(vim.fn.expand("%"))
         end,
