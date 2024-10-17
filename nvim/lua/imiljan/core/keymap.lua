@@ -1,9 +1,10 @@
-vim.keymap.set("n", "<F1>", "<cmd>silent !tmux neww tmux-sessionizer<cr>", { desc = "TmuxSessionizer" })
-vim.keymap.set("n", "<F2>", "<cmd>silent !tmux-chooser<cr>", { desc = "TmuxChooser" })
-
+vim.keymap.set("n", "<leader>n", vim.cmd.Ex, { desc = "Netrw" })
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Remove highlight" })
 vim.keymap.set("n", "Q", "<nop>", { desc = "Disable EX mode on Q" })
 vim.keymap.set("i", "<C-c>", "<Esc>", { desc = "Exit insert mode" })
+
+vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<cr>", { desc = "TmuxSessionizer" })
+vim.keymap.set("n", "<C-b>", "<cmd>silent !tmux-chooser<cr>", { desc = "TmuxChooser" })
 
 vim.keymap.set("n", "<up>", "<cmd>resize +5<cr>", { desc = "Resize +" })
 vim.keymap.set("n", "<down>", "<cmd>resize -5<cr>", { desc = "Resize -" })
@@ -28,7 +29,7 @@ vim.keymap.set("x", "<leader>P", [["_dP]], { desc = "Paste without changing the 
 vim.keymap.set("n", "x", '"_x', { desc = "Delete single char without reg" })
 
 vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]], { desc = "Yank to system clipboard" })
-vim.keymap.set("n", "<leader>Y", [["+Y]], { desc = "Yank line to system clipbloadr" })
+vim.keymap.set("n", "<leader>Y", [["+Y]], { desc = "Yank line to system clipboard" })
 
 vim.keymap.set({ "n", "v" }, "<leader>dd", [["_d]], { desc = "Delete to void" })
 

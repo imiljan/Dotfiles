@@ -18,11 +18,13 @@ bindkey '^ ' autosuggest-accept
 
 session-widget() { tmux-sessionizer }
 zle -N session-widget
-bindkey "^[OP" session-widget # ^[OP == F1
+# bindkey "^[OP" session-widget # ^[OP == F1
+bindkey "^f" session-widget
 
 chooser-widget() { tmux-chooser }
 zle -N chooser-widget
-bindkey "^[OQ" chooser-widget # ^[OQ == F2
+# bindkey "^[OQ" chooser-widget # ^[OQ == F2
+bindkey "^b" chooser-widget
 
 # NVM
 export NVM_DIR="$HOME/.nvm"
@@ -67,9 +69,9 @@ FZF_DEFAULT_OPTS="
 "
 
 # https://github.com/folke/tokyonight.nvim/blob/main/extras/fzf/tokyonight_night.sh
+# --color=bg+:#283457
+# --color=bg:#16161e
 FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS
-  --color=bg+:#283457
-  --color=bg:#16161e
   --color=border:#27a1b9
   --color=fg:#c0caf5
   --color=gutter:#16161e
@@ -104,7 +106,7 @@ export FZF_CTRL_R_OPTS="
   --bind 'ctrl-/:toggle-preview'
   --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'
   --color header:italic
-  --header 'Press CTRL-Y to copy command into clipboard; CTRL-/ for preview' 
+  --header 'Press CTRL-Y to copy command into clipboard; CTRL-/ for preview'
   $PERVIEW_BIND"
 
 # ALT-C for Directories

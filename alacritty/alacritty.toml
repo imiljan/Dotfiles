@@ -5,9 +5,9 @@ TERM = "screen-256color"
 padding = { x = 3, y = 3 }
 dimensions = { columns = 140, lines = 40 }
 decorations = "Buttonless"
-opacity = 0.8
-blur = true
-startup_mode = "Maximized"
+# opacity = 0.8
+# blur = true
+# startup_mode = "Maximized"
 option_as_alt = "Both"
 
 [font]
@@ -19,8 +19,8 @@ size = 16
 # https://github.com/basecamp/omakub/blob/master/themes/alacritty/tokyo-night.toml
 [colors]
 [colors.primary]
-# background = '#000000'
-background = '#1a1b26'
+background = '#000000'
+# background = '#1a1b26'
 foreground = '#a9b1d6'
 
 # Normal colors
@@ -53,7 +53,6 @@ background = '#7aa2f7'
 bindings = [
   { mods = "Control", key = "Key6", chars = "\u001e" },
   { mods = "Control", key = "Slash", chars = "\u001f" },
-
   { mods = "Control", key = "Back", chars = "\u0015" },
   { mods = "Alt", key = "Back", chars = "\u001b\u007f" },
 
@@ -61,3 +60,6 @@ bindings = [
 
 [selection]
 save_to_clipboard = true
+
+[mouse]
+hide_when_typing = true

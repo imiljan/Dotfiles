@@ -7,7 +7,10 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
   spec = "imiljan.plugins", -- Plugin Spec https://lazy.folke.io/spec
-  install = { missing = true },
+  install = { colorscheme = { "tokyonight-night", "habamax" }, missing = true },
+  ui = {
+    border = "rounded",
+  },
   checker = {
     enabled = false,
     concurrency = nil,
@@ -19,5 +22,19 @@ require("lazy").setup({
   rocks = {
     enabled = false,
     hererocks = false,
+  },
+  performance = {
+    rtp = {
+      disabled_plugins = {
+        "gzip",
+        -- "matchit",
+        -- "matchparen",
+        -- "netrwPlugin",
+        "tarPlugin",
+        "tohtml",
+        "tutor",
+        "zipPlugin",
+      },
+    },
   },
 })

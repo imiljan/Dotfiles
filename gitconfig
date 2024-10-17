@@ -30,6 +30,10 @@
     excludesfile = /Users/imiljan/.gitignore
 [push]
     autoSetupRemote = true
+; [pull]
+;     rebase = true
+[rerere]
+    enabled = true
 [diff]
     tool = nvimdiff
 [merge]

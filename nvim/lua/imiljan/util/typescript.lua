@@ -1,6 +1,7 @@
 local M = {}
 
 -- https://github.com/typescript-language-server/typescript-language-server?tab=readme-ov-file#workspace-commands-workspaceexecutecommand
+
 function M.organize_imports(bufnr)
   -- https://github.com/typescript-language-server/typescript-language-server/blob/master/README.md#organize-imports
   vim.lsp.buf_request_sync(bufnr or 0, "workspace/executeCommand", {
@@ -11,6 +12,7 @@ function M.organize_imports(bufnr)
 end
 
 function M.go_to_source_definition()
+  -- https://github.com/typescript-language-server/typescript-language-server?tab=readme-ov-file#go-to-source-definition
   local resp = vim.lsp.buf_request_sync(0, "workspace/executeCommand", {
     command = "_typescript.goToSourceDefinition",
     arguments = { vim.api.nvim_buf_get_name(0), vim.lsp.util.make_position_params().position },
@@ -43,6 +45,7 @@ function M.go_to_source_definition()
 end
 
 function M.rename_file()
+  -- https://github.com/typescript-language-server/typescript-language-server?tab=readme-ov-file#rename-file
   local source_file = vim.api.nvim_buf_get_name(0)
 
   vim.ui.input({

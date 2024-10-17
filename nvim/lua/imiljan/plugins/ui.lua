@@ -5,14 +5,14 @@ return {
     priority = 1000,
     config = function()
       require("tokyonight").setup({
-        style = "night",
-        transparent = false,
+        style = "night", -- night, storm, day, moon
+        transparent = true,
         terminal_colors = true,
         styles = {
           comments = { italic = false },
           keywords = { italic = false },
-          -- sidebars = "transparent",
-          -- floats = "transparent",
+          sidebars = "transparent",
+          floats = "transparent",
         },
         sidebars = { "terminal", "help", "neo-tree" },
         hide_inactive_statusline = false,
@@ -21,49 +21,6 @@ return {
         on_colors = function() end,
         on_highlights = function() end,
       })
-
-      vim.cmd.colorscheme("tokyonight")
-    end,
-  },
-  {
-    "goolord/alpha-nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    event = "VimEnter",
-    config = function()
-      local alpha = require("alpha")
-      local dashboard = require("alpha.themes.dashboard")
-
-      dashboard.section.header.val = {
-        [[                                                                       ]],
-        [[                                                                       ]],
-        [[                                                                       ]],
-        [[                                                                       ]],
-        [[                                                                     ]],
-        [[       ████ ██████           █████      ██                     ]],
-        [[      ███████████             █████                             ]],
-        [[      █████████ ███████████████████ ███   ███████████   ]],
-        [[     █████████  ███    █████████████ █████ ██████████████   ]],
-        [[    █████████ ██████████ █████████ █████ █████ ████ █████   ]],
-        [[  ███████████ ███    ███ █████████ █████ █████ ████ █████  ]],
-        [[ ██████  █████████████████████ ████ █████ █████ ████ ██████ ]],
-        [[                                                                       ]],
-        [[                                                                       ]],
-        [[                                                                       ]],
-      }
-
-      -- default https://github.com/goolord/alpha-nvim/blob/main/lua/alpha/themes/dashboard.lua
-      dashboard.section.buttons.val = {
-        dashboard.button("e", "  New file", "<cmd>ene <CR>"),
-        dashboard.button("<C-p>", "󰈞  Git/Project files"),
-        dashboard.button("SPC s f", "󰈞  Find files"),
-        dashboard.button("SPC s g", "󰈬  Find word"),
-        dashboard.button("SPC s .", "󰊄  Recently opened files"),
-        dashboard.button("SPC s m", "  Jump to marks"),
-        dashboard.button("SPC q l", "  Open last session"),
-        dashboard.button("SPC s n", "  Config"),
-      }
-
-      alpha.setup(dashboard.config)
     end,
   },
   {
@@ -104,11 +61,17 @@ return {
       },
     },
     keys = {
+      { "<leader>bn", "<cmd>tabnew<cr>", desc = "BufLine: New" },
+      { "<leader>bq", "<cmd>tabclose<cr>", desc = "BufLine: Close Current" },
+
       { "<leader>bp", "<cmd>BufferLineTogglePin<cr>", desc = "BufLine: Toggle Pin" },
       { "<leader>bP", "<cmd>BufferLineGroupClose ungrouped<cr>", desc = "BufLine: Delete Non-Pinned" },
       { "<leader>bo", "<cmd>BufferLineCloseOthers<cr>", desc = "BufLine: Delete Other" },
       { "<leader>br", "<cmd>BufferLineCloseRight<cr>", desc = "BufLine: Delete to the Right" },
       { "<leader>bl", "<cmd>BufferLineCloseLeft<cr>", desc = "BufLine: Delete to the Left" },
+
+      { "<S-h>", "<cmd>BufferLineCyclePrev<cr>", desc = "BufLine: Prev" },
+      { "<S-l>", "<cmd>BufferLineCycleNext<cr>", desc = "BufLine: Next" },
 
       { "[b", "<cmd>BufferLineCyclePrev<cr>", desc = "BufLine: Prev" },
       { "]b", "<cmd>BufferLineCycleNext<cr>", desc = "BufLine: Next" },
@@ -128,8 +91,7 @@ return {
       "folke/trouble.nvim",
     },
     config = function()
-      local trouble = require("trouble")
-      local symbols = trouble.statusline({
+      local symbols = require("trouble").statusline({
         mode = "lsp_document_symbols",
         groups = {},
         title = false,
@@ -139,16 +101,13 @@ return {
       })
 
       require("lualine").setup({
-        options = {
-          theme = "auto",
-          globalstatus = true,
-        },
+        options = { theme = "auto", globalstatus = true },
         sections = {
           lualine_a = { "mode" },
-          lualine_b = { "branch", "diff", "diagnostics" },
+          lualine_b = { "branch", "diff" },
           lualine_c = { { "filename", path = 1 }, { symbols.get, cond = symbols.has } },
-          lualine_x = { "kulala", "encoding", "filetype" },
-          lualine_y = { "progress" },
+          lualine_x = {},
+          lualine_y = { "diagnostics" },
           lualine_z = { "location" },
         },
         extensions = {
@@ -166,37 +125,6 @@ return {
     "lukas-reineke/indent-blankline.nvim",
     event = { "BufReadPost", "BufNewFile", "BufWritePre" },
     main = "ibl",
-    opts = {
-      scope = {
-        enabled = false,
-      },
-    },
-  },
-  { -- echasnovski/mini
-    "echasnovski/mini.indentscope",
-    version = false, -- wait till new 0.7.0 release to put it back on semver
-    event = { "BufReadPost", "BufNewFile", "BufWritePre" }, -- LazyFile
-    opts = {
-      -- symbol = "▏",
-      symbol = "│",
-      options = { try_as_border = true },
-    },
-    init = function()
-      vim.api.nvim_create_autocmd("FileType", {
-        pattern = {
-          "alpha",
-          "help",
-          "lazy",
-          "mason",
-          "neo-tree",
-          "toggleterm",
-          "Trouble",
-          "trouble",
-        },
-        callback = function()
-          vim.b.miniindentscope_disable = true
-        end,
-      })
-    end,
+    opts = { scope = { enabled = false } },
   },
 }

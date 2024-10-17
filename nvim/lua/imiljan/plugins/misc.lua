@@ -14,6 +14,22 @@ return {
         },
       })
 
+      harpoon:extend({
+        UI_CREATE = function(cx)
+          vim.keymap.set("n", "<C-v>", function()
+            harpoon.ui:select_menu_item({ vsplit = true })
+          end, { buffer = cx.bufnr })
+
+          vim.keymap.set("n", "<C-x>", function()
+            harpoon.ui:select_menu_item({ split = true })
+          end, { buffer = cx.bufnr })
+
+          vim.keymap.set("n", "<C-t>", function()
+            harpoon.ui:select_menu_item({ tabedit = true })
+          end, { buffer = cx.bufnr })
+        end,
+      })
+
       vim.keymap.set("n", "<leader>aa", function()
         harpoon:list():add()
       end, { desc = "Harpoon: Add file" })
@@ -46,6 +62,7 @@ return {
   },
   {
     "mistweaverco/kulala.nvim",
+    lazy = true,
     ft = { "http" },
     opts = {
       default_view = "headers_body",

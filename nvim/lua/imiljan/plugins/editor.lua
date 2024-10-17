@@ -1,26 +1,76 @@
 return {
   { "tpope/vim-sleuth" },
   { "numToStr/Comment.nvim", opts = {} },
-  { "echasnovski/mini.ai", opts = { n_lines = 500 } },
   { "echasnovski/mini.surround", opts = { n_lines = 100 } },
+  -- { "echasnovski/mini.pairs", opts = {} },
+  {
+    "echasnovski/mini.ai",
+    opts = function()
+      local ai = require("mini.ai")
+
+      return {
+        n_lines = 500,
+        custom_textobjects = {
+          o = ai.gen_spec.treesitter({
+            a = { "@block.outer", "@conditional.outer", "@loop.outer" },
+            i = { "@block.inner", "@conditional.inner", "@loop.inner" },
+          }),
+          f = ai.gen_spec.treesitter({
+            a = "@function.outer",
+            i = "@function.inner",
+          }),
+          -- Whole buffer.
+          g = function()
+            return {
+              from = { line = 1, col = 1 },
+              to = {
+                line = vim.fn.line("$"),
+                col = math.max(vim.fn.getline("$"):len(), 1),
+              },
+            }
+          end,
+        },
+      }
+    end,
+  },
+  {
+    "echasnovski/mini.indentscope",
+    event = { "BufReadPost", "BufNewFile", "BufWritePre" }, -- LazyFile
+    opts = { symbol = "│", options = { try_as_border = true } },
+    init = function()
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = {
+          "alpha",
+          "help",
+          "lazy",
+          "mason",
+          "neo-tree",
+          "toggleterm",
+          "Trouble",
+          "trouble",
+        },
+        callback = function()
+          vim.b.miniindentscope_disable = true
+        end,
+      })
+    end,
+  },
   {
     "nvim-telescope/telescope.nvim",
     event = "VimEnter",
     branch = "0.1.x",
     dependencies = {
       "nvim-lua/plenary.nvim",
-      -- Suggested
       "BurntSushi/ripgrep",
       { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-      -- Optional
       "sharkdp/fd",
       "nvim-treesitter/nvim-treesitter",
       "nvim-tree/nvim-web-devicons",
-      -- Extensions
       "nvim-telescope/telescope-ui-select.nvim",
       "nvim-telescope/telescope-file-browser.nvim",
       "nvim-telescope/telescope-github.nvim",
-      -- Other
+      "nvim-telescope/telescope-symbols.nvim",
+      { "AckslD/nvim-neoclip.lua", opts = {} },
       "folke/trouble.nvim",
     },
     config = function()
@@ -34,7 +84,7 @@ return {
       telescope.setup({
         defaults = {
           sorting_strategy = "ascending",
-          layout_strategy = "horizontal",
+          layout_strategy = "flex",
           layout_config = {
             horizontal = {
               height = 0.95,
@@ -69,6 +119,16 @@ return {
             },
           },
         },
+        pickers = {
+          git_files = { use_git_root = false, show_untracked = true },
+          find_files = {
+            hidden = true,
+            no_ignore = true,
+            file_ignore_patterns = { "node_modules", "lib", "dist", ".git", ".venv" },
+          },
+          buffers = { sort_lastused = true, sort_mru = true },
+          colorscheme = { enable_preview = true },
+        },
         extensions = {
           ["ui-select"] = { require("telescope.themes").get_dropdown({}) },
           ["file_browser"] = { hijack_netrw = false },
@@ -79,18 +139,16 @@ return {
       pcall(telescope.load_extension, "ui-select")
       pcall(telescope.load_extension, "file_browser")
       pcall(telescope.load_extension, "gh")
+      pcall(telescope.load_extension, "neoclip")
 
       vim.keymap.set("n", "<C-p>", function()
-        local ok = pcall(telescope_builtin.git_files, { use_git_root = false, show_untracked = true })
+        local ok = pcall(telescope_builtin.git_files)
         if not ok then
           telescope_builtin.find_files()
         end
       end, { desc = "SEARCH: Git/Project Files" })
 
       vim.keymap.set("n", "<leader>sf", telescope_builtin.find_files, { desc = "SEARCH: Files" })
-      vim.keymap.set("n", "<leader>sF", function()
-        telescope_builtin.find_files({ file_ignore_patterns = { "node_modules", ".git", ".venv" }, hidden = true })
-      end, { desc = "SEARCH: Files (hidden)" })
       vim.keymap.set("n", "<leader>sg", telescope_builtin.live_grep, { desc = "SEARCH: Grep" })
       vim.keymap.set("n", "<leader>sw", telescope_builtin.grep_string, { desc = "SEARCH: Current Word" })
       vim.keymap.set("n", "<leader>sW", function()
@@ -116,7 +174,8 @@ return {
       vim.keymap.set("n", "<leader>s.", telescope_builtin.oldfiles, { desc = "SEARCH: Recent Files" })
       vim.keymap.set("n", '<leader>s"', telescope_builtin.registers, { desc = "SEARCH: Registers" })
       vim.keymap.set("n", "<leader>sb", telescope_builtin.buffers, { desc = "SEARCH: Existing buffers" })
-      vim.keymap.set("n", "<leader>sc", telescope_builtin.commands, { desc = "SEARCH: Commands" })
+      vim.keymap.set("n", "<leader>sc", telescope_builtin.command_history, { desc = "SEARCH: Command History" })
+      vim.keymap.set("n", "<leader>sC", telescope_builtin.commands, { desc = "SEARCH: Commands" })
       vim.keymap.set("n", "<leader>sh", telescope_builtin.help_tags, { desc = "SEARCH: Help" })
       vim.keymap.set("n", "<leader>sk", telescope_builtin.keymaps, { desc = "SEARCH: Keymaps" })
       vim.keymap.set("n", "<leader>sm", telescope_builtin.marks, { desc = "SEARCH: Marks" })
@@ -126,18 +185,20 @@ return {
         telescope_builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({ previewer = false }))
       end, { desc = "SEARCH: in current buffer" })
 
-      vim.keymap.set("n", "<leader>ss", telescope_builtin.builtin, { desc = "SEARCH: Select Telescope" })
+      vim.keymap.set("n", "<leader>sa", telescope_builtin.builtin, { desc = "SEARCH: Select Telescope" })
       vim.keymap.set("n", "<leader>sn", function()
         telescope_builtin.find_files({ cwd = vim.fn.stdpath("config") })
       end, { desc = "SEARCH: Neovim files" })
 
-      vim.keymap.set("n", "<leader>cs", telescope_builtin.spell_suggest, { desc = "SEARCH: Spell Suggestions" })
+      vim.keymap.set("n", "<leader>cS", telescope_builtin.spell_suggest, { desc = "SEARCH: Spell Suggestions" })
 
       vim.keymap.set("n", "<leader>fb", telescope.extensions.file_browser.file_browser, { desc = "Telescope: FileBrowser" })
+      vim.keymap.set("n", "<leader>fc", telescope.extensions.neoclip.default, { desc = "Telescope: Clipboard" })
     end,
   },
   {
     "nvim-neo-tree/neo-tree.nvim",
+    lazy = true,
     cmd = "Neotree",
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -203,7 +264,9 @@ return {
       })
 
       wk.add({
-        { "<leader>S", group = "Search and Replace" },
+        { "<leader>E", group = "Diagnostics: QuickFix" },
+        { "<leader>G", group = "Git (Telescope)" },
+        { "<leader>S", group = "Workspace Symbols with input" },
         { "<leader>a", group = "Harpoon" },
         { "<leader>b", group = "Bufferline" },
         { "<leader>c", group = "Code Actions" },
@@ -235,7 +298,7 @@ return {
     cmd = "GrugFar",
     keys = {
       {
-        "<leader>Ss",
+        "<leader>sR",
         function()
           local grug = require("grug-far")
           local ext = vim.bo.buftype == "" and vim.fn.expand("%:e")
@@ -255,7 +318,17 @@ return {
     "folke/trouble.nvim",
     cmd = "Trouble",
     dependencies = { "nvim-tree/nvim-web-devicons" },
-    opts = {},
+    opts = {
+      auto_preview = false,
+      focus = true,
+      preview = {
+        type = "float",
+        border = "rounded",
+        title = "Preview",
+        title_pos = "center",
+        size = { width = 0.9, height = 0.95 },
+      },
+    },
     keys = {
       { "<leader>xx", "<cmd>Trouble<cr>", desc = "Trouble" },
       { "<leader>xc", "<cmd>Trouble close<cr>", desc = "Trouble: close" },
@@ -277,6 +350,35 @@ return {
       { "<leader>xq", "<cmd>Trouble qflist toggle<cr>", desc = "Trouble: Quickfix List" },
       { "<leader>qo", "<cmd>copen<cr>", desc = "QuickFix: open" },
       { "<leader>qc", "<cmd>cclose<cr>", desc = "QuickFix: close" },
+
+      {
+        "<C-Up>",
+        function()
+          if require("trouble").is_open() then
+            require("trouble").prev({ skip_groups = true, jump = true })
+          else
+            local ok, err = pcall(vim.cmd.cprev)
+            if not ok then
+              vim.notify(err, vim.log.levels.ERROR)
+            end
+          end
+        end,
+        desc = "QuickFix/Trouble: prev",
+      },
+      {
+        "<C-Down>",
+        function()
+          if require("trouble").is_open() then
+            require("trouble").next({ skip_groups = true, jump = true })
+          else
+            local ok, err = pcall(vim.cmd.cnext)
+            if not ok then
+              vim.notify(err, vim.log.levels.ERROR)
+            end
+          end
+        end,
+        desc = "QuickFix/Trouble: next",
+      },
 
       {
         "[q",
