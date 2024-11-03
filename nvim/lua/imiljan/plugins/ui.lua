@@ -106,7 +106,7 @@ return {
           lualine_a = { "mode" },
           lualine_b = { "branch", "diff" },
           lualine_c = { { "filename", path = 1 }, { symbols.get, cond = symbols.has } },
-          lualine_x = {},
+          lualine_x = { "kulala" },
           lualine_y = { "diagnostics" },
           lualine_z = { "location" },
         },

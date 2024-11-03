@@ -44,6 +44,7 @@ return {
           vim.keymap.set("n", "gr", builtin.lsp_references, { buffer = e.buf, desc = "LSP: References" })
           vim.keymap.set("n", "gI", builtin.lsp_implementations, { buffer = e.buf, desc = "LSP: Implementations" })
           vim.keymap.set("n", "gT", builtin.lsp_type_definitions, { buffer = e.buf, desc = "LSP: Type Definition" })
+          vim.keymap.set("n", "gO", builtin.lsp_document_symbols, { buffer = e.buf, desc = "LSP: Document Symbols" })
 
           vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = e.buf, desc = "LSP: Documentation" })
           vim.keymap.set("n", "gK", vim.lsp.buf.signature_help, { buffer = e.buf, desc = "LSP: Signature Help" })
@@ -51,9 +52,8 @@ return {
           vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { buffer = e.buf, desc = "LSP: Rename Symbol" })
           vim.keymap.set({ "n", "x" }, "<leader>ca", vim.lsp.buf.code_action, { buffer = e.buf, desc = "LSP: Code Action" })
 
-          vim.keymap.set("n", "<leader>ss", builtin.lsp_document_symbols, { buffer = e.buf, desc = "LSP: Document Symbols" })
-          vim.keymap.set("n", "<leader>sS", builtin.lsp_dynamic_workspace_symbols, { buffer = e.buf, desc = "LSP: Dynamic Workspace Symbols" })
-          vim.keymap.set("n", "<leader>Ss", function()
+          vim.keymap.set("n", "<leader>ss", builtin.lsp_dynamic_workspace_symbols, { buffer = e.buf, desc = "LSP: Dynamic Workspace Symbols" })
+          vim.keymap.set("n", "<leader>sS", function()
             vim.ui.input({ prompt = "Workspace Symbols > " }, function(input)
               builtin.lsp_workspace_symbols({ query = input })
             end)
@@ -492,10 +492,7 @@ return {
   },
   {
     "nvim-treesitter/nvim-treesitter",
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter-textobjects",
-      -- "nvim-treesitter/nvim-treesitter-context",
-    },
+    dependencies = { "nvim-treesitter/nvim-treesitter-textobjects", "nvim-treesitter/nvim-treesitter-context" },
     build = ":TSUpdate",
     config = function()
       require("nvim-treesitter.configs").setup({
@@ -571,6 +568,8 @@ return {
           },
         },
       })
+
+      require("treesitter-context").setup({ enable = true, max_lines = 3, min_window_height = 3 })
 
       vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
         pattern = { "*.component.html", "*.container.html" },
