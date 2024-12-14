@@ -13,12 +13,6 @@ return {
     end,
   },
   {
-    "kdheepak/lazygit.nvim",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    cmd = { "LazyGit", "LazyGitConfig", "LazyGitCurrentFile", "LazyGitFilter", "LazyGitFilterCurrentFile" },
-    keys = { { "<leader>lg", ":LazyGit<CR>", desc = "LazyGit: Open" } },
-  },
-  {
     "lewis6991/gitsigns.nvim",
     dependencies = { "nvim-telescope/telescope.nvim" },
     config = function()
@@ -84,7 +78,7 @@ return {
         end,
       })
 
-      vim.keymap.set("n", "<leader>gBr", "<cmd>silent !gh repo view --web<cr>", { desc = "Git: Browser REPO" })
+      -- vim.keymap.set("n", "<leader>gBr", "<cmd>silent !gh repo view --web<cr>", { desc = "Git: Browser REPO" })
       vim.keymap.set("n", "<leader>gBp", "<cmd>silent !gh pr view --web<cr>", { desc = "Git: Browser PR" })
 
       local telescope_builtin = require("telescope.builtin")

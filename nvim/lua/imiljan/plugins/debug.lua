@@ -142,16 +142,18 @@ return {
 
     dap.defaults.fallback.exception_breakpoints = "default"
 
+    vim.api.nvim_set_hl(0, "DapBreak", { fg = "#e51400" })
+    vim.api.nvim_set_hl(0, "DapStop", { fg = "#ffcc00" })
     local icons = {
-      Stopped = { "", "DiagnosticWarn", "DapStoppedLine" },
-      Breakpoint = "",
-      BreakpointCondition = "",
-      BreakpointRejected = { "", "DiagnosticError" },
-      LogPoint = "",
+      Stopped = "",
+      Breakpoint = "",
+      BreakpointCondition = "",
+      BreakpointRejected = "",
+      LogPoint = "",
     }
-    for name, sign in pairs(icons) do
-      sign = type(sign) == "table" and sign or { sign }
-      vim.fn.sign_define("Dap" .. name, { text = sign[1] .. " ", texthl = sign[2] or "DiagnosticInfo", linehl = sign[3], numhl = sign[3] })
+    for name, icon in pairs(icons) do
+      local hl = (name == "Stopped") and "DapStop" or "DapBreak"
+      vim.fn.sign_define("Dap" .. name, { text = icon, texthl = hl, numhl = hl })
     end
 
     -- setup dap config by VsCode launch.json file

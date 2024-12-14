@@ -83,6 +83,17 @@ return {
           end, { buffer = e.buf, desc = "Diagnostic: Document" })
           vim.keymap.set("n", "<leader>fD", builtin.diagnostics, { buffer = e.buf, desc = "Diagnostic: Workspace" })
 
+          vim.diagnostic.config({
+            signs = {
+              text = {
+                [vim.diagnostic.severity.ERROR] = "",
+                [vim.diagnostic.severity.WARN] = "",
+                [vim.diagnostic.severity.INFO] = "",
+                [vim.diagnostic.severity.HINT] = "",
+              },
+            },
+          })
+
           -- For list of capabilities
           -- :lua vim.print(vim.lsp.get_active_clients()[1].server_capabilities)
           local client = vim.lsp.get_client_by_id(e.data.client_id)
@@ -445,7 +456,7 @@ return {
       local linter_and_formaters = {
         "stylua",
         -- "prettier",
-        -- "prettierd",
+        "prettierd",
         -- "black",
         -- "isort",
         "yamlfmt",
@@ -476,6 +487,7 @@ return {
       require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
       require("mason-lspconfig").setup({
         automatic_installation = true,
+        ensure_installed = {},
         handlers = {
           function(server_name)
             local server = servers[server_name] or {}
@@ -534,40 +546,81 @@ return {
           },
         },
         textobjects = {
-          -- Testing only Mini.AI
-          -- select = {
-          --   enable = true,
-          --   lookahead = true,
-          --   keymaps = {
-          --     ["af"] = { query = "@function.outer", desc = "Select outer part of the function region" },
-          --     ["if"] = { query = "@function.inner", desc = "Select the inner part of the function region" },
-          --     ["ac"] = { query = "@class.outer", desc = "Select outer part of the class region" },
-          --     ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
-          --   },
-          --   selection_modes = {
-          --     ["@parameter.outer"] = "v", -- charwise
-          --     ["@function.outer"] = "V", -- linewise
-          --     ["@class.outer"] = "<c-v>", -- blockwise
-          --   },
-          --   include_surrounding_whitespace = true,
-          -- },
-          -- swap = {
-          --   enable = true,
-          --   swap_next = { ["<leader>pn"] = "@parameter.inner" },
-          --   swap_previous = { ["<leader>pp"] = "@parameter.inner" },
-          -- },
+          select = {
+            enable = true,
+            lookahead = true,
+            keymaps = {
+              ["ao"] = { query = "@block.outer", desc = "Select outer part of the block region" },
+              ["io"] = { query = "@block.inner", desc = "Select inner part of the block region" },
+              ["af"] = { query = "@function.outer", desc = "Select outer part of the function region" },
+              ["if"] = { query = "@function.inner", desc = "Select inner part of the function region" },
+              ["ac"] = { query = "@class.outer", desc = "Select outer part of the class region" },
+              ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
+            },
+            include_surrounding_whitespace = true,
+          },
+          swap = {
+            enable = true,
+            swap_next = { ["<leader>an"] = "@parameter.inner" },
+            swap_previous = { ["<leader>ap"] = "@parameter.inner" },
+          },
           move = {
             enable = true,
-            set_jumps = true, -- whether to set jumps in the jumplist
-            goto_next_start = { ["]f"] = "@function.outer", ["]c"] = "@class.outer", ["]a"] = "@parameter.inner" },
-            goto_next_end = { ["]F"] = "@function.outer", ["]C"] = "@class.outer", ["]A"] = "@parameter.inner" },
-            goto_previous_start = { ["[f"] = "@function.outer", ["[c"] = "@class.outer", ["[a"] = "@parameter.inner" },
-            goto_previous_end = { ["[F"] = "@function.outer", ["[C"] = "@class.outer", ["[A"] = "@parameter.inner" },
-            goto_next = { ["]i"] = "@conditional.outer" },
-            goto_previous = { ["[i"] = "@conditional.outer" },
+            set_jumps = true,
+            goto_next_start = {
+              ["]o"] = "@block.outer",
+              ["]f"] = "@function.outer",
+              ["]c"] = "@class.outer",
+              ["]a"] = "@parameter.inner",
+            },
+            goto_next_end = {
+              ["]O"] = "@block.outer",
+              ["]F"] = "@function.outer",
+              ["]C"] = "@class.outer",
+              ["]A"] = "@parameter.inner",
+            },
+            goto_previous_start = {
+              ["[o"] = "@block.outer",
+              ["[f"] = "@function.outer",
+              ["[c"] = "@class.outer",
+              ["[a"] = "@parameter.inner",
+            },
+            goto_previous_end = {
+              ["[O"] = "@block.outer",
+              ["[F"] = "@function.outer",
+              ["[C"] = "@class.outer",
+              ["[A"] = "@parameter.inner",
+            },
+            goto_next = {
+              ["]i"] = "@conditional.outer",
+            },
+            goto_previous = {
+              ["[i"] = "@conditional.outer",
+            },
+          },
+          lsp_interop = {
+            enable = true,
+            border = "rounded",
+            floating_preview_opts = {},
+            peek_definition_code = {
+              ["<leader>df"] = "@function.outer",
+              ["<leader>dF"] = "@class.outer",
+            },
           },
         },
       })
+
+      local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
+
+      -- Repeat movement with ; and ,
+      vim.keymap.set({ "n", "x", "o" }, ";", ts_repeat_move.repeat_last_move)
+      vim.keymap.set({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_opposite)
+
+      -- Optionally, make builtin f, F, t, T also repeatable with ; and ,
+      vim.keymap.set({ "n", "x", "o" }, "f", ts_repeat_move.builtin_f_expr, { expr = true })
+      vim.keymap.set({ "n", "x", "o" }, "F", ts_repeat_move.builtin_F_expr, { expr = true })
+      vim.keymap.set({ "n", "x", "o" }, "t", ts_repeat_move.builtin_t_expr, { expr = true })
+      vim.keymap.set({ "n", "x", "o" }, "T", ts_repeat_move.builtin_T_expr, { expr = true })
 
       require("treesitter-context").setup({ enable = true, max_lines = 3, min_window_height = 3 })
 
@@ -587,7 +640,6 @@ return {
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-cmdline",
-      -- "petertriho/cmp-git",
       "onsails/lspkind.nvim",
       {
         "garymjr/nvim-snippets",
@@ -680,16 +732,6 @@ return {
         }),
         matching = { disallow_symbol_nonprefix_matching = false },
       })
-
-      -- cmp.setup.filetype("gitcommit", {
-      --   sources = cmp.config.sources({
-      --     { name = "git" },
-      --   }, {
-      --     { name = "buffer" },
-      --   }),
-      -- })
-      --
-      -- require("cmp_git").setup()
     end,
   },
   {
@@ -713,7 +755,7 @@ return {
         javascript = { "prettierd", "prettier", stop_after_first = true },
         typescript = { "prettierd", "prettier", stop_after_first = true },
         html = { "prettierd", "prettier", stop_after_first = true },
-        json = { "prettierd", "prettier", stop_after_first = true },
+        json = { "jq", "prettierd", "prettier", stop_after_first = true },
         markdown = { "prettierd", "prettier", stop_after_first = true },
         yaml = { "yamlfmt" },
         sh = { "shfmt" },
@@ -762,8 +804,10 @@ return {
         -- vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
         group = vim.api.nvim_create_augroup("imiljan-lint", { clear = true }),
         callback = function()
-          lint.try_lint()
-          lint.try_lint("codespell")
+          if vim.opt_local.modifiable:get() then
+            lint.try_lint()
+            lint.try_lint("codespell")
+          end
         end,
       })
     end,

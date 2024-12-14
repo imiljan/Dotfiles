@@ -6,13 +6,13 @@ return {
     config = function()
       require("tokyonight").setup({
         style = "night", -- night, storm, day, moon
-        transparent = true,
+        transparent = false,
         terminal_colors = true,
         styles = {
           comments = { italic = false },
           keywords = { italic = false },
-          sidebars = "transparent",
-          floats = "transparent",
+          sidebars = "dark",
+          floats = "dark",
         },
         sidebars = { "terminal", "help", "neo-tree" },
         hide_inactive_statusline = false,
@@ -22,23 +22,6 @@ return {
         on_highlights = function() end,
       })
     end,
-  },
-  {
-    "stevearc/dressing.nvim",
-    opts = {
-      input = {
-        enabled = true,
-        relative = "editor",
-        max_width = { 140, 0.9 },
-        min_width = { 40, 0.4 },
-      },
-      select = {
-        enabled = true,
-        builtin = {
-          relative = "editor",
-        },
-      },
-    },
   },
   {
     "akinsho/bufferline.nvim",
@@ -120,11 +103,5 @@ return {
         },
       })
     end,
-  },
-  {
-    "lukas-reineke/indent-blankline.nvim",
-    event = { "BufReadPost", "BufNewFile", "BufWritePre" },
-    main = "ibl",
-    opts = { scope = { enabled = false } },
   },
 }
