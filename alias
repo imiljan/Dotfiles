@@ -79,12 +79,20 @@ export-vars() {
 goWork() {
 	cp ~/.npm_work_rc ~/.npmrc
 	cp ~/.ssh_config_work ~/.ssh/config
+
 	ssh-add -d ~/.ssh/id_ed25519_personal
+
+	ssh-add ~/.ssh/id_ed25519
+	ssh-add ~/.ssh/google_compute_engine
 }
 
 goPersonal() {
 	cp ~/.npm_personal_rc ~/.npmrc
 	cp ~/.ssh_config_personal ~/.ssh/config
+
+	ssh-add -d ~/.ssh/id_ed25519
+	ssh-add -d ~/.ssh/google_compute_engine
+
 	ssh-add ~/.ssh/id_ed25519_personal
 }
 

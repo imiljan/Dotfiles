@@ -12,6 +12,7 @@ export XDG_STATE_HOME=$HOME/.local/state
 export EDITOR="nvim"
 
 export STARSHIP_CONFIG=$XDG_CONFIG_HOME/starship/starship.toml
+export EZA_CONFIG_DIR=$XDG_CONFIG_HOME/eza
 
 # https://github.com/zsh-users/zsh-autosuggestions?tab=readme-ov-file#key-bindings
 bindkey '^ ' autosuggest-accept

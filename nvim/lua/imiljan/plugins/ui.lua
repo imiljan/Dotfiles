@@ -6,39 +6,29 @@ return {
     config = function()
       require("tokyonight").setup({
         style = "night", -- night, storm, day, moon
-        transparent = true,
+        light_style = "day",
+        transparent = false,
         terminal_colors = true,
         styles = {
           comments = { italic = false },
           keywords = { italic = false },
-          sidebars = "transparent",
-          floats = "transparent",
+          sidebars = "dark",
+          floats = "dark",
         },
         sidebars = { "terminal", "help", "neo-tree" },
         hide_inactive_statusline = false,
+        day_brightness = 0.3,
         dim_inactive = true,
         lualine_bold = false,
         on_colors = function() end,
         on_highlights = function() end,
+        cache = true,
+        plugins = {
+          all = true,
+          auto = true,
+        },
       })
     end,
-  },
-  {
-    "stevearc/dressing.nvim",
-    opts = {
-      input = {
-        enabled = true,
-        relative = "editor",
-        max_width = { 140, 0.9 },
-        min_width = { 40, 0.4 },
-      },
-      select = {
-        enabled = true,
-        builtin = {
-          relative = "editor",
-        },
-      },
-    },
   },
   {
     "akinsho/bufferline.nvim",
@@ -61,8 +51,13 @@ return {
       },
     },
     keys = {
-      { "<leader>bn", "<cmd>tabnew<cr>", desc = "BufLine: New" },
-      { "<leader>bq", "<cmd>tabclose<cr>", desc = "BufLine: Close Current" },
+      { "<leader>tt", "<cmd>tabnew<cr>", desc = "TAB: open new" },
+      { "<leader>tq", "<cmd>tabclose<cr>", desc = "TAB: close current" },
+      { "<leader>tn", "<cmd>tabn<cr>", desc = "TAB: go to next" },
+      { "<leader>tp", "<cmd>tabp<cr>", desc = "TAB: go to prev" },
+
+      { "<S-h>", "<cmd>BufferLineCyclePrev<cr>", desc = "BufLine: Prev" },
+      { "<S-l>", "<cmd>BufferLineCycleNext<cr>", desc = "BufLine: Next" },
 
       { "<leader>bp", "<cmd>BufferLineTogglePin<cr>", desc = "BufLine: Toggle Pin" },
       { "<leader>bP", "<cmd>BufferLineGroupClose ungrouped<cr>", desc = "BufLine: Delete Non-Pinned" },
@@ -70,18 +65,10 @@ return {
       { "<leader>br", "<cmd>BufferLineCloseRight<cr>", desc = "BufLine: Delete to the Right" },
       { "<leader>bl", "<cmd>BufferLineCloseLeft<cr>", desc = "BufLine: Delete to the Left" },
 
-      { "<S-h>", "<cmd>BufferLineCyclePrev<cr>", desc = "BufLine: Prev" },
-      { "<S-l>", "<cmd>BufferLineCycleNext<cr>", desc = "BufLine: Next" },
-
       { "[b", "<cmd>BufferLineCyclePrev<cr>", desc = "BufLine: Prev" },
       { "]b", "<cmd>BufferLineCycleNext<cr>", desc = "BufLine: Next" },
       { "[B", "<cmd>BufferLineMovePrev<cr>", desc = "BufLine: Move prev" },
       { "]B", "<cmd>BufferLineMoveNext<cr>", desc = "BufLine: Move next" },
-
-      { "<leader>tt", "<cmd>tabnew<cr>", desc = "TAB: open new" },
-      { "<leader>tq", "<cmd>tabclose<cr>", desc = "TAB: close current" },
-      { "<leader>tn", "<cmd>tabn<cr>", desc = "TAB: go to next" },
-      { "<leader>tp", "<cmd>tabp<cr>", desc = "TAB: go to prev" },
     },
   },
   {
@@ -120,11 +107,5 @@ return {
         },
       })
     end,
-  },
-  {
-    "lukas-reineke/indent-blankline.nvim",
-    event = { "BufReadPost", "BufNewFile", "BufWritePre" },
-    main = "ibl",
-    opts = { scope = { enabled = false } },
   },
 }

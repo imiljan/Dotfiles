@@ -1,5 +1,49 @@
 return {
   {
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    opts = {
+      bigfile = { enabled = true },
+      dashboard = { enabled = false },
+      indent = {
+        enabled = true,
+        only_scope = true,
+        only_current = true,
+        scope = { animate = { enabled = false } },
+      },
+      input = { enabled = true },
+      notifier = { enabled = false },
+      rename = { enabled = true },
+      scope = {},
+      quickfile = { enabled = true },
+      scroll = { enabled = false },
+      statuscolumn = { enabled = false },
+      styles = {},
+      words = { enabled = false },
+      zen = {
+        toggles = {
+          dim = false,
+          git_signs = true,
+        },
+      },
+    },
+    -- stylua: ignore
+    keys = {
+      { "<leader>.", function() Snacks.scratch() end, desc = "Toggle Scratch Buffer", },
+      { "<leader>S", function() Snacks.scratch.select() end, desc = "Select Scratch Buffer", },
+      { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete Buffer", },
+
+      { "<leader>gBl", function() Snacks.gitbrowse() end, desc = "Git: Browse REPO (at line)" },
+      { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
+      { "<leader>ll", function() Snacks.lazygit.log_file() end, desc = "Lazygit Current File History" },
+      { "<leader>lL", function() Snacks.lazygit.log() end, desc = "Lazygit Log (cwd)" },
+
+      { "<leader>zz",  function() Snacks.zen({ width = 140 }) end, desc = "Toggle Zen Mode" },
+      { "<leader>zZ",  function() Snacks.zen.zoom() end, desc = "Toggle Zoom" },
+    },
+  },
+  {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
     dependencies = { "nvim-lua/plenary.nvim" },

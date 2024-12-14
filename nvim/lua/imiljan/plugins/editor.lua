@@ -2,59 +2,6 @@ return {
   { "tpope/vim-sleuth" },
   { "numToStr/Comment.nvim", opts = {} },
   { "echasnovski/mini.surround", opts = { n_lines = 100 } },
-  -- { "echasnovski/mini.pairs", opts = {} },
-  {
-    "echasnovski/mini.ai",
-    opts = function()
-      local ai = require("mini.ai")
-
-      return {
-        n_lines = 500,
-        custom_textobjects = {
-          o = ai.gen_spec.treesitter({
-            a = { "@block.outer", "@conditional.outer", "@loop.outer" },
-            i = { "@block.inner", "@conditional.inner", "@loop.inner" },
-          }),
-          f = ai.gen_spec.treesitter({
-            a = "@function.outer",
-            i = "@function.inner",
-          }),
-          -- Whole buffer.
-          g = function()
-            return {
-              from = { line = 1, col = 1 },
-              to = {
-                line = vim.fn.line("$"),
-                col = math.max(vim.fn.getline("$"):len(), 1),
-              },
-            }
-          end,
-        },
-      }
-    end,
-  },
-  {
-    "echasnovski/mini.indentscope",
-    event = { "BufReadPost", "BufNewFile", "BufWritePre" }, -- LazyFile
-    opts = { symbol = "│", options = { try_as_border = true } },
-    init = function()
-      vim.api.nvim_create_autocmd("FileType", {
-        pattern = {
-          "alpha",
-          "help",
-          "lazy",
-          "mason",
-          "neo-tree",
-          "toggleterm",
-          "Trouble",
-          "trouble",
-        },
-        callback = function()
-          vim.b.miniindentscope_disable = true
-        end,
-      })
-    end,
-  },
   {
     "nvim-telescope/telescope.nvim",
     event = "VimEnter",
@@ -75,9 +22,9 @@ return {
     },
     config = function()
       local telescope = require("telescope")
-      local telescope_actions = require("telescope.actions")
-      local telescope_actions_layout = require("telescope.actions.layout")
-      local telescope_builtin = require("telescope.builtin")
+      local actions = require("telescope.actions")
+      local actions_layout = require("telescope.actions.layout")
+      local builtin = require("telescope.builtin")
 
       local trouble = require("trouble.sources.telescope")
 
@@ -105,31 +52,43 @@ return {
           mappings = {
             i = {
               ["<C-h>"] = "which_key",
-              ["<C-f>"] = telescope_actions_layout.cycle_layout_next,
-              ["<C-j>"] = telescope_actions.cycle_history_next,
-              ["<C-k>"] = telescope_actions.cycle_history_prev,
+              ["<C-f>"] = actions_layout.cycle_layout_next,
+              ["<C-j>"] = actions.cycle_history_next,
+              ["<C-k>"] = actions.cycle_history_prev,
               ["<C-t>"] = trouble.open,
             },
             n = {
               ["<C-h>"] = "which_key",
-              ["<C-f>"] = telescope_actions_layout.cycle_layout_next,
-              ["<C-j>"] = telescope_actions.cycle_history_next,
-              ["<C-k>"] = telescope_actions.cycle_history_prev,
+              ["<C-f>"] = actions_layout.cycle_layout_next,
+              ["<C-j>"] = actions.cycle_history_next,
+              ["<C-k>"] = actions.cycle_history_prev,
               ["<C-t>"] = trouble.open,
             },
           },
         },
         pickers = {
-          git_files = { use_git_root = false, show_untracked = true },
+          git_files = {
+            use_git_root = false,
+            show_untracked = true,
+          },
           find_files = {
             hidden = true,
             no_ignore = true,
             file_ignore_patterns = { "node_modules", "lib", "dist", ".git", ".venv" },
           },
-          buffers = { sort_lastused = true, sort_mru = true },
-          colorscheme = { enable_preview = true },
+          live_grep = {
+            additional_args = { "--fixed-strings" },
+          },
+          buffers = {
+            sort_lastused = true,
+            sort_mru = true,
+          },
+          colorscheme = {
+            enable_preview = true,
+          },
         },
         extensions = {
+          ["fzf"] = {},
           ["ui-select"] = { require("telescope.themes").get_dropdown({}) },
           ["file_browser"] = { hijack_netrw = false },
         },
@@ -142,18 +101,18 @@ return {
       pcall(telescope.load_extension, "neoclip")
 
       vim.keymap.set("n", "<C-p>", function()
-        local ok = pcall(telescope_builtin.git_files)
+        local ok = pcall(builtin.git_files)
         if not ok then
-          telescope_builtin.find_files()
+          builtin.find_files()
         end
       end, { desc = "SEARCH: Git/Project Files" })
 
-      vim.keymap.set("n", "<leader>sf", telescope_builtin.find_files, { desc = "SEARCH: Files" })
-      vim.keymap.set("n", "<leader>sg", telescope_builtin.live_grep, { desc = "SEARCH: Grep" })
-      vim.keymap.set("n", "<leader>sw", telescope_builtin.grep_string, { desc = "SEARCH: Current Word" })
+      vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "SEARCH: Files" })
+      vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "SEARCH: Grep" })
+      vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "SEARCH: Current Word" })
       vim.keymap.set("n", "<leader>sW", function()
         vim.ui.input({ prompt = "Grep > " }, function(input)
-          telescope_builtin.grep_string({ search = input })
+          builtin.grep_string({ search = input })
         end)
       end, { desc = "SEARCH: Grep with input" })
 
@@ -163,34 +122,33 @@ return {
           completion = "file",
           default = vim.uv.cwd(),
         }, function(input)
-          telescope_builtin.live_grep({ search_dirs = { input }, prompt_title = "Live Grep in Directory" })
+          builtin.live_grep({ search_dirs = { input }, prompt_title = "Live Grep in Directory" })
         end)
       end, { desc = "SEARCH: Live Grep in Directory" })
 
-      vim.keymap.set("n", "<leader>s/", function()
-        telescope_builtin.live_grep({ grep_open_files = true, prompt_title = "Live Grep in Open Files" })
-      end, { desc = "SEARCH: Live Grep in Open Files" })
-
-      vim.keymap.set("n", "<leader>s.", telescope_builtin.oldfiles, { desc = "SEARCH: Recent Files" })
-      vim.keymap.set("n", '<leader>s"', telescope_builtin.registers, { desc = "SEARCH: Registers" })
-      vim.keymap.set("n", "<leader>sb", telescope_builtin.buffers, { desc = "SEARCH: Existing buffers" })
-      vim.keymap.set("n", "<leader>sc", telescope_builtin.command_history, { desc = "SEARCH: Command History" })
-      vim.keymap.set("n", "<leader>sC", telescope_builtin.commands, { desc = "SEARCH: Commands" })
-      vim.keymap.set("n", "<leader>sh", telescope_builtin.help_tags, { desc = "SEARCH: Help" })
-      vim.keymap.set("n", "<leader>sk", telescope_builtin.keymaps, { desc = "SEARCH: Keymaps" })
-      vim.keymap.set("n", "<leader>sm", telescope_builtin.marks, { desc = "SEARCH: Marks" })
-      vim.keymap.set("n", "<leader>sr", telescope_builtin.resume, { desc = "SEARCH: Resume" })
-
       vim.keymap.set("n", "<leader>/", function()
-        telescope_builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({ previewer = false }))
+        builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({ previewer = false }))
       end, { desc = "SEARCH: in current buffer" })
 
-      vim.keymap.set("n", "<leader>sa", telescope_builtin.builtin, { desc = "SEARCH: Select Telescope" })
-      vim.keymap.set("n", "<leader>sn", function()
-        telescope_builtin.find_files({ cwd = vim.fn.stdpath("config") })
-      end, { desc = "SEARCH: Neovim files" })
+      vim.keymap.set("n", "<leader>s/", function()
+        builtin.live_grep({ grep_open_files = true, prompt_title = "Live Grep in Open Files" })
+      end, { desc = "SEARCH: Live Grep in Open Files" })
 
-      vim.keymap.set("n", "<leader>cS", telescope_builtin.spell_suggest, { desc = "SEARCH: Spell Suggestions" })
+      vim.keymap.set("n", "<leader>s.", builtin.oldfiles, { desc = "SEARCH: Recent Files" })
+      vim.keymap.set("n", '<leader>s"', builtin.registers, { desc = "SEARCH: Registers" })
+      vim.keymap.set("n", "<leader>sa", builtin.builtin, { desc = "SEARCH: Select Telescope" })
+      vim.keymap.set("n", "<leader>sb", builtin.buffers, { desc = "SEARCH: Existing buffers" })
+      vim.keymap.set("n", "<leader>sc", builtin.command_history, { desc = "SEARCH: Command History" })
+      vim.keymap.set("n", "<leader>sC", builtin.commands, { desc = "SEARCH: Commands" })
+      vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "SEARCH: Help" })
+      vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "SEARCH: Keymaps" })
+      vim.keymap.set("n", "<leader>sm", builtin.marks, { desc = "SEARCH: Marks" })
+      vim.keymap.set("n", "<leader>sr", builtin.resume, { desc = "SEARCH: Resume" })
+      vim.keymap.set("n", "<leader>cS", builtin.spell_suggest, { desc = "SEARCH: Spell Suggestions" })
+
+      vim.keymap.set("n", "<leader>sn", function()
+        builtin.find_files({ cwd = vim.fn.stdpath("config") })
+      end, { desc = "SEARCH: Neovim files" })
 
       vim.keymap.set("n", "<leader>fb", telescope.extensions.file_browser.file_browser, { desc = "Telescope: FileBrowser" })
       vim.keymap.set("n", "<leader>fc", telescope.extensions.neoclip.default, { desc = "Telescope: Clipboard" })
@@ -231,6 +189,30 @@ return {
         },
       },
     },
+    config = function(_, opts)
+      local function on_move(data)
+        -- TODO: Integrate TS rename file
+        Snacks.rename.on_rename_file(data.source, data.destination)
+      end
+
+      local events = require("neo-tree.events")
+      opts.event_handlers = opts.event_handlers or {}
+      vim.list_extend(opts.event_handlers, {
+        { event = events.FILE_MOVED, handler = on_move },
+        { event = events.FILE_RENAMED, handler = on_move },
+      })
+
+      require("neo-tree").setup(opts)
+
+      vim.api.nvim_create_autocmd("TermClose", {
+        pattern = "*lazygit",
+        callback = function()
+          if package.loaded["neo-tree.sources.git_status"] then
+            require("neo-tree.sources.git_status").refresh()
+          end
+        end,
+      })
+    end,
     keys = {
       {
         "<C-n>",
@@ -274,6 +256,8 @@ return {
         { "<leader>e", group = "Diagnoctic: Show message" },
         { "<leader>f", group = "Format/Diagnostics/FileBrowser" },
         { "<leader>g", group = "Git", mode = { "n", "v" } },
+        { "<leader>gB", group = " GitHub Browser" },
+        { "<leader>gf", group = "Git Fugitive" },
         { "<leader>gt", group = "Git Toggle" },
         { "<leader>h", group = "HTTP" },
         { "<leader>l", group = "LSPHints/LocList/LazyGit/Wrap" },
@@ -436,11 +420,5 @@ return {
         desc = "TODO: next",
       },
     },
-  },
-  {
-    "folke/zen-mode.nvim",
-    opts = { window = { width = 140 } },
-    cmd = { "ZenMode" },
-    keys = { { "<leader>zz", "<cmd>ZenMode<cr>", desc = "ZenMode: Toggle" } },
   },
 }
