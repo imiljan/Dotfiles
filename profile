@@ -70,9 +70,9 @@ FZF_DEFAULT_OPTS="
 "
 
 # https://github.com/folke/tokyonight.nvim/blob/main/extras/fzf/tokyonight_night.sh
-# --color=bg+:#283457
-# --color=bg:#16161e
 FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS
+  --color=bg+:#283457
+  --color=bg:#16161e
   --color=border:#27a1b9
   --color=fg:#c0caf5
   --color=gutter:#16161e

@@ -6,7 +6,7 @@ olddir=~/Dotfiles_old
 files="zshrc profile gitconfig gitignore vimrc ideavimrc alias"
 
 config=~/.config
-dirs="aerospace alacritty nvim lazygit starship"
+dirs="aerospace alacritty bat borders eza ghostty lazygit nvim starship"
 
 bins="fix-tilde irg tmux-chooser tmux-sessionizer"
 ##########

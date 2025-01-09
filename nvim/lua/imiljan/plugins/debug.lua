@@ -65,25 +65,12 @@ return {
     },
     { "theHamsta/nvim-dap-virtual-text", opts = {} },
 
-    -- Add your own debuggers here
+    -- Add your own debug adapters here
     {
       "jbyuki/one-small-step-for-vimkind",
       -- stylua: ignore
       keys = {
         { "<leader>dL", function() require("osv").launch({ port = 8086 }) end, desc = "DAP: Launch Lua adapter" },
-      },
-    },
-    {
-      "mxsdev/nvim-dap-vscode-js",
-      dependencies = {
-        {
-          "microsoft/vscode-js-debug",
-          build = "npm ci && npm run compile vsDebugServerBundle && rm -rf out && mv -f dist out",
-        },
-      },
-      opts = {
-        debugger_path = vim.fn.stdpath("data") .. "/lazy/vscode-js-debug",
-        adapters = { "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost" },
       },
     },
     {
@@ -172,6 +159,7 @@ return {
     dap.adapters.nlua = function(callback, config)
       callback({ type = "server", host = config.host or "127.0.0.1", port = config.port or 8086 })
     end
+
     dap.configurations["lua"] = {
       {
         type = "nlua",
@@ -180,6 +168,22 @@ return {
       },
     }
 
+    -- TypeScript/JavaScript debug adapters - nvim-dap-vscode-js is unmainained 💀
+    local js_debug_path = require("mason-registry").get_package("js-debug-adapter"):get_install_path()
+    local DAP_TYPES = { "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost" }
+    for _, adapter in ipairs(DAP_TYPES) do
+      dap.adapters[adapter] = {
+        type = "server",
+        host = "localhost",
+        port = "${port}",
+        executable = {
+          command = "node",
+          args = { js_debug_path .. "/js-debug/src/dapDebugServer.js", "${port}" },
+        },
+      }
+    end
+
+    -- TypeScript/JavaScript configurations
     for _, language in ipairs({ "typescript", "javascript" }) do
       dap.configurations[language] = {
         {
@@ -217,6 +221,7 @@ return {
       }
     end
 
+    -- Python configurations
     dap.configurations.python = {
       {
         name = "Python: Debug Flask",

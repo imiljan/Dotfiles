@@ -476,7 +476,7 @@ return {
         "vale",
         "codespell",
       }
-      local dap = { "debugpy" } -- js-debug-addapter installed manually, not working here
+      local dap = { "debugpy", "js-debug-adapter" }
 
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, linter_and_formaters)
@@ -638,6 +638,9 @@ return {
     end,
   },
   {
+    "github/copilot.vim",
+  },
+  {
     "saghen/blink.cmp",
     event = { "InsertEnter", "CmdlineEnter" },
     dependencies = "rafamadriz/friendly-snippets",
@@ -669,18 +672,45 @@ return {
 
         -- cmdline = { preset = "super-tab" },
       },
-      appearance = { use_nvim_cmp_as_default = false, nerd_font_variant = "mono" },
+      -- https://cmp.saghen.dev/configuration/reference.html#reference
+      --
+      -- https://cmp.saghen.dev/configuration/reference.html#completion-keyword
       completion = {
-        accept = { auto_brackets = { enabled = true } },
         list = {
-          -- selection = "auto_insert"
-          selection = function(ctx)
-            return ctx.mode == "cmdline" and "auto_insert" or "preselect"
-          end,
+          selection = {
+            preselect = false,
+            auto_insert = true,
+          },
         },
-        menu = { border = "single", draw = { treesitter = { "lsp" } } },
-        documentation = { auto_show = true, auto_show_delay_ms = 200, window = { border = "single" } },
-        ghost_text = { enabled = false },
+        accept = {
+          auto_brackets = {
+            enabled = true,
+          },
+        },
+        menu = {
+          border = "single",
+          auto_show = function(ctx)
+            return ctx.mode ~= "cmdline" or not vim.tbl_contains({ "/", "?" }, vim.fn.getcmdtype())
+          end,
+          draw = { treesitter = { "lsp" } },
+        },
+        documentation = {
+          auto_show = true,
+          auto_show_delay_ms = 200,
+          update_delay_ms = 50,
+          window = {
+            border = "single",
+          },
+        },
+        ghost_text = {
+          enabled = false,
+        },
+      },
+      signature = {
+        enabled = true,
+        window = {
+          border = "single",
+        },
       },
       sources = {
         default = { "lazydev", "lsp", "path", "snippets", "buffer" },
@@ -692,7 +722,6 @@ return {
           },
         },
       },
-      signature = { enabled = true, window = { border = "single" } },
     },
   },
   -- {
