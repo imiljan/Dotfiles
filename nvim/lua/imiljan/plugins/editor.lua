@@ -1,6 +1,13 @@
 return {
   { "tpope/vim-sleuth" },
-  { "numToStr/Comment.nvim", opts = {} },
+  {
+    "numToStr/Comment.nvim",
+    config = function()
+      require("Comment").setup()
+      local ft = require("Comment.ft")
+      ft.set("http", { "#%s", "#%s" })
+    end,
+  },
   { "echasnovski/mini.surround", opts = { n_lines = 100 } },
   {
     "nvim-telescope/telescope.nvim",
@@ -190,19 +197,18 @@ return {
       },
     },
     config = function(_, opts)
+      require("neo-tree").setup(opts)
+      local events = require("neo-tree.events")
+
       local function on_move(data)
-        -- TODO: Integrate TS rename file
         Snacks.rename.on_rename_file(data.source, data.destination)
       end
 
-      local events = require("neo-tree.events")
       opts.event_handlers = opts.event_handlers or {}
       vim.list_extend(opts.event_handlers, {
         { event = events.FILE_MOVED, handler = on_move },
         { event = events.FILE_RENAMED, handler = on_move },
       })
-
-      require("neo-tree").setup(opts)
 
       vim.api.nvim_create_autocmd("TermClose", {
         pattern = "*lazygit",
@@ -405,20 +411,20 @@ return {
 
       { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "SEARCH: Todo" },
       { "<leader>sT", "<cmd>TodoTelescope keywords=TODO,FIX,FIXME<cr>", desc = "SEARCH: Todo/Fix/Fixme" },
-      {
-        "[t",
-        function()
-          require("todo-comments").jump_prev()
-        end,
-        desc = "TODO: prev",
-      },
-      {
-        "]t",
-        function()
-          require("todo-comments").jump_next()
-        end,
-        desc = "TODO: next",
-      },
+      -- {
+      --   "[t",
+      --   function()
+      --     require("todo-comments").jump_prev()
+      --   end,
+      --   desc = "TODO: prev",
+      -- },
+      -- {
+      --   "]t",
+      --   function()
+      --     require("todo-comments").jump_next()
+      --   end,
+      --   desc = "TODO: next",
+      -- },
     },
   },
 }

@@ -56,27 +56,24 @@ return {
       { "<leader>tn", "<cmd>tabn<cr>", desc = "TAB: go to next" },
       { "<leader>tp", "<cmd>tabp<cr>", desc = "TAB: go to prev" },
 
+      { "[t", "<cmd>BufferLineCyclePrev<cr>", desc = "BufLine: Prev" },
+      { "]t", "<cmd>BufferLineCycleNext<cr>", desc = "BufLine: Next" },
+      { "[T", "<cmd>BufferLineMovePrev<cr>", desc = "BufLine: Move prev" },
+      { "]T", "<cmd>BufferLineMoveNext<cr>", desc = "BufLine: Move next" },
+
       { "<S-h>", "<cmd>BufferLineCyclePrev<cr>", desc = "BufLine: Prev" },
       { "<S-l>", "<cmd>BufferLineCycleNext<cr>", desc = "BufLine: Next" },
 
-      { "<leader>bp", "<cmd>BufferLineTogglePin<cr>", desc = "BufLine: Toggle Pin" },
-      { "<leader>bP", "<cmd>BufferLineGroupClose ungrouped<cr>", desc = "BufLine: Delete Non-Pinned" },
-      { "<leader>bo", "<cmd>BufferLineCloseOthers<cr>", desc = "BufLine: Delete Other" },
-      { "<leader>br", "<cmd>BufferLineCloseRight<cr>", desc = "BufLine: Delete to the Right" },
-      { "<leader>bl", "<cmd>BufferLineCloseLeft<cr>", desc = "BufLine: Delete to the Left" },
-
-      { "[b", "<cmd>BufferLineCyclePrev<cr>", desc = "BufLine: Prev" },
-      { "]b", "<cmd>BufferLineCycleNext<cr>", desc = "BufLine: Next" },
-      { "[B", "<cmd>BufferLineMovePrev<cr>", desc = "BufLine: Move prev" },
-      { "]B", "<cmd>BufferLineMoveNext<cr>", desc = "BufLine: Move next" },
+      { "<leader>Tp", "<cmd>BufferLineTogglePin<cr>", desc = "BufLine: Toggle Pin" },
+      { "<leader>TP", "<cmd>BufferLineGroupClose ungrouped<cr>", desc = "BufLine: Delete Non-Pinned" },
+      { "<leader>To", "<cmd>BufferLineCloseOthers<cr>", desc = "BufLine: Delete Other" },
+      { "<leader>Tr", "<cmd>BufferLineCloseRight<cr>", desc = "BufLine: Delete to the Right" },
+      { "<leader>Tl", "<cmd>BufferLineCloseLeft<cr>", desc = "BufLine: Delete to the Left" },
     },
   },
   {
     "nvim-lualine/lualine.nvim",
-    dependencies = {
-      "nvim-tree/nvim-web-devicons",
-      "folke/trouble.nvim",
-    },
+    dependencies = { "nvim-tree/nvim-web-devicons", "folke/trouble.nvim" },
     config = function()
       local symbols = require("trouble").statusline({
         mode = "lsp_document_symbols",

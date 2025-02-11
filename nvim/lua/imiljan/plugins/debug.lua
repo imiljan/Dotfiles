@@ -17,9 +17,9 @@ return {
           enabld = true,
           icons = {
             play = " 5",
+            step_out = " 6",
             step_into = " 7",
             step_over = " 8",
-            step_out = " 9",
             disconnect = "",
             pause = "",
             run_last = "",
@@ -84,9 +84,9 @@ return {
   -- stylua: ignore
   keys = {
     { "<F5>", function() require("dap").continue() end, desc = "Debug: Start/Continue" },
+    { "<F6>", function() require("dap").step_out() end, desc = "Debug: Step Out" },
     { "<F7>", function() require("dap").step_into() end, desc = "Debug: Step Into" },
     { "<F8>", function() require("dap").step_over() end, desc = "Debug: Step Over" },
-    { "<F9>", function() require("dap").step_out() end, desc = "Debug: Step Out" },
 
     { "<leader>dc", function() require("dap").continue() end, desc = "DAP: Continue" },
     -- { "<leader>d", function() require("dap").run() end, desc = "DAP: Run" },
@@ -150,27 +150,13 @@ return {
       return vim.json.decode(json.json_strip_comments(str))
     end
 
-    -- Extends dap.configurations with entries read from .vscode/launch.json
-    if vim.fn.filereadable(".vscode/launch.json") then
-      vscode.load_launchjs()
-    end
-
-    -- Lua configurations.
-    dap.adapters.nlua = function(callback, config)
-      callback({ type = "server", host = config.host or "127.0.0.1", port = config.port or 8086 })
-    end
-
-    dap.configurations["lua"] = {
-      {
-        type = "nlua",
-        request = "attach",
-        name = "Attach to running Neovim instance",
-      },
-    }
+    local js_filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact" }
+    vscode.type_to_filetypes["node"] = js_filetypes
+    vscode.type_to_filetypes["pwa-node"] = js_filetypes
 
     -- TypeScript/JavaScript debug adapters - nvim-dap-vscode-js is unmainained 💀
     local js_debug_path = require("mason-registry").get_package("js-debug-adapter"):get_install_path()
-    local DAP_TYPES = { "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost" }
+    local DAP_TYPES = { "node", "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost" }
     for _, adapter in ipairs(DAP_TYPES) do
       dap.adapters[adapter] = {
         type = "server",
@@ -187,17 +173,17 @@ return {
     for _, language in ipairs({ "typescript", "javascript" }) do
       dap.configurations[language] = {
         {
-          name = "Node: Launch file",
-          type = "pwa-node",
-          request = "launch",
-          program = "${file}",
-          cwd = "${workspaceFolder}",
-        },
-        {
           name = "Node: Attach",
           type = "pwa-node",
           request = "attach",
           processId = dap_util.pick_process,
+          cwd = "${workspaceFolder}",
+        },
+        {
+          name = "Node: Launch file",
+          type = "pwa-node",
+          request = "launch",
+          program = "${file}",
           cwd = "${workspaceFolder}",
         },
         {
@@ -241,10 +227,23 @@ return {
         autoStartBrowser = false,
       },
       {
-        name = "Python: Debug Python File",
+        name = "Python: Debug File",
         type = "debugpy",
         request = "launch",
         program = "${file}",
+      },
+    }
+
+    -- Lua configurations.
+    dap.adapters.nlua = function(callback, config)
+      callback({ type = "server", host = config.host or "127.0.0.1", port = config.port or 8086 })
+    end
+
+    dap.configurations["lua"] = {
+      {
+        type = "nlua",
+        request = "attach",
+        name = "Attach to running Neovim instance",
       },
     }
   end,

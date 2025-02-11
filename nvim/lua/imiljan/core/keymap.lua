@@ -1,9 +1,11 @@
 vim.keymap.set("n", "<leader>n", vim.cmd.Ex, { desc = "Netrw" })
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Remove highlight" })
 vim.keymap.set("n", "Q", "<nop>", { desc = "Disable EX mode on Q" })
+vim.keymap.set("n", "<F1>", "<nop>", { desc = "Disable Help" })
 vim.keymap.set("i", "<C-c>", "<Esc>", { desc = "Exit insert mode" })
 
-vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<cr>", { desc = "TmuxSessionizer" })
+-- vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<cr>", { desc = "TmuxSessionizer" })
+vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux-sessionizer<cr>", { desc = "TmuxSessionizer" })
 vim.keymap.set("n", "<C-b>", "<cmd>silent !tmux-chooser<cr>", { desc = "TmuxChooser" })
 
 vim.keymap.set("n", "<up>", "<cmd>resize +5<cr>", { desc = "Resize +" })

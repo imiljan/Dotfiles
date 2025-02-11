@@ -4,7 +4,7 @@
 # https://nikitabobko.github.io/AeroSpace/goodness
 
 after-login-command = []
-after-startup-command = ['exec-and-forget borders active_color=0xff27a1b9 inactive_color=0xff494d64 width=5.0']
+after-startup-command = []
 start-at-login = true
 enable-normalization-flatten-containers = true
 enable-normalization-opposite-orientation-for-nested-containers = true
@@ -34,7 +34,7 @@ outer.right = 5
 cmd-h = []     # Disable "hide application"
 cmd-alt-h = [] # Disable "hide others"
 
-alt-enter = 'exec-and-forget open -a Alacritty'
+alt-enter = 'exec-and-forget open -a Ghostty'
 alt-slash = 'layout tiles horizontal vertical'
 alt-comma = 'layout accordion vertical horizontal'
 
@@ -134,3 +134,7 @@ run = "move-node-to-workspace 5"
 [[on-window-detected]]
 if.app-id = 'net.whatsapp.WhatsApp'
 run = "move-node-to-workspace 9"
+
+[[on-window-detected]]
+if.app-id = 'com.mongodb.compass'
+run = "move-node-to-workspace 10"

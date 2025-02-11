@@ -29,7 +29,8 @@ function M.copy_path(state)
       local i = tonumber(choice:sub(1, 1))
       if i then
         local result = results[i]
-        vim.fn.setreg('"', result)
+        vim.fn.setreg('"', result) -- set the default register
+        vim.fn.setreg("+", result) -- set the clipboard register
         vim.notify("Copied: " .. result)
       else
         vim.notify("Invalid selection")

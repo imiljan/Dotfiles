@@ -5,7 +5,6 @@ return {
     lazy = false,
     opts = {
       bigfile = { enabled = true },
-      dashboard = { enabled = false },
       indent = {
         enabled = true,
         only_scope = true,
@@ -13,14 +12,8 @@ return {
         scope = { animate = { enabled = false } },
       },
       input = { enabled = true },
-      notifier = { enabled = false },
-      rename = { enabled = true },
-      scope = {},
       quickfile = { enabled = true },
-      scroll = { enabled = false },
-      statuscolumn = { enabled = false },
-      styles = {},
-      words = { enabled = false },
+      scope = { enabled = true },
       zen = {
         toggles = {
           dim = false,
@@ -182,7 +175,7 @@ return {
       { "<C-j>", "<cmd><C-U>TmuxNavigateDown<cr>", desc = "Tmux Down" },
       { "<C-k>", "<cmd><C-U>TmuxNavigateUp<cr>", desc = "Tmux Up" },
       { "<C-l>", "<cmd><C-U>TmuxNavigateRight<cr>", desc = "Tmux Right" },
-      { "<C-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>", desc = "Tmux Previous" },
+      -- { "<C-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>", desc = "Tmux Previous" },
     },
   },
   {

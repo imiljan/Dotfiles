@@ -1,6 +1,11 @@
 [user]
     name = Miljan Ignjatovic
     email = miljan.ignjatovic.96@gmail.com
+    signingkey = /Users/imiljan/.ssh/id_ed25519.pub
+[gpg]
+    format = ssh
+[commit]
+    gpgsign = true
 [color]
     diff = auto
     status = auto

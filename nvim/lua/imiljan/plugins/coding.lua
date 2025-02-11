@@ -5,29 +5,17 @@ return {
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
       "WhoIsSethDaniel/mason-tool-installer.nvim",
-      "saghen/blink.cmp",
+      -- "saghen/blink.cmp",
       "nvim-telescope/telescope.nvim",
       {
         "folke/lazydev.nvim",
         ft = "lua",
-        dependencies = {
-          { "Bilal2453/luvit-meta", lazy = true },
-        },
-        opts = {
-          library = {
-            { path = "luvit-meta/library", words = { "vim%.uv" } },
-          },
-        },
+        dependencies = { { "Bilal2453/luvit-meta", lazy = true } },
+        opts = { library = { { path = "luvit-meta/library", words = { "vim%.uv" } } } },
       },
       {
         "j-hui/fidget.nvim",
-        opts = {
-          notification = {
-            window = {
-              winblend = 0,
-            },
-          },
-        },
+        opts = { notification = { window = { winblend = 0 } } },
       },
     },
     config = function()
@@ -392,44 +380,45 @@ return {
           -- },
         },
 
-        -- 1.4GB ????
-        -- eslint = {
-        --   codeAction = {
-        --     disableRuleComment = {
-        --       enable = true,
-        --       location = "separateLine",
-        --     },
-        --     showDocumentation = {
-        --       enable = true,
-        --     },
-        --   },
-        --   codeActionOnSave = {
-        --     enable = false,
-        --     mode = "all",
-        --   },
-        --   experimental = {
-        --     useFlatConfig = false,
-        --   },
-        --   format = false,
-        --   nodePath = "",
-        --   onIgnoredFiles = "off",
-        --   problems = {
-        --     shortenToSingleLine = false,
-        --   },
-        --   quiet = false,
-        --   rulesCustomizations = {},
-        --   run = "onSave",
-        --   useESLintClass = false,
-        --   validate = "on",
-        --   workingDirectory = {
-        --     mode = "location",
-        --   },
-        -- },
-
-        html = { filetypes = { "html" } },
+        -- vscode-langservers-extracted
+        -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#cssls
         cssls = {},
+        -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#eslint
+        eslint = {
+          -- https://github.com/microsoft/vscode-eslint/blob/55871979d7af184bf09af491b6ea35ebd56822cf/server/src/eslintServer.ts#L216-L229
+          -- https://github.com/neovim/nvim-lspconfig/blob/master/lua/lspconfig/configs/eslint.lua#L51
+          settings = {
+            validate = "on",
+            packageManager = nil,
+            codeAction = {
+              disableRuleComment = { enable = true, location = "separateLine" },
+              showDocumentation = { enable = true },
+            },
+            codeActionOnSave = { enable = false, mode = "all" },
+            format = false,
+            quiet = false,
+            onIgnoredFiles = "off",
+            rulesCustomizations = {},
+            run = "onSave",
+            nodePath = nil,
+
+            useESLintClass = false,
+            experimental = { useFlatConfig = false },
+            problems = { shortenToSingleLine = false },
+            workingDirectory = { mode = "location" },
+          },
+        },
+        -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#html
+        html = { filetypes = { "html" } },
+        -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#jsonls
+        jsonls = {
+          init_options = {
+            provideFormatter = false,
+          },
+        },
+        -- vscode-langservers-extracted
+
         sqlls = {},
-        jsonls = {},
         yamlls = {},
         bashls = {},
         terraformls = {},
@@ -456,16 +445,16 @@ return {
 
       local linter_and_formaters = {
         "stylua",
-        -- "prettier",
-        "prettierd",
         -- "black",
         -- "isort",
-        "yamlfmt",
+        -- "prettier",
+        -- "prettierd",
+        -- "yamlfmt",
         "shfmt",
 
         -- "eslint_d",
         -- "flake8",
-        "actionlint",
+        -- "actionlint",
         "checkmake",
         "hadolint",
         "yamllint",
@@ -483,8 +472,8 @@ return {
       vim.list_extend(ensure_installed, dap)
 
       local capabilities = vim.lsp.protocol.make_client_capabilities()
-      -- capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
-      capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities())
+      capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
+      -- capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities())
 
       require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
       require("mason-lspconfig").setup({
@@ -639,192 +628,199 @@ return {
   },
   {
     "github/copilot.vim",
+    config = function()
+      vim.keymap.set("i", "<C-\\>", 'copilot#Accept("\\<CR>")', {
+        expr = true,
+        replace_keycodes = false,
+      })
+      vim.g.copilot_no_tab_map = true
+    end,
   },
   {
-    "saghen/blink.cmp",
+    "hrsh7th/nvim-cmp",
     event = { "InsertEnter", "CmdlineEnter" },
-    dependencies = "rafamadriz/friendly-snippets",
-    version = "*",
-    opts = {
-      keymap = {
-        preset = "default",
-
-        -- default options
-        -- ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
-        -- ["<C-e>"] = { "hide" },
-        -- ["<C-y>"] = { "select_and_accept" },
-        --
-        -- ["<C-p>"] = { "select_prev", "fallback" },
-        -- ["<C-n>"] = { "select_next", "fallback" },
-        --
-        -- ["<C-b>"] = { "scroll_documentation_up", "fallback" },
-        -- ["<C-f>"] = { "scroll_documentation_down", "fallback" },
-        --
-        -- ["<Tab>"] = { "snippet_forward", "fallback" },
-        -- ["<S-Tab>"] = { "snippet_backward", "fallback" },
-
-        -- overrides
-        ["<C-u>"] = { "scroll_documentation_up", "fallback" },
-        ["<C-d>"] = { "scroll_documentation_down", "fallback" },
-
-        -- custom
-        ["<CR>"] = { "accept", "fallback" },
-
-        -- cmdline = { preset = "super-tab" },
-      },
-      -- https://cmp.saghen.dev/configuration/reference.html#reference
-      --
-      -- https://cmp.saghen.dev/configuration/reference.html#completion-keyword
-      completion = {
-        list = {
-          selection = {
-            preselect = false,
-            auto_insert = true,
+    dependencies = {
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer",
+      "hrsh7th/cmp-path",
+      "hrsh7th/cmp-cmdline",
+      "onsails/lspkind.nvim",
+      {
+        "garymjr/nvim-snippets",
+        dependencies = { "rafamadriz/friendly-snippets" },
+        opts = { friendly_snippets = true },
+        keys = {
+          {
+            "<Tab>",
+            function()
+              return vim.snippet.active({ direction = 1 }) and "<cmd>lua vim.snippet.jump(1)<cr>" or "<Tab>"
+            end,
+            expr = true,
+            silent = true,
+            mode = { "i", "s" },
           },
-        },
-        accept = {
-          auto_brackets = {
-            enabled = true,
-          },
-        },
-        menu = {
-          border = "single",
-          auto_show = function(ctx)
-            return ctx.mode ~= "cmdline" or not vim.tbl_contains({ "/", "?" }, vim.fn.getcmdtype())
-          end,
-          draw = { treesitter = { "lsp" } },
-        },
-        documentation = {
-          auto_show = true,
-          auto_show_delay_ms = 200,
-          update_delay_ms = 50,
-          window = {
-            border = "single",
-          },
-        },
-        ghost_text = {
-          enabled = false,
-        },
-      },
-      signature = {
-        enabled = true,
-        window = {
-          border = "single",
-        },
-      },
-      sources = {
-        default = { "lazydev", "lsp", "path", "snippets", "buffer" },
-        providers = {
-          lazydev = {
-            name = "LazyDev",
-            module = "lazydev.integrations.blink",
-            score_offset = 100,
+          {
+            "<S-Tab>",
+            function()
+              return vim.snippet.active({ direction = -1 }) and "<cmd>lua vim.snippet.jump(-1)<cr>" or "<S-Tab>"
+            end,
+            expr = true,
+            silent = true,
+            mode = { "i", "s" },
           },
         },
       },
     },
+    config = function()
+      local cmp = require("cmp")
+      local defaults = require("cmp.config.default")()
+      local lspkind = require("lspkind")
+
+      cmp.setup({
+        snippet = {
+          expand = function(args)
+            vim.snippet.expand(args.body)
+          end,
+        },
+        preselect = cmp.PreselectMode.None,
+        completion = { completeopt = "menu,menuone,noselect,popup" },
+        window = {
+          completion = cmp.config.window.bordered(),
+          documentation = cmp.config.window.bordered(),
+        },
+        mapping = cmp.mapping.preset.insert({
+          ["<C-u>"] = cmp.mapping.scroll_docs(-4),
+          ["<C-d>"] = cmp.mapping.scroll_docs(4),
+          ["<C-Space>"] = cmp.mapping.complete(),
+          ["<C-e>"] = cmp.mapping.abort(),
+          ["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+          ["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+          ["<C-y>"] = cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Insert }),
+          ["<CR>"] = cmp.mapping.confirm({ select = false, behavior = cmp.ConfirmBehavior.Insert }),
+          ["<S-CR>"] = cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Replace }),
+        }),
+        sources = cmp.config.sources({
+          { name = "nvim_lsp" },
+          { name = "snippets" },
+          { name = "path" },
+          { name = "lazydev", group_index = 0 },
+        }, {
+          { name = "buffer" },
+        }),
+        formatting = {
+          expandable_indicator = true,
+          fields = { "abbr", "menu", "kind" },
+          format = lspkind.cmp_format({
+            mode = "symbol_text",
+            maxwidth = 50,
+            ellipsis_char = "...",
+            show_labelDetails = true,
+          }),
+        },
+        sorting = defaults.sorting,
+      })
+
+      cmp.setup.cmdline({ "/", "?" }, {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = {
+          { name = "buffer", max_item_count = 30 },
+        },
+      })
+
+      cmp.setup.cmdline(":", {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = cmp.config.sources({
+          { name = "path", max_item_count = 30 },
+        }, {
+          { name = "cmdline", max_item_count = 30 },
+        }),
+        matching = { disallow_symbol_nonprefix_matching = false },
+      })
+    end,
   },
   -- {
-  --   "hrsh7th/nvim-cmp",
+  --   "saghen/blink.cmp",
   --   event = { "InsertEnter", "CmdlineEnter" },
-  --   dependencies = {
-  --     "hrsh7th/cmp-nvim-lsp",
-  --     "hrsh7th/cmp-buffer",
-  --     "hrsh7th/cmp-path",
-  --     "hrsh7th/cmp-cmdline",
-  --     "onsails/lspkind.nvim",
-  --     {
-  --       "garymjr/nvim-snippets",
-  --       dependencies = { "rafamadriz/friendly-snippets" },
-  --       opts = { friendly_snippets = true },
-  --       keys = {
-  --         {
-  --           "<Tab>",
-  --           function()
-  --             return vim.snippet.active({ direction = 1 }) and "<cmd>lua vim.snippet.jump(1)<cr>" or "<Tab>"
-  --           end,
-  --           expr = true,
-  --           silent = true,
-  --           mode = { "i", "s" },
+  --   dependencies = "rafamadriz/friendly-snippets",
+  --   version = "*",
+  --   opts = {
+  --     keymap = {
+  --       preset = "default",
+  --
+  --       -- default options
+  --       -- ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
+  --       -- ["<C-e>"] = { "hide" },
+  --       -- ["<C-y>"] = { "select_and_accept" },
+  --       --
+  --       -- ["<C-p>"] = { "select_prev", "fallback" },
+  --       -- ["<C-n>"] = { "select_next", "fallback" },
+  --       --
+  --       -- ["<C-b>"] = { "scroll_documentation_up", "fallback" },
+  --       -- ["<C-f>"] = { "scroll_documentation_down", "fallback" },
+  --       --
+  --       -- ["<Tab>"] = { "snippet_forward", "fallback" },
+  --       -- ["<S-Tab>"] = { "snippet_backward", "fallback" },
+  --
+  --       -- overrides
+  --       ["<C-u>"] = { "scroll_documentation_up", "fallback" },
+  --       ["<C-d>"] = { "scroll_documentation_down", "fallback" },
+  --
+  --       -- custom
+  --       ["<CR>"] = { "accept", "fallback" },
+  --
+  --       -- cmdline = { preset = "super-tab" },
+  --     },
+  --     -- https://cmp.saghen.dev/configuration/reference.html#reference
+  --     --
+  --     -- https://cmp.saghen.dev/configuration/reference.html#completion-keyword
+  --     completion = {
+  --       list = {
+  --         selection = {
+  --           preselect = false,
+  --           auto_insert = true,
   --         },
-  --         {
-  --           "<S-Tab>",
-  --           function()
-  --             return vim.snippet.active({ direction = -1 }) and "<cmd>lua vim.snippet.jump(-1)<cr>" or "<S-Tab>"
-  --           end,
-  --           expr = true,
-  --           silent = true,
-  --           mode = { "i", "s" },
+  --       },
+  --       accept = {
+  --         auto_brackets = {
+  --           enabled = true,
+  --         },
+  --       },
+  --       menu = {
+  --         border = "single",
+  --         auto_show = function(ctx)
+  --           return ctx.mode ~= "cmdline" or not vim.tbl_contains({ "/", "?" }, vim.fn.getcmdtype())
+  --         end,
+  --         draw = { treesitter = { "lsp" } },
+  --       },
+  --       documentation = {
+  --         auto_show = true,
+  --         auto_show_delay_ms = 200,
+  --         update_delay_ms = 50,
+  --         window = {
+  --           border = "single",
+  --         },
+  --       },
+  --       ghost_text = {
+  --         enabled = false,
+  --       },
+  --     },
+  --     signature = {
+  --       enabled = true,
+  --       window = {
+  --         border = "single",
+  --       },
+  --     },
+  --     sources = {
+  --       default = { "lazydev", "lsp", "path", "snippets", "buffer" },
+  --       providers = {
+  --         lazydev = {
+  --           name = "LazyDev",
+  --           module = "lazydev.integrations.blink",
+  --           score_offset = 100,
   --         },
   --       },
   --     },
   --   },
-  --   config = function()
-  --     local cmp = require("cmp")
-  --     local defaults = require("cmp.config.default")()
-  --     local lspkind = require("lspkind")
-  --
-  --     cmp.setup({
-  --       snippet = {
-  --         expand = function(args)
-  --           vim.snippet.expand(args.body)
-  --         end,
-  --       },
-  --       preselect = cmp.PreselectMode.None,
-  --       completion = { completeopt = "menu,menuone,noselect,popup" },
-  --       window = {
-  --         completion = cmp.config.window.bordered(),
-  --         documentation = cmp.config.window.bordered(),
-  --       },
-  --       mapping = cmp.mapping.preset.insert({
-  --         ["<C-u>"] = cmp.mapping.scroll_docs(-4),
-  --         ["<C-d>"] = cmp.mapping.scroll_docs(4),
-  --         ["<C-Space>"] = cmp.mapping.complete(),
-  --         ["<C-e>"] = cmp.mapping.abort(),
-  --         ["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
-  --         ["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
-  --         ["<C-y>"] = cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Insert }),
-  --         ["<CR>"] = cmp.mapping.confirm({ select = false, behavior = cmp.ConfirmBehavior.Insert }),
-  --         ["<S-CR>"] = cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Replace }),
-  --       }),
-  --       sources = cmp.config.sources({
-  --         { name = "nvim_lsp" },
-  --         { name = "snippets" },
-  --         { name = "path" },
-  --         { name = "lazydev", group_index = 0 },
-  --       }, {
-  --         { name = "buffer" },
-  --       }),
-  --       formatting = {
-  --         expandable_indicator = true,
-  --         fields = { "abbr", "menu", "kind" },
-  --         format = lspkind.cmp_format({
-  --           mode = "symbol_text",
-  --           maxwidth = 50,
-  --           ellipsis_char = "...",
-  --           show_labelDetails = true,
-  --         }),
-  --       },
-  --       sorting = defaults.sorting,
-  --     })
-  --
-  --     cmp.setup.cmdline({ "/", "?" }, {
-  --       mapping = cmp.mapping.preset.cmdline(),
-  --       sources = {
-  --         { name = "buffer", max_item_count = 30 },
-  --       },
-  --     })
-  --
-  --     cmp.setup.cmdline(":", {
-  --       mapping = cmp.mapping.preset.cmdline(),
-  --       sources = cmp.config.sources({
-  --         { name = "path", max_item_count = 30 },
-  --       }, {
-  --         { name = "cmdline", max_item_count = 30 },
-  --       }),
-  --       matching = { disallow_symbol_nonprefix_matching = false },
-  --     })
-  --   end,
   -- },
   {
     "stevearc/conform.nvim",
@@ -844,12 +840,12 @@ return {
       formatters_by_ft = {
         lua = { "stylua" },
         python = { "isort", "black" },
-        javascript = { "prettierd", "prettier", stop_after_first = true },
-        typescript = { "prettierd", "prettier", stop_after_first = true },
-        html = { "prettierd", "prettier", stop_after_first = true },
-        json = { "jq", "prettierd", "prettier", stop_after_first = true },
-        markdown = { "prettierd", "prettier", stop_after_first = true },
-        yaml = { "yamlfmt" },
+        javascript = { "prettier", "prettierd", stop_after_first = true },
+        typescript = { "prettier", "prettierd", stop_after_first = true },
+        html = { "prettier", "prettierd", stop_after_first = true },
+        json = { "jq", "prettier", "prettierd", stop_after_first = true },
+        markdown = { "prettier", "prettierd", stop_after_first = true },
+        -- yaml = { "yamlfmt" },
         sh = { "shfmt" },
         bash = { "shfmt" },
         zsh = { "shfmt" },
@@ -876,17 +872,18 @@ return {
       lint.linters_by_ft = {
         -- lua = { "luacheck" },
         python = { "flake8" },
+
+        -- eslint language server is used instead of this
         -- javascript = { "eslint_d" },
         -- typescript = { "eslint_d" },
-
-        javascript = { "eslint" },
-        typescript = { "eslint" },
+        -- javascript = { "eslint" },
+        -- typescript = { "eslint" },
 
         -- yaml = { "actionlint" },
         make = { "checkmake" },
         dockerfile = { "hadolint" },
         yaml = { "yamllint" },
-        -- markdown = { "markdownlint-cli2" },
+        markdown = { "markdownlint-cli2" },
         terraform = { "tflint" },
         json = { "jsonlint" },
         text = { "vale" },
