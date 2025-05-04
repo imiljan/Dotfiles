@@ -11,7 +11,7 @@ end
 
 -- despite the name, fixes a couple of specific issues: unreachable code, await in non-async functions, incorrectly implemented interface
 vim.keymap.set("n", "<leader>cA", function()
-  ts_code_action("source.fixAll.tx")
+  ts_code_action("source.fixAll.ts")
 end, { desc = "LSP TS: Fix all" })
 
 -- removes declared but unused variables

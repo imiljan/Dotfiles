@@ -12,7 +12,6 @@ return {
   {
     "nvim-telescope/telescope.nvim",
     event = "VimEnter",
-    branch = "0.1.x",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "BurntSushi/ripgrep",
@@ -24,6 +23,7 @@ return {
       "nvim-telescope/telescope-file-browser.nvim",
       "nvim-telescope/telescope-github.nvim",
       "nvim-telescope/telescope-symbols.nvim",
+      "nvim-telescope/telescope-dap.nvim",
       { "AckslD/nvim-neoclip.lua", opts = {} },
       "folke/trouble.nvim",
     },
@@ -97,13 +97,13 @@ return {
         extensions = {
           ["fzf"] = {},
           ["ui-select"] = { require("telescope.themes").get_dropdown({}) },
-          ["file_browser"] = { hijack_netrw = false },
+          -- ["file_browser"] = { hijack_netrw = false },
         },
       })
 
       pcall(telescope.load_extension, "fzf")
       pcall(telescope.load_extension, "ui-select")
-      pcall(telescope.load_extension, "file_browser")
+      -- pcall(telescope.load_extension, "file_browser")
       pcall(telescope.load_extension, "gh")
       pcall(telescope.load_extension, "neoclip")
 
@@ -112,16 +112,16 @@ return {
         if not ok then
           builtin.find_files()
         end
-      end, { desc = "SEARCH: Git/Project Files" })
+      end, { desc = "🔭: Git/Project Files" })
 
-      vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "SEARCH: Files" })
-      vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "SEARCH: Grep" })
-      vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "SEARCH: Current Word" })
+      vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "🔭: Files" })
+      vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "🔭: Grep" })
+      vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "🔭: Grep Word" })
       vim.keymap.set("n", "<leader>sW", function()
         vim.ui.input({ prompt = "Grep > " }, function(input)
           builtin.grep_string({ search = input })
         end)
-      end, { desc = "SEARCH: Grep with input" })
+      end, { desc = "🔭: Grep with input" })
 
       vim.keymap.set("n", "<leader>sd", function()
         vim.ui.input({
@@ -131,34 +131,43 @@ return {
         }, function(input)
           builtin.live_grep({ search_dirs = { input }, prompt_title = "Live Grep in Directory" })
         end)
-      end, { desc = "SEARCH: Live Grep in Directory" })
+      end, { desc = "🔭: Live Grep in Directory" })
 
       vim.keymap.set("n", "<leader>/", function()
         builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({ previewer = false }))
-      end, { desc = "SEARCH: in current buffer" })
+      end, { desc = "🔭: Grep in current buffer" })
 
       vim.keymap.set("n", "<leader>s/", function()
         builtin.live_grep({ grep_open_files = true, prompt_title = "Live Grep in Open Files" })
-      end, { desc = "SEARCH: Live Grep in Open Files" })
-
-      vim.keymap.set("n", "<leader>s.", builtin.oldfiles, { desc = "SEARCH: Recent Files" })
-      vim.keymap.set("n", '<leader>s"', builtin.registers, { desc = "SEARCH: Registers" })
-      vim.keymap.set("n", "<leader>sa", builtin.builtin, { desc = "SEARCH: Select Telescope" })
-      vim.keymap.set("n", "<leader>sb", builtin.buffers, { desc = "SEARCH: Existing buffers" })
-      vim.keymap.set("n", "<leader>sc", builtin.command_history, { desc = "SEARCH: Command History" })
-      vim.keymap.set("n", "<leader>sC", builtin.commands, { desc = "SEARCH: Commands" })
-      vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "SEARCH: Help" })
-      vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "SEARCH: Keymaps" })
-      vim.keymap.set("n", "<leader>sm", builtin.marks, { desc = "SEARCH: Marks" })
-      vim.keymap.set("n", "<leader>sr", builtin.resume, { desc = "SEARCH: Resume" })
-      vim.keymap.set("n", "<leader>cS", builtin.spell_suggest, { desc = "SEARCH: Spell Suggestions" })
+      end, { desc = "🔭: Live Grep in Open Files" })
+      vim.keymap.set("n", "<leader>s.", builtin.oldfiles, { desc = "🔭: Old Files" })
+      vim.keymap.set("n", '<leader>s"', builtin.registers, { desc = "🔭: Registers" })
+      vim.keymap.set("n", "<leader>sa", builtin.builtin, { desc = "🔭: Builtin" })
+      vim.keymap.set("n", "<leader>sb", builtin.buffers, { desc = "🔭: Buffers" })
+      vim.keymap.set("n", "<leader>sc", builtin.command_history, { desc = "🔭: Command History" })
+      vim.keymap.set("n", "<leader>sC", builtin.commands, { desc = "🔭: Commands" })
+      vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "🔭: Help" })
+      vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "🔭: Keymaps" })
+      vim.keymap.set("n", "<leader>sm", builtin.marks, { desc = "🔭: Marks" })
+      vim.keymap.set("n", "<leader>sr", builtin.resume, { desc = "🔭: Resume" })
+      vim.keymap.set("n", "<leader>cS", builtin.spell_suggest, { desc = "🔭: Spell Suggestions" })
 
       vim.keymap.set("n", "<leader>sn", function()
         builtin.find_files({ cwd = vim.fn.stdpath("config") })
-      end, { desc = "SEARCH: Neovim files" })
+      end, { desc = "🔭: Neovim files" })
 
-      vim.keymap.set("n", "<leader>fb", telescope.extensions.file_browser.file_browser, { desc = "Telescope: FileBrowser" })
-      vim.keymap.set("n", "<leader>fc", telescope.extensions.neoclip.default, { desc = "Telescope: Clipboard" })
+      vim.keymap.set("n", "<leader>fe", builtin.symbols, { desc = "🔭: Emojis" })
+      -- vim.keymap.set("n", "<leader>fb", telescope.extensions.file_browser.file_browser, { desc = "🔭: FileBrowser" })
+      vim.keymap.set("n", "<leader>fc", telescope.extensions.neoclip.default, { desc = "🔭: Clipboard" })
+
+      vim.keymap.set("n", "<leader>hg", function()
+        vim.ui.input({ prompt = "HTTP name >" }, function(input)
+          builtin.grep_string({
+            search = "@name " .. input,
+            additional_args = { "--glob=*.http" },
+          })
+        end)
+      end, { noremap = true, silent = true, desc = "HTTP: Grep by name" })
     end,
   },
   {
@@ -253,7 +262,7 @@ return {
 
       wk.add({
         { "<leader>E", group = "Diagnostics: QuickFix" },
-        { "<leader>G", group = "Git (Telescope)" },
+        { "<leader>G", group = "Git (🔭)" },
         { "<leader>S", group = "Workspace Symbols with input" },
         { "<leader>a", group = "Harpoon" },
         { "<leader>b", group = "Bufferline" },
@@ -323,6 +332,7 @@ return {
       { "<leader>xx", "<cmd>Trouble<cr>", desc = "Trouble" },
       { "<leader>xc", "<cmd>Trouble close<cr>", desc = "Trouble: close" },
 
+      { "<leader>X", "<cmd>Trouble diagnostics toggle<cr>", desc = "Trouble: Diagnostics" },
       { "<leader>xd", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Trouble: Buffer Diagnostics" },
       { "<leader>xD", "<cmd>Trouble diagnostics toggle<cr>", desc = "Trouble: Diagnostics" },
 
@@ -409,8 +419,8 @@ return {
       { "<leader>xt", "<cmd>TodoTrouble<cr>", desc = "Trouble: Todo" },
       { "<leader>xT", "<cmd>TodoTrouble keywords=TODO,FIX,FIXME<cr>", desc = "Trouble: Todo/Fix/Fixme" },
 
-      { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "SEARCH: Todo" },
-      { "<leader>sT", "<cmd>TodoTelescope keywords=TODO,FIX,FIXME<cr>", desc = "SEARCH: Todo/Fix/Fixme" },
+      { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "🔭: Todo" },
+      { "<leader>sT", "<cmd>TodoTelescope keywords=TODO,FIX,FIXME<cr>", desc = "🔭: Todo/Fix/Fixme" },
       -- {
       --   "[t",
       --   function()

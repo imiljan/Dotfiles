@@ -6,7 +6,7 @@ olddir=~/Dotfiles_old
 files="zshrc profile gitconfig gitignore vimrc ideavimrc alias"
 
 config=~/.config
-dirs="aerospace alacritty bat borders eza ghostty lazygit nvim starship"
+dirs="aerospace alacritty bat borders btop eza ghostty lazygit nvim starship"
 
 bins="fix-tilde irg tmux-chooser tmux-sessionizer"
 ##########
@@ -20,7 +20,7 @@ cd $dir || exit
 echo "done"
 
 for f in $files; do
-	echo "Moving any existing dotfiles from ~ to $olddir"
+	echo "Moving any existing dotfiles from $HOME to $olddir"
 	mv ~/."$f" ~/Dotfiles_old/
 	echo "Creating symlink to $f in home directory."
 	ln -s $dir/"$f" ~/."$f"
@@ -37,6 +37,11 @@ ln -s $dir/tmux.conf $config/tmux/tmux.conf
 
 echo "Installing tpm"
 git clone https://github.com/tmux-plugins/tpm $config/tmux/plugins/tpm
+
+if [ ! -d "$HOME/.local/bin" ]; then
+	echo "Creating $HOME/.local/bin directory."
+	mkdir -p "$HOME/.local/bin"
+fi
 
 for b in $bins; do
 	echo "Creating symlink to $b in ~/.local/bin directory."

@@ -7,8 +7,11 @@ fi
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-export XDG_CONFIG_HOME=$HOME/.config
-export XDG_STATE_HOME=$HOME/.local/state
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_STATE_HOME="$HOME/.local/state"
+export XDG_DATA_HOME="$HOME/.local/share"
+
 export EDITOR="nvim"
 
 export STARSHIP_CONFIG=$XDG_CONFIG_HOME/starship/starship.toml
@@ -70,9 +73,9 @@ FZF_DEFAULT_OPTS="
 "
 
 # https://github.com/folke/tokyonight.nvim/blob/main/extras/fzf/tokyonight_night.sh
+# --color=bg+:#283457
+# --color=bg:#16161e
 FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS
-  --color=bg+:#283457
-  --color=bg:#16161e
   --color=border:#27a1b9
   --color=fg:#c0caf5
   --color=gutter:#16161e
@@ -161,9 +164,11 @@ source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 eval "$(jenv init -)"
 export PATH="$HOME/.jenv/bin:$PATH"
 export PATH="$HOME/.jenv/plugins:$PATH"
+export JAVA_HOME="$HOME/.jenv/versions/`jenv version-name`"
+alias jenv_set_java_home='export JAVA_HOME="$HOME/.jenv/versions/`jenv version-name`"'
 
 # Maven
-export M2_HOME=/opt/homebrew/Cellar/maven/3.9.3/libexec
+export M2_HOME=/opt/homebrew/Cellar/maven/3.9.9/libexec
 export M2=$M2_HOME/bin
 export PATH=$PATH:$M2_HOME/bin
 

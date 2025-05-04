@@ -5,15 +5,26 @@ return {
     lazy = false,
     opts = {
       bigfile = { enabled = true },
+      dashboard = { enabled = false },
+      explorer = { enabled = false },
       indent = {
         enabled = true,
         only_scope = true,
         only_current = true,
-        scope = { animate = { enabled = false } },
+        animate = { enabled = false },
+        scope = { enabled = true },
       },
       input = { enabled = true },
+      picker = {
+        enabled = true,
+        ui_select = true,
+      },
+      notifier = { enabled = false },
       quickfile = { enabled = true },
       scope = { enabled = true },
+      scroll = { enabled = false },
+      statuscolumn = { enabled = false },
+      words = { enabled = false },
       zen = {
         toggles = {
           dim = false,
@@ -23,17 +34,22 @@ return {
     },
     -- stylua: ignore
     keys = {
-      { "<leader>.", function() Snacks.scratch() end, desc = "Toggle Scratch Buffer", },
-      { "<leader>S", function() Snacks.scratch.select() end, desc = "Select Scratch Buffer", },
-      { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete Buffer", },
-
+      -- Top Pickers & Explorer
+      { "<leader><space>", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
+      { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
+      { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
+      -- GIT
       { "<leader>gBl", function() Snacks.gitbrowse() end, desc = "Git: Browse REPO (at line)" },
       { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
       { "<leader>ll", function() Snacks.lazygit.log_file() end, desc = "Lazygit Current File History" },
       { "<leader>lL", function() Snacks.lazygit.log() end, desc = "Lazygit Log (cwd)" },
 
-      { "<leader>zz",  function() Snacks.zen({ width = 140 }) end, desc = "Toggle Zen Mode" },
-      { "<leader>zZ",  function() Snacks.zen.zoom() end, desc = "Toggle Zoom" },
+      -- Other
+      { "<leader>zz", function() Snacks.zen({ width = 140 }) end, desc = "Toggle Zen Mode" },
+      { "<leader>zZ", function() Snacks.zen.zoom() end, desc = "Toggle Zoom" },
+      { "<leader>.", function() Snacks.scratch() end, desc = "Toggle Scratch Buffer", },
+      { "<leader>S", function() Snacks.scratch.select() end, desc = "Select Scratch Buffer", },
+      { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete Buffer", },
     },
   },
   {
@@ -101,10 +117,34 @@ return {
     "mistweaverco/kulala.nvim",
     lazy = true,
     ft = { "http" },
+    keys = {
+      { "<leader>hr", "<cmd>lua require('kulala').run()<cr>", desc = "HTTP: Run", ft = "http" },
+      -- { "<leader>hA", "<cmd>lua require('kulala').run_all()<cr>", desc = "HTTP: Run ALL", ft = "http" },
+      { "<leader>hh", "<cmd>lua require('kulala').replay()<cr>", desc = "HTTP: Replay", ft = "http" },
+      { "<leader>hi", "<cmd>lua require('kulala').inspect()<cr>", desc = "HTTP: Inspect", ft = "http" },
+      { "<leader>hI", "<cmd>lua require('kulala').show_stats()<cr>", desc = "HTTP: Show Stats", ft = "http" },
+      { "<leader>hS", "<cmd>lua require('kulala').scratchpad()<cr>", desc = "HTTP: Scratchpad", ft = "http" },
+      { "<leader>hc", "<cmd>lua require('kulala').copy()<cr>", desc = "HTTP: Copy as cURL", ft = "http" },
+      { "<leader>hp", "<cmd>lua require('kulala').from_curl()<cr>", desc = "HTTP: Paste from cURL", ft = "http" },
+      { "<leader>ho", "<cmd>lua require('kulala').open()<cr>", desc = "HTTP: Open", ft = "http" },
+      { "<leader>hq", "<cmd>lua require('kulala').close()<cr>", desc = "HTTP: Close", ft = "http" },
+      { "<leader>ht", "<cmd>lua require('kulala').toggle_view()<cr>", desc = "HTTP: Toggle View", ft = "http" },
+      { "<leader>hs", "<cmd>lua require('kulala').search()<cr>", desc = "HTTP: Search", ft = "http" },
+      { "<leader>he", "<cmd>lua require('kulala').set_selected_env()<cr>", desc = "HTTP: Select env", ft = "http" },
+      { "<leader>hC", "<cmd>lua require('kulala').scripts_clear_global()<cr>", desc = "HTTP: Clear global", ft = "http" },
+
+      { "<leader>[h", "<cmd>lua require('kulala').jump_prev()<cr>", desc = "HTTP: Prev", ft = "http" },
+      { "<leader>]h", "<cmd>lua require('kulala').jump_next()<cr>", desc = "HTTP: Next", ft = "http" },
+
+      { "<C-Up>", "<cmd>lua require('kulala').jump_prev()<cr>", desc = "HTTP: Prev", ft = "http" },
+      { "<C-Down>", "<cmd>lua require('kulala').jump_next()<cr>", desc = "HTTP: Next", ft = "http" },
+    },
     opts = {
       default_view = "headers_body",
       default_env = "local",
       environment_scope = "g",
+      global_keymaps = false,
+      kulala_keymaps = true,
     },
   },
   {
@@ -122,35 +162,12 @@ return {
     "folke/persistence.nvim",
     event = "BufReadPre",
     opts = { options = vim.opt.sessionoptions:get() },
+    -- stylua: ignore
     keys = {
-      {
-        "<leader>qs",
-        function()
-          require("persistence").load()
-        end,
-        desc = "Persistence: Restore Session",
-      },
-      {
-        "<leader>qS",
-        function()
-          require("persistence").select()
-        end,
-        desc = "Persistence: Select Session",
-      },
-      {
-        "<leader>ql",
-        function()
-          require("persistence").load({ last = true })
-        end,
-        desc = "Persistence: Restore Last Session",
-      },
-      {
-        "<leader>qd",
-        function()
-          require("persistence").stop()
-        end,
-        desc = "Persistence: Don't Save Current Session",
-      },
+      { "<leader>qs", function() require("persistence").select() end, desc = "Persistence: Select Session" },
+      { "<leader>qS", function() require("persistence").load() end, desc = "Persistence: Restore Session" },
+      { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Persistence: Restore Last Session" },
+      { "<leader>qd", function() require("persistence").stop() end, desc = "Persistence: Don't Save Current Session" },
     },
   },
   {

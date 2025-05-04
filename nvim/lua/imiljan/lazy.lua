@@ -7,7 +7,10 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
   spec = "imiljan.plugins", -- Plugin Spec https://lazy.folke.io/spec
-  install = { colorscheme = { "tokyonight-night", "habamax" }, missing = true },
+  install = {
+    colorscheme = { "tokyonight-night", "habamax" },
+    missing = true,
+  },
   ui = {
     border = "rounded",
   },
