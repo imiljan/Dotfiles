@@ -16,9 +16,10 @@ end
 
 function M.go_to_source_definition()
   -- https://github.com/typescript-language-server/typescript-language-server?tab=readme-ov-file#go-to-source-definition
+  local params = vim.lsp.util.make_position_params(0, "utf-8")
   local command_params = {
     command = "_typescript.goToSourceDefinition",
-    arguments = { vim.api.nvim_buf_get_name(0), vim.lsp.util.make_position_params(0, "utf-8").position },
+    arguments = { params.textDocument.uri, params.position },
   }
   local resp = vim.lsp.buf_request_sync(0, ms.workspace_executeCommand, command_params)
 
@@ -43,7 +44,7 @@ function M.go_to_source_definition()
     vim.lsp.util.show_document(result[1], "utf-8", { reuse_win = true, focus = true })
   else
     vim.print(err)
-    vim.notify(err.message, vim.log.levels.ERROR)
+    vim.notify(err.error.message, vim.log.levels.ERROR)
   end
 end
 

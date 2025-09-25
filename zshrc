@@ -4,8 +4,8 @@ ZSH_THEME=""
 
 plugins=(
   git
-  docker
-  jira
+  # docker
+  # jira
   vi-mode
 
   zsh-autosuggestions
@@ -21,6 +21,7 @@ HIST_STAMPS="yyyy-mm-dd"
 source $HOME/.profile
 source $ZSH/oh-my-zsh.sh
 source $HOME/.alias
+source $HOME/Dotfiles/secrets
 
 source <(fzf --zsh)
 eval "$(starship init zsh)"

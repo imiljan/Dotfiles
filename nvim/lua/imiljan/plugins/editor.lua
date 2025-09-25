@@ -160,14 +160,14 @@ return {
       -- vim.keymap.set("n", "<leader>fb", telescope.extensions.file_browser.file_browser, { desc = "🔭: FileBrowser" })
       vim.keymap.set("n", "<leader>fc", telescope.extensions.neoclip.default, { desc = "🔭: Clipboard" })
 
-      vim.keymap.set("n", "<leader>hg", function()
-        vim.ui.input({ prompt = "HTTP name >" }, function(input)
-          builtin.grep_string({
-            search = "@name " .. input,
-            additional_args = { "--glob=*.http" },
-          })
-        end)
-      end, { noremap = true, silent = true, desc = "HTTP: Grep by name" })
+      -- vim.keymap.set("n", "<leader>hg", function()
+      --   vim.ui.input({ prompt = "HTTP name >" }, function(input)
+      --     builtin.grep_string({
+      --       search = "@name " .. input,
+      --       additional_args = { "--glob=*.http" },
+      --     })
+      --   end)
+      -- end, { noremap = true, silent = true, desc = "HTTP: Grep by name" })
     end,
   },
   {
@@ -276,7 +276,7 @@ return {
         { "<leader>gt", group = "Git Toggle" },
         { "<leader>h", group = "HTTP" },
         { "<leader>l", group = "LSPHints/LocList/LazyGit/Wrap" },
-        { "<leader>o", group = "Outline" },
+        { "<leader>o", group = "Outline/Overseer" },
         { "<leader>q", group = "Quickfix list / Persistence" },
         { "<leader>r", group = "Rename" },
         { "<leader>s", group = "Search" },
@@ -342,14 +342,7 @@ return {
       { "<leader>xs", "<cmd>Trouble symbols toggle win.position=bottom focus=false<cr>", desc = "Trouble: Symbols" },
 
       { "<leader>xl", "<cmd>Trouble loclist toggle<cr>", desc = "Trouble: Location List" },
-      { "<leader>lo", "<cmd>lopen<cr>", desc = "LocationList: open" },
-      { "<leader>lc", "<cmd>lclose<cr>", desc = "LocationList: close" },
-      { "]l", "<cmd>lnext<cr>", desc = "LocationList: next" },
-      { "[l", "<cmd>lprev<cr>", desc = "LocationList: prev" },
-
       { "<leader>xq", "<cmd>Trouble qflist toggle<cr>", desc = "Trouble: Quickfix List" },
-      { "<leader>qo", "<cmd>copen<cr>", desc = "QuickFix: open" },
-      { "<leader>qc", "<cmd>cclose<cr>", desc = "QuickFix: close" },
 
       {
         "<C-Up>",

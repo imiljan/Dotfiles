@@ -2,8 +2,8 @@ return {
   {
     "neovim/nvim-lspconfig",
     dependencies = {
-      "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
+      "mason-org/mason.nvim",
+      "mason-org/mason-lspconfig.nvim",
       "saghen/blink.cmp",
       "nvim-telescope/telescope.nvim",
       {
@@ -18,8 +18,6 @@ return {
       },
     },
     config = function()
-      require("mason").setup()
-
       local ts = require("imiljan.util.typescript")
 
       vim.api.nvim_create_autocmd("LspAttach", {
@@ -126,14 +124,15 @@ return {
 
             -- LSP specific overrides
             if client.name == "ts_ls" then
-              vim.api.nvim_create_autocmd("BufWritePre", {
-                group = vim.api.nvim_create_augroup("imiljan-OrganizeImports", {}),
-                buffer = e.buf,
-                desc = "TypeScript - On Save",
-                callback = function(e2)
-                  ts.organize_imports(e2.buf)
-                end,
-              })
+              -- vim.api.nvim_create_autocmd("BufWritePre", {
+              --   group = vim.api.nvim_create_augroup("imiljan-OrganizeImports", {}),
+              --   buffer = e.buf,
+              --   desc = "TypeScript - On Save",
+              --   callback = function(e2)
+              --     -- vim.print("Organizing imports for " .. e2.file .. " buffer")
+              --     ts.organize_imports(e2.buf)
+              --   end,
+              -- })
 
               vim.keymap.set("n", "gs", ts.go_to_source_definition, { buffer = e.buf, desc = "LSP TS: Go To Source Definition" })
               vim.keymap.set("n", "<leader>rf", ts.rename_file, { buffer = e.buf, desc = "LSP TS: Rename File" })
@@ -454,30 +453,23 @@ return {
         }
       end
 
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      -- capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
-      capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities())
-
+      require("mason").setup()
       require("mason-lspconfig").setup({
-        automatic_installation = true,
         ensure_installed = vim.tbl_keys(servers or {}),
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-
-            server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-            server.inlay_hints = { enabled = true }
-            server.codelens = { enabled = false }
-
-            require("lspconfig")[server_name].setup(server)
-            -- vim.lsp.enable(server_name)
-          end,
-        },
+        automatic_enable = false,
       })
 
-      require("lspconfig")["kulala_ls"].setup({ capabilities = capabilities })
-      -- vim.lsp.config("kulala_ls", { capabilities = capabilities })
-      -- vim.lsp.enable("kulala_ls")
+      local capabilities = vim.lsp.protocol.make_client_capabilities()
+      capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities())
+
+      for server, config in pairs(servers) do
+        config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
+        config.inlay_hints = { enabled = true }
+        -- config.codelens = { enabled = false }
+
+        vim.lsp.config(server, config)
+        vim.lsp.enable(server)
+      end
     end,
   },
   {
@@ -614,120 +606,9 @@ return {
     end,
   },
   {
-    "github/copilot.vim",
-    config = function()
-      vim.keymap.set("i", "<C-\\>", 'copilot#Accept("\\<CR>")', {
-        expr = true,
-        replace_keycodes = false,
-      })
-      vim.g.copilot_no_tab_map = true
-    end,
-  },
-  -- {
-  --   "hrsh7th/nvim-cmp",
-  --   event = { "InsertEnter", "CmdlineEnter" },
-  --   dependencies = {
-  --     "hrsh7th/cmp-nvim-lsp",
-  --     "hrsh7th/cmp-buffer",
-  --     "hrsh7th/cmp-path",
-  --     "hrsh7th/cmp-cmdline",
-  --     "onsails/lspkind.nvim",
-  --     {
-  --       "garymjr/nvim-snippets",
-  --       dependencies = { "rafamadriz/friendly-snippets" },
-  --       opts = { friendly_snippets = true },
-  --       keys = {
-  --         {
-  --           "<Tab>",
-  --           function()
-  --             return vim.snippet.active({ direction = 1 }) and "<cmd>lua vim.snippet.jump(1)<cr>" or "<Tab>"
-  --           end,
-  --           expr = true,
-  --           silent = true,
-  --           mode = { "i", "s" },
-  --         },
-  --         {
-  --           "<S-Tab>",
-  --           function()
-  --             return vim.snippet.active({ direction = -1 }) and "<cmd>lua vim.snippet.jump(-1)<cr>" or "<S-Tab>"
-  --           end,
-  --           expr = true,
-  --           silent = true,
-  --           mode = { "i", "s" },
-  --         },
-  --       },
-  --     },
-  --   },
-  --   config = function()
-  --     local cmp = require("cmp")
-  --     local defaults = require("cmp.config.default")()
-  --     local lspkind = require("lspkind")
-  --
-  --     cmp.setup({
-  --       snippet = {
-  --         expand = function(args)
-  --           vim.snippet.expand(args.body)
-  --         end,
-  --       },
-  --       preselect = cmp.PreselectMode.None,
-  --       completion = { completeopt = "menu,menuone,noselect,popup" },
-  --       window = {
-  --         completion = cmp.config.window.bordered(),
-  --         documentation = cmp.config.window.bordered(),
-  --       },
-  --       mapping = cmp.mapping.preset.insert({
-  --         ["<C-u>"] = cmp.mapping.scroll_docs(-4),
-  --         ["<C-d>"] = cmp.mapping.scroll_docs(4),
-  --         ["<C-Space>"] = cmp.mapping.complete(),
-  --         ["<C-e>"] = cmp.mapping.abort(),
-  --         ["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
-  --         ["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
-  --         ["<C-y>"] = cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Insert }),
-  --         ["<CR>"] = cmp.mapping.confirm({ select = false, behavior = cmp.ConfirmBehavior.Insert }),
-  --         ["<S-CR>"] = cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Replace }),
-  --       }),
-  --       sources = cmp.config.sources({
-  --         { name = "nvim_lsp" },
-  --         { name = "snippets" },
-  --         { name = "path" },
-  --         { name = "lazydev", group_index = 0 },
-  --       }, {
-  --         { name = "buffer" },
-  --       }),
-  --       formatting = {
-  --         expandable_indicator = true,
-  --         fields = { "abbr", "menu", "kind" },
-  --         format = lspkind.cmp_format({
-  --           mode = "symbol_text",
-  --           maxwidth = 50,
-  --           ellipsis_char = "...",
-  --           show_labelDetails = true,
-  --         }),
-  --       },
-  --       sorting = defaults.sorting,
-  --     })
-  --
-  --     cmp.setup.cmdline({ "/", "?" }, {
-  --       mapping = cmp.mapping.preset.cmdline(),
-  --       sources = {
-  --         { name = "buffer", max_item_count = 30 },
-  --       },
-  --     })
-  --
-  --     cmp.setup.cmdline(":", {
-  --       mapping = cmp.mapping.preset.cmdline(),
-  --       sources = cmp.config.sources({
-  --         { name = "path", max_item_count = 30 },
-  --       }, {
-  --         { name = "cmdline", max_item_count = 30 },
-  --       }),
-  --       matching = { disallow_symbol_nonprefix_matching = false },
-  --     })
-  --   end,
-  -- },
-  {
     "saghen/blink.cmp",
     event = { "InsertEnter", "CmdlineEnter" },
+    version = "1.*",
     -- dependencies = { "rafamadriz/friendly-snippets" },
     opts = {
       keymap = {
@@ -760,7 +641,7 @@ return {
       cmdline = {
         keymap = {
           ["<Tab>"] = { "accept" },
-          ["<CR>"] = { "accept_and_enter", "fallback" },
+          -- ["<CR>"] = { "accept_and_enter", "fallback" },
         },
         completion = {
           menu = {
@@ -784,7 +665,13 @@ return {
         menu = {
           border = "single",
           auto_show = true,
-          draw = { treesitter = { "lsp" } },
+          draw = {
+            columns = {
+              { "label", "label_description", gap = 1 },
+              { "kind_icon", "kind", "source_name" },
+            },
+            treesitter = { "lsp" },
+          },
         },
         documentation = {
           auto_show = true,
@@ -811,7 +698,8 @@ return {
       },
 
       sources = {
-        default = { "lazydev", "lsp", "path", "snippets", "buffer" },
+        default = { "lazydev", "snippets", "lsp", "path", "buffer" },
+        -- default = { "lazydev", "lsp", "path", "snippets", "buffer" },
         providers = {
           lazydev = {
             name = "LazyDev",
@@ -834,7 +722,7 @@ return {
   {
     "zapling/mason-conform.nvim",
     dependencies = {
-      "williamboman/mason.nvim",
+      "mason-org/mason.nvim",
       {
         "stevearc/conform.nvim",
         event = { "BufWritePre" },
@@ -891,7 +779,7 @@ return {
   {
     "rshkarin/mason-nvim-lint",
     dependencies = {
-      "williamboman/mason.nvim",
+      "mason-org/mason.nvim",
       {
         "mfussenegger/nvim-lint",
         event = { "BufReadPre", "BufNewFile" },

@@ -1,6 +1,6 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
-add_newline = false
+# https://starship.rs/config/#prompt
 
 format = """
 [░▒▓](#a3aed2)\
@@ -25,6 +25,10 @@ $time\
 right_format = """
 $gcloud\
 """
+
+command_timeout = 3000
+
+add_newline = false
 
 [directory]
 truncation_length = 5

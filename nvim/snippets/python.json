@@ -284,5 +284,5 @@
       "\t${7:pass}"
     ],
     "description": "try/except/else/finally blocks"
-  },
+  }
 }

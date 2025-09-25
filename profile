@@ -161,26 +161,25 @@ source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
 source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 
 # Java - JEnv
-eval "$(jenv init -)"
-export PATH="$HOME/.jenv/bin:$PATH"
-export PATH="$HOME/.jenv/plugins:$PATH"
-export JAVA_HOME="$HOME/.jenv/versions/`jenv version-name`"
-alias jenv_set_java_home='export JAVA_HOME="$HOME/.jenv/versions/`jenv version-name`"'
+# eval "$(jenv init -)"
+# export PATH="$HOME/.jenv/bin:$PATH"
+# export PATH="$HOME/.jenv/plugins:$PATH"
+# export JAVA_HOME="$HOME/.jenv/versions/`jenv version-name`"
 
 # Maven
-export M2_HOME=/opt/homebrew/Cellar/maven/3.9.9/libexec
-export M2=$M2_HOME/bin
-export PATH=$PATH:$M2_HOME/bin
+# export M2_HOME=/opt/homebrew/Cellar/maven/3.9.9/libexec
+# export M2=$M2_HOME/bin
+# export PATH=$PATH:$M2_HOME/bin
 
 # Android
-export ANDROID_HOME=$HOME/Library/Android/sdk
-export PATH=$PATH:$ANDROID_HOME/emulator
-export PATH=$PATH:$ANDROID_HOME/tools
-export PATH=$PATH:$ANDROID_HOME/tools/bin
-export PATH=$PATH:$ANDROID_HOME/platform-tools
+# export ANDROID_HOME=$HOME/Library/Android/sdk
+# export PATH=$PATH:$ANDROID_HOME/emulator
+# export PATH=$PATH:$ANDROID_HOME/tools
+# export PATH=$PATH:$ANDROID_HOME/tools/bin
+# export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 # Android studio
-export CAPACITOR_ANDROID_STUDIO_PATH=~/Applications/Android\ Studio.app
+# export CAPACITOR_ANDROID_STUDIO_PATH=~/Applications/Android\ Studio.app
 
 # Python
 PYTHON_BIN_PATH="$(python3 -m site --user-base)/bin"
@@ -195,8 +194,8 @@ eval "$(pyenv init -)"
 eval "$(_PIPENV_COMPLETE=zsh_source pipenv)"
 
 # Ruby
-eval "$(rbenv init - zsh)"
-export PATH="$HOME/.rbenv/bin:$PATH"
+# eval "$(rbenv init - zsh)"
+# export PATH="$HOME/.rbenv/bin:$PATH"
 
 # Ngrok
 # if command -v ngrok &>/dev/null; then

@@ -1,4 +1,4 @@
-vim.keymap.set("n", "<leader>n", vim.cmd.Ex, { desc = "Netrw" })
+-- vim.keymap.set("n", "<leader>n", vim.cmd.Ex, { desc = "Netrw" })
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Remove highlight" })
 vim.keymap.set("n", "Q", "<nop>", { desc = "Disable EX mode on Q" })
 vim.keymap.set("n", "<F1>", "<nop>", { desc = "Disable Help" })
@@ -38,3 +38,17 @@ vim.keymap.set({ "n", "v" }, "<leader>dd", [["_d]], { desc = "Delete to void" })
 vim.keymap.set("n", "<leader>lw", "<cmd>set wrap!<CR>", { desc = "Toggle wrap" })
 
 vim.keymap.set("n", "<leader>rr", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace current word" })
+
+-- Tabs
+vim.keymap.set("n", "<leader>tt", "<cmd>tabnew<cr>", { desc = "TAB: open new" })
+vim.keymap.set("n", "<leader>tq", "<cmd>tabclose<cr>", { desc = "TAB: close current" })
+vim.keymap.set("n", "<leader>tn", "<cmd>tabn<cr>", { desc = "TAB: go to next" })
+vim.keymap.set("n", "<leader>tp", "<cmd>tabp<cr>", { desc = "TAB: go to prev" })
+
+-- Loclist
+vim.keymap.set("n", "]l", "<cmd>lnext<cr>", { desc = "LocationList: next" })
+vim.keymap.set("n", "[l", "<cmd>lprev<cr>", { desc = "LocationList: prev" })
+
+-- Quickfix
+vim.keymap.set("n", "<leader>qo", "<cmd>copen<cr>", { desc = "QuickFix: open" })
+vim.keymap.set("n", "<leader>qc", "<cmd>cclose<cr>", { desc = "QuickFix: close" })

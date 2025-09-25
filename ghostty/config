@@ -1,9 +1,12 @@
 theme = tokyonight
 
 background = #000000
+background-opacity = 0.85
+background-blur = 20
 
-font-family = CaskaydiaCove Nerd Font
-font-size = 16
+# font-family = CaskaydiaCove Nerd Font
+font-family = JetBrains Mono Nerd Font
+font-size = 18
 font-feature = -calt
 
 window-padding-x = 3

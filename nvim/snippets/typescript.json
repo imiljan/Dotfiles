@@ -241,5 +241,54 @@
       "}"
     ],
     "description": "Async Function Expression"
+  },
+  "describe": {
+    "prefix": "describe",
+    "body": [
+      "describe('$1', () => {",
+      "  $2",
+      "})"
+    ]
+  },
+  "before": {
+    "prefix": "before",
+    "body": [
+      "before('$1', () => {",
+      "  $2",
+      "})"
+    ]
+  },
+  "after": {
+    "prefix": "after",
+    "body": [
+      "after('$1', () => {",
+      "  $2",
+      "})"
+    ]
+  },
+  "afterEach": {
+    "prefix": "afterEach",
+    "body": [
+      "afterEach(() => {",
+      "  $1",
+      "})"
+    ]
+  },
+  "beforeEach": {
+    "prefix": "beforeEach",
+    "body": [
+      "beforeEach(() => {",
+      "  $1",
+      "})"
+    ]
+  },
+  "it": {
+    "prefix": "it",
+    "body": [
+      "it('$1', ${2:async} () => {",
+      "  $3",
+      "})"
+    ],
+    "description": "Mocha `it`"
   }
 }

@@ -54,11 +54,6 @@ return {
       },
     },
     keys = {
-      { "<leader>tt", "<cmd>tabnew<cr>", desc = "TAB: open new" },
-      { "<leader>tq", "<cmd>tabclose<cr>", desc = "TAB: close current" },
-      { "<leader>tn", "<cmd>tabn<cr>", desc = "TAB: go to next" },
-      { "<leader>tp", "<cmd>tabp<cr>", desc = "TAB: go to prev" },
-
       { "[t", "<cmd>BufferLineCyclePrev<cr>", desc = "BufLine: Prev" },
       { "]t", "<cmd>BufferLineCycleNext<cr>", desc = "BufLine: Next" },
       { "[T", "<cmd>BufferLineMovePrev<cr>", desc = "BufLine: Move prev" },

@@ -27,6 +27,7 @@ return {
       "nvim-treesitter/nvim-treesitter",
 
       -- "nvim-neotest/neotest-plenary",
+      -- "adrigzr/neotest-mocha",
       "nvim-neotest/neotest-python",
       -- "nvim-neotest/neotest-vim-test",
     },
@@ -34,6 +35,9 @@ return {
       require("neotest").setup({
         adapters = {
           -- require("neotest-plenary"),
+          -- require("neotest-mocha")({
+          --   command = "npx mocha -r ts-node/register --",
+          -- }),
           require("neotest-python"),
           --NOTE: https://github.com/nvim-neotest/neotest-vim-test?tab=readme-ov-file#issues
           -- require("neotest-vim-test")({ ignore_file_types = { "python", "vim", "lua" } }),

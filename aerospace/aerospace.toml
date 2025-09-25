@@ -109,17 +109,9 @@ alt-shift-l = ['join-with right', 'mode main']
 if.app-id = 'com.tinyspeck.slackmacgap'
 run = "move-node-to-workspace 1"
 
-[[on-window-detected]]
-if.app-id = 'com.microsoft.Outlook'
-run = "move-node-to-workspace 1"
-
 # [[on-window-detected]]
 # if.app-id = 'com.google.Chrome'
 # run = "move-node-to-workspace 2"
-
-[[on-window-detected]]
-if.app-id = 'org.alacritty'
-run = "move-node-to-workspace 3"
 
 [[on-window-detected]]
 if.app-id = 'com.mitchellh.ghostty'
@@ -129,18 +121,14 @@ run = "move-node-to-workspace 3"
 # if.app-id = 'com.google.Chrome'
 # run = "move-node-to-workspace 4"
 
-[[on-window-detected]]
-if.app-id = 'com.microsoft.teams2'
-run = "move-node-to-workspace 5"
-
-[[on-window-detected]]
-if.app-id = 'us.zoom.xos'
-run = "move-node-to-workspace 5"
+# [[on-window-detected]]
+# if.app-id = 'notion.id'
+# run = "move-node-to-workspace 5"
 
 [[on-window-detected]]
 if.app-id = 'net.whatsapp.WhatsApp'
 run = "move-node-to-workspace 9"
 
-[[on-window-detected]]
-if.app-id = 'com.mongodb.compass'
-run = "move-node-to-workspace 10"
+# [[on-window-detected]]
+# if.app-id = 'com.mongodb.compass'
+# run = "move-node-to-workspace 10"
