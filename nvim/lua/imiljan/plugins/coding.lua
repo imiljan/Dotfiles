@@ -4,8 +4,6 @@ return {
     dependencies = {
       "mason-org/mason.nvim",
       "mason-org/mason-lspconfig.nvim",
-      "saghen/blink.cmp",
-      "nvim-telescope/telescope.nvim",
       {
         "folke/lazydev.nvim",
         ft = "lua",
@@ -18,25 +16,71 @@ return {
       },
     },
     config = function()
+      require("mason").setup()
+      require("mason-lspconfig").setup({
+        ensure_installed = {
+          -- "angularls",
+          "bashls",
+          "cssls",
+          "docker_compose_language_service",
+          "eslint",
+          "html",
+          "jsonls",
+          "lua_ls",
+          "pyright",
+          "sqlls",
+          "terraformls",
+          "ts_ls",
+          -- "tsgo",
+          "yamlls",
+        },
+        -- automatic_enable = false,
+      })
+
+      -- vim.lsp.enable({
+      --   -- "angularls",
+      --   "bashls",
+      --   "cssls",
+      --   "docker_compose_language_service",
+      --   "eslint",
+      --   "html",
+      --   "jsonls",
+      --   "lua_ls",
+      --   "pyright",
+      --   "sqlls",
+      --   "terraformls",
+      --   "ts_ls",
+      --   -- "tsgo",
+      --   "yamlls",
+      -- })
+
+      local builtin = require("telescope.builtin")
+      local tca = require("tiny-code-action")
       local ts = require("imiljan.util.typescript")
 
       vim.api.nvim_create_autocmd("LspAttach", {
         group = vim.api.nvim_create_augroup("imiljan-LspAttach", { clear = true }),
         callback = function(e)
-          local builtin = require("telescope.builtin")
+          --     -- https://github.com/ibhagwan/fzf-lua?tab=readme-ov-file#lspdiagnostics
+          --     vim.keymap.set("n", "gr", "<cmd>FzfLua lsp_references<cr>", { buffer = e.buf, desc = "LSP: References" })
+          --     vim.keymap.set("n", "gd", "<cmd>FzfLua lsp_definitions<cr>", { buffer = e.buf, desc = "LSP: Definitions" })
+          --     vim.keymap.set("n", "gD", "<cmd>FzfLua lsp_declarations<cr>", { buffer = e.buf, desc = "LSP: Declaration" })
+          --     vim.keymap.set("n", "gT", "<cmd>FzfLua lsp_typedefs<cr>", { buffer = e.buf, desc = "LSP: Type Definition" })
+          --     vim.keymap.set("n", "gI", "<cmd>FzfLua lsp_implementations<cr>", { buffer = e.buf, desc = "LSP: Implementations" })
+          --     vim.keymap.set("n", "gO", "<cmd>FzfLua lsp_document_symbols<cr>", { buffer = e.buf, desc = "LSP: Document Symbols" })
+          --
+          --     vim.keymap.set("n", "<leader>ss", "<cmd>FzfLua lsp_workspace_symbols<cr>", { buffer = e.buf, desc = "LSP: Document Symbols" })
+          --     vim.keymap.set("n", "<leader>sS", "<cmd>FzfLua lsp_live_workspace_symbols<cr>", { buffer = e.buf, desc = "LSP: Live Workspace Symbols" })
+          --
+          --     vim.keymap.set("n", "<leader>fd", "<cmd>FzfLua diagnostics_document<cr>", { buffer = e.buf, desc = "Diagnostic: Find in Document" })
+          --     vim.keymap.set("n", "<leader>fD", "<cmd>FzfLua diagnostics_workspace<cr>", { buffer = e.buf, desc = "Diagnostic: Find in Workspace" })
 
+          vim.keymap.set("n", "gr", builtin.lsp_references, { buffer = e.buf, desc = "LSP: References" })
           vim.keymap.set("n", "gd", builtin.lsp_definitions, { buffer = e.buf, desc = "LSP: Definitions" })
           vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = e.buf, desc = "LSP: Declaration" })
-          vim.keymap.set("n", "gr", builtin.lsp_references, { buffer = e.buf, desc = "LSP: References" })
           vim.keymap.set("n", "gI", builtin.lsp_implementations, { buffer = e.buf, desc = "LSP: Implementations" })
           vim.keymap.set("n", "gT", builtin.lsp_type_definitions, { buffer = e.buf, desc = "LSP: Type Definition" })
           vim.keymap.set("n", "gO", builtin.lsp_document_symbols, { buffer = e.buf, desc = "LSP: Document Symbols" })
-
-          vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = e.buf, desc = "LSP: Documentation" })
-          vim.keymap.set("n", "gK", vim.lsp.buf.signature_help, { buffer = e.buf, desc = "LSP: Signature Help" })
-          vim.keymap.set("i", "<C-S>", vim.lsp.buf.signature_help, { buffer = e.buf, desc = "LSP: Signature Help" })
-          vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { buffer = e.buf, desc = "LSP: Rename Symbol" })
-          vim.keymap.set({ "n", "x" }, "<leader>ca", vim.lsp.buf.code_action, { buffer = e.buf, desc = "LSP: Code Action" })
 
           vim.keymap.set("n", "<leader>ss", builtin.lsp_dynamic_workspace_symbols, { buffer = e.buf, desc = "LSP: Dynamic Workspace Symbols" })
           vim.keymap.set("n", "<leader>sS", function()
@@ -45,8 +89,22 @@ return {
             end)
           end, { buffer = e.buf, desc = "LSP: Workspace Symbols with input" })
 
+          vim.keymap.set("n", "<leader>fd", function()
+            builtin.diagnostics({ bufnr = 0 })
+          end, { buffer = e.buf, desc = "Diagnostic: Find in Document" })
+          vim.keymap.set("n", "<leader>fD", builtin.diagnostics, { buffer = e.buf, desc = "Diagnostic: Find in Workspace" })
+
+          vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = e.buf, desc = "LSP: Documentation" })
+          vim.keymap.set("n", "gK", vim.lsp.buf.signature_help, { buffer = e.buf, desc = "LSP: Signature Help" })
+          vim.keymap.set("i", "<C-S>", vim.lsp.buf.signature_help, { buffer = e.buf, desc = "LSP: Signature Help" })
+          vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { buffer = e.buf, desc = "LSP: Rename Symbol" })
+          -- vim.keymap.set({ "n", "x" }, "<leader>ca", vim.lsp.buf.code_action, { buffer = e.buf, desc = "LSP: Code Action" })
+          vim.keymap.set({ "n", "x" }, "<leader>ca", function()
+            tca.code_action({})
+          end, { noremap = true, silent = true })
+
           vim.keymap.set("n", "<leader>cx", function()
-            vim.lsp.buf.code_action({
+            tca.code_action({
               apply = true,
               context = {
                 only = { "source" },
@@ -55,10 +113,12 @@ return {
             })
           end, { desc = "LSP: Source Action" })
 
-          -- Diagnostics
+          vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { buffer = e.buf, desc = "Diagnostic: Messages" })
+          vim.keymap.set("n", "<leader>E", vim.diagnostic.setqflist, { buffer = e.buf, desc = "Diagnostic: QuickFix" })
+
           vim.diagnostic.config({
             underline = true,
-            -- virtual_text = true,
+            virtual_lines = false,
             virtual_text = { current_line = true },
             signs = {
               text = {
@@ -68,26 +128,19 @@ return {
                 [vim.diagnostic.severity.HINT] = "",
               },
             },
-            -- float = {
-            --   header = "",
-            --   source = "if_many",
-            --   prefix = "",
-            --   border = "rounded",
-            -- },
+            float = {
+              severity_sort = true,
+              header = "",
+              source = "if_many",
+              prefix = "",
+              border = "rounded",
+            },
             update_in_insert = false,
             severity_sort = false,
             jump = {
               float = false,
             },
           })
-
-          vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { buffer = e.buf, desc = "Diagnostic: Messages" })
-          vim.keymap.set("n", "<leader>E", vim.diagnostic.setqflist, { buffer = e.buf, desc = "Diagnostic: QuickFix" })
-
-          vim.keymap.set("n", "<leader>fd", function()
-            builtin.diagnostics({ bufnr = 0 })
-          end, { buffer = e.buf, desc = "Diagnostic: Find in Document" })
-          vim.keymap.set("n", "<leader>fD", builtin.diagnostics, { buffer = e.buf, desc = "Diagnostic: Find in Workspace" })
 
           -- For list of capabilities
           -- :lua vim.print(vim.lsp.get_active_clients()[1].server_capabilities)
@@ -140,344 +193,11 @@ return {
           end -- end if client
         end,
       })
-
-      -- :help lspconfig-setup
-      local servers = {
-        -- Full example of all settings from lspconfig-setup. In any case, always check LSP docs
-        lua_ls = {
-          -- root_dir = function(filename, bufnr) end,
-          -- name = "",
-          -- filetypes = {},
-          -- autostart = true,
-          -- single_file_support = nil,
-          -- on_new_config = function(new_config, new_root_dir) end,
-          -- capabilities = {},
-          -- cmd = {},
-          -- handlers = {},
-          -- init_options = {
-          --   -- https://neovim.io/doc/user/lsp.html#vim.lsp.ClientConfig
-          --   -- {init_options} (table) Values to pass in the initialization request as initializationOptions.
-          --   -- See initialize in the LSP spec.
-          -- },
-          -- on_attach = {},
-          settings = { -- https://luals.github.io/wiki/settings/
-            -- {settings} (table) Map with language server specific settings.
-            -- These are returned to the language server if requested via workspace/configuration.
-            -- Keys are case-sensitive.
-            --
-            -- In most cases, you only want to change/check settings...
-            Lua = {
-              -- addonManager = {},
-              completion = { callSnippet = "Replace" },
-              -- diagnostics = { disable = { "missing-fields" } },
-              doc = {
-                privateName = { "^_" },
-              },
-              -- format = {},
-              hint = {
-                arrayIndex = "Disable",
-                enable = true,
-                paramName = "Disable",
-                paramType = true,
-                semicolon = "Disable",
-                setType = false,
-              },
-              -- hover = {},
-              -- misc = {},
-              -- runtime = {},
-              -- semantic = {},
-              -- spell = {},
-              -- telemetry = {},
-              -- type = {},
-              -- window = {},
-              workspace = { checkThirdParty = false },
-            },
-          },
-        },
-
-        ts_ls = {
-          -- https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md#configuration
-          init_options = { -- https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md#initializationoptions
-            -- hostInfo = "",
-            -- completionDisableFilterText = false,
-            -- disableAutomaticTypingAcquisition = false,
-            maxTsServerMemory = 4096, -- default undefined
-            -- npmLocation = "",
-            -- locale = "",
-            -- plugins = {}, -- https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md#plugins-option
-            -- tsserver = {}, -- https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md#tsserver-options
-            preferences = { -- https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md#preferences-options
-              -- DEFAULT PREFERENCES https://github.com/typescript-language-server/typescript-language-server/blob/b224b878652438bcdd639137a6b1d1a6630129e4/src/features/fileConfigurationManager.ts#L25
-
-              -- autoImportFileExcludePatterns = [],
-              -- disableSuggestions = false,
-              -- quotePreference = "auto",
-              -- includeCompletionsForModuleExports = true,
-              -- includeCompletionsForImportStatements = true,
-              -- includeCompletionsWithSnippetText = true,
-              -- includeCompletionsWithInsertText = true,
-              -- includeAutomaticOptionalChainCompletions = true,
-              -- includeCompletionsWithClassMemberSnippets = true,
-              -- includeCompletionsWithObjectLiteralMethodSnippets = true,
-              -- useLabelDetailsInCompletionEntries = true,
-              -- allowIncompleteCompletions = true,
-              -- importModuleSpecifierPreference = "shortest",
-              -- importModuleSpecifierEnding = "auto",
-              -- allowTextChangesInNewFiles = true,
-              -- lazyConfiguredProjectsFromExternalProject = false,
-              -- organizeImportsIgnoreCase = "auto",
-              -- organizeImportsCollation = "ordinal",
-              -- organizeImportsCollationLocale = "en",
-              -- organizeImportsNumericCollation = false,
-              -- organizeImportsAccentCollation = true,
-              -- organizeImportsCaseFirst = false,
-              -- providePrefixAndSuffixTextForRename = true,
-              -- provideRefactorNotApplicableReason = true,
-              -- allowRenameOfImportPath = true,
-              -- includePackageJsonAutoImports = "auto",
-              -- interactiveInlayHints = true,
-              -- jsxAttributeCompletionStyle = "auto",
-              -- displayPartsForJSDoc = true,
-              -- excludeLibrarySymbolsInNavTo = true,
-              -- generateReturnInDocTemplate = true,
-              includeInlayParameterNameHints = "all",
-              includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-              includeInlayFunctionParameterTypeHints = true,
-              includeInlayVariableTypeHints = true,
-              includeInlayVariableTypeHintsWhenTypeMatchesName = true,
-              includeInlayPropertyDeclarationTypeHints = true,
-              includeInlayFunctionLikeReturnTypeHints = true,
-              includeInlayEnumMemberValueHints = true,
-            },
-          },
-          settings = {
-            -- https://github.com/typescript-language-server/typescript-language-server/blob/master/docs/configuration.md#workspacedidchangeconfiguration
-            typescript = {
-              -- Formatting preferences
-              format = {
-                baseIndentSize = 2,
-                convertTabsToSpaces = true,
-                indentSize = 2,
-                indentStyle = "None",
-                insertSpaceAfterCommaDelimiter = true,
-                insertSpaceAfterConstructor = false,
-                insertSpaceAfterFunctionKeywordForAnonymousFunctions = true,
-                insertSpaceAfterKeywordsInControlFlowStatements = true,
-                insertSpaceAfterOpeningAndBeforeClosingEmptyBraces = false,
-                insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces = false,
-                insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces = true,
-                insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets = false,
-                insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis = false,
-                insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces = false,
-                insertSpaceAfterSemicolonInForStatements = true,
-                insertSpaceAfterTypeAssertion = false,
-                insertSpaceBeforeAndAfterBinaryOperators = true,
-                insertSpaceBeforeFunctionParenthesis = false,
-                -- newLineCharacter = '',
-                placeOpenBraceOnNewLineForControlBlocks = false,
-                placeOpenBraceOnNewLineForFunctions = false,
-                semicolons = "ignore",
-                tabSize = 2,
-                trimTrailingWhitespace = true,
-              },
-              -- -- Inlay Hints preferences
-              -- inlayHints = {
-              --   includeInlayEnumMemberValueHints = true,
-              --   includeInlayFunctionLikeReturnTypeHints = true,
-              --   includeInlayFunctionParameterTypeHints = true,
-              --   includeInlayParameterNameHints = "none", -- 'none' | 'literals' | 'all';
-              --   includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-              --   includeInlayPropertyDeclarationTypeHints = true,
-              --   includeInlayVariableTypeHints = true,
-              --   includeInlayVariableTypeHintsWhenTypeMatchesName = true,
-              -- },
-              -- -- Code Lens preferences
-              -- implementationsCodeLens = {
-              --   enabled = true,
-              -- },
-              -- referencesCodeLens = {
-              --   enabled = true,
-              --   showOnAllFunctions = true,
-              -- },
-            },
-            javascript = {
-              -- Formatting preferences
-              format = {
-                baseIndentSize = 2,
-                convertTabsToSpaces = true,
-                indentSize = 2,
-                indentStyle = "None",
-                insertSpaceAfterCommaDelimiter = true,
-                insertSpaceAfterConstructor = false,
-                insertSpaceAfterFunctionKeywordForAnonymousFunctions = true,
-                insertSpaceAfterKeywordsInControlFlowStatements = true,
-                insertSpaceAfterOpeningAndBeforeClosingEmptyBraces = false,
-                insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces = false,
-                insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces = true,
-                insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets = false,
-                insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis = false,
-                insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces = false,
-                insertSpaceAfterSemicolonInForStatements = true,
-                insertSpaceAfterTypeAssertion = false,
-                insertSpaceBeforeAndAfterBinaryOperators = true,
-                insertSpaceBeforeFunctionParenthesis = false,
-                -- newLineCharacter = '',
-                placeOpenBraceOnNewLineForControlBlocks = false,
-                placeOpenBraceOnNewLineForFunctions = false,
-                semicolons = "ignore",
-                tabSize = 2,
-                trimTrailingWhitespace = true,
-              },
-              -- -- Inlay Hints preferences
-              -- inlayHints = {
-              --   includeInlayEnumMemberValueHints = true,
-              --   includeInlayFunctionLikeReturnTypeHints = true,
-              --   includeInlayFunctionParameterTypeHints = true,
-              --   includeInlayParameterNameHints = "none", -- 'none' | 'literals' | 'all';
-              --   includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-              --   includeInlayPropertyDeclarationTypeHints = true,
-              --   includeInlayVariableTypeHints = true,
-              --   includeInlayVariableTypeHintsWhenTypeMatchesName = true,
-              -- },
-              -- -- Code Lens preferences
-              -- implementationsCodeLens = {
-              --   enabled = true,
-              -- },
-              -- referencesCodeLens = {
-              --   enabled = true,
-              --   showOnAllFunctions = true,
-              -- },
-            },
-            completions = {
-              completeFunctionCalls = true,
-            },
-            -- diagnostics = {
-            --   ignoredCodes = {},
-            -- },
-            -- implicitProjectConfiguration = {
-            --   checkJs = true,
-            --   experimentalDecorators = "ESNext",
-            --   module = true,
-            --   strictFunctionTypes = true,
-            --   strictNullChecks = true,
-            --   target = "ES2020",
-            -- },
-          },
-          -- from https://neovim.io/doc/user/lsp.html#vim.lsp.ClientConfig
-          -- {commands} (table<string,fun(command: lsp.Command, ctx: table)>)
-          commands = {
-            OrganizeImports = { ts.organize_imports, description = "Organize Imports" },
-            RenameFile = { ts.rename_file, description = "Rename File" },
-            GoToSourceDefinition = { ts.go_to_source_definition, description = "Go To Source Definition" },
-          },
-        },
-
-        -- angularls = {
-        --   root_dir = require("lspconfig.util").root_pattern("nx.json", "angular.json", "project.json"),
-        -- },
-
-        pyright = {
-          -- settings = {
-          --   pyright = { -- https://microsoft.github.io/pyright/#/settings?id=pyright-settings
-          --     disableLanguageServices = false,
-          --     disableOrganizeImports = false,
-          --     disableTaggedHints = false,
-          --     -- ...
-          --   },
-          -- },
-        },
-
-        -- -- vscode-langservers-extracted
-        -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#cssls
-        cssls = {
-          init_options = { provideFormatter = false },
-        },
-        -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#eslint
-        eslint = {
-          -- https://github.com/microsoft/vscode-eslint/blob/55871979d7af184bf09af491b6ea35ebd56822cf/server/src/eslintServer.ts#L216-L229
-          -- https://github.com/neovim/nvim-lspconfig/blob/master/lua/lspconfig/configs/eslint.lua#L51
-          settings = {
-            validate = "on",
-            packageManager = nil,
-            codeAction = {
-              disableRuleComment = { enable = true, location = "separateLine" },
-              showDocumentation = { enable = true },
-            },
-            codeActionOnSave = { enable = false, mode = "all" },
-            format = false,
-            quiet = false,
-            onIgnoredFiles = "off",
-            rulesCustomizations = {},
-            run = "onSave",
-            nodePath = nil,
-
-            useESLintClass = false,
-            experimental = { useFlatConfig = false },
-            problems = { shortenToSingleLine = false },
-            workingDirectory = { mode = "location" },
-          },
-        },
-        -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#html
-        html = {
-          filetypes = { "html" },
-          init_options = { provideFormatter = false },
-        },
-        -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#jsonls
-        jsonls = {
-          init_options = { provideFormatter = false },
-        },
-        -- -- vscode-langservers-extracted
-
-        sqlls = {},
-        yamlls = {},
-        bashls = {},
-        terraformls = {},
-        dockerls = {},
-        docker_compose_language_service = {},
-        -- marksman = {},
-      }
-
-      if vim.g.enable_ng == 1 then
-        local angularls_path = require("mason-registry").get_package("angular-language-server"):get_install_path()
-        vim.print(angularls_path)
-
-        servers["ts_ls"]["root_dir"] = require("lspconfig.util").root_pattern("nx.json", "tsconfig.json")
-        servers["ts_ls"]["init_options"]["plugins"] = {
-          {
-            name = "@angular/language-server",
-            location = angularls_path .. "/node_modules/@angular/language-server",
-          },
-        }
-        servers["angularls"] = {
-          root_dir = require("lspconfig.util").root_pattern("nx.json", "angular.json", "project.json"),
-        }
-      end
-
-      require("mason").setup()
-      require("mason-lspconfig").setup({
-        ensure_installed = vim.tbl_keys(servers or {}),
-        automatic_enable = false,
-      })
-
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities())
-
-      for server, config in pairs(servers) do
-        config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
-        config.inlay_hints = { enabled = true }
-        -- config.codelens = { enabled = false }
-
-        vim.lsp.config(server, config)
-        vim.lsp.enable(server)
-      end
     end,
   },
   {
     "nvim-treesitter/nvim-treesitter",
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter-textobjects",
-      -- "nvim-treesitter/nvim-treesitter-context"
-    },
+    dependencies = { "nvim-treesitter/nvim-treesitter-textobjects" },
     build = ":TSUpdate",
     config = function()
       require("nvim-treesitter.configs").setup({
@@ -595,8 +315,6 @@ return {
       vim.keymap.set({ "n", "x", "o" }, "t", ts_repeat_move.builtin_t_expr, { expr = true })
       vim.keymap.set({ "n", "x", "o" }, "T", ts_repeat_move.builtin_T_expr, { expr = true })
 
-      -- require("treesitter-context").setup({ enable = true, max_lines = 3, min_window_height = 3 })
-
       vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
         pattern = { "*.component.html", "*.container.html" },
         callback = function()
@@ -606,10 +324,19 @@ return {
     end,
   },
   {
+    "rachartier/tiny-code-action.nvim",
+    dependencies = { { "nvim-lua/plenary.nvim" }, { "nvim-telescope/telescope.nvim" } },
+    event = "LspAttach",
+    opts = {
+      backend = "delta",
+      -- picker = "fzf-lua",
+      picker = "telescope",
+    },
+  },
+  {
     "saghen/blink.cmp",
     event = { "InsertEnter", "CmdlineEnter" },
     version = "1.*",
-    -- dependencies = { "rafamadriz/friendly-snippets" },
     opts = {
       keymap = {
         preset = "default",
@@ -637,7 +364,6 @@ return {
         -- custom
         ["<CR>"] = { "accept", "fallback" },
       },
-
       cmdline = {
         keymap = {
           ["<Tab>"] = { "accept" },
@@ -649,7 +375,6 @@ return {
           },
         },
       },
-
       completion = {
         accept = {
           auto_brackets = {
@@ -685,18 +410,15 @@ return {
           enabled = false,
         },
       },
-
       signature = {
         enabled = true,
         window = {
           border = "single",
         },
       },
-
       snippets = {
         preset = "default",
       },
-
       sources = {
         default = { "lazydev", "snippets", "lsp", "path", "buffer" },
         -- default = { "lazydev", "lsp", "path", "snippets", "buffer" },
@@ -719,107 +441,107 @@ return {
       },
     },
   },
+  -- {
+  --   "zapling/mason-conform.nvim",
+  --   dependencies = {
+  --     "mason-org/mason.nvim",
   {
-    "zapling/mason-conform.nvim",
-    dependencies = {
-      "mason-org/mason.nvim",
+    "stevearc/conform.nvim",
+    event = { "BufWritePre" },
+    cmd = { "ConformInfo" },
+    keys = {
       {
-        "stevearc/conform.nvim",
-        event = { "BufWritePre" },
-        cmd = { "ConformInfo" },
-        keys = {
-          {
-            "<leader>ff",
-            function()
-              require("conform").format({ async = true, lsp_format = "fallback" })
-            end,
-            mode = "",
-            desc = "Format File",
-          },
-        },
-        opts = {
-          formatters = {
-            kulala = {
-              command = "kulala-fmt",
-              args = { "format", "$FILENAME" },
-              stdin = false,
-            },
-          },
-          formatters_by_ft = {
-            lua = { "stylua" },
-            python = { "isort", "black" },
-            javascript = { "prettierd", "prettier", stop_after_first = true },
-            typescript = { "prettierd", "prettier", stop_after_first = true },
-            html = { "prettierd", "prettier", stop_after_first = true },
-            json = { "jq", "prettierd", "prettier", stop_after_first = true },
-            jsonc = { "prettierd", "prettier", stop_after_first = true },
-            markdown = { "prettierd", "prettier", stop_after_first = true },
-            -- yaml = { "yamlfmt" },
-            sh = { "shfmt" },
-            bash = { "shfmt" },
-            zsh = { "shfmt" },
-            http = { "kulala" },
-
-            ["*"] = { "codespell" },
-            ["_"] = { "trim_whitespace" },
-          },
-          default_format_opts = {
-            lsp_format = "fallback",
-          },
-          format_on_save = {
-            lsp_format = "fallback",
-            timeout_ms = 500,
-          },
-          notify_on_error = false,
-        },
-      },
-    },
-    opts = {},
-  },
-  {
-    "rshkarin/mason-nvim-lint",
-    dependencies = {
-      "mason-org/mason.nvim",
-      {
-        "mfussenegger/nvim-lint",
-        event = { "BufReadPre", "BufNewFile" },
-        config = function()
-          local lint = require("lint")
-
-          lint.linters_by_ft = {
-            -- lua = { "luacheck" },
-            python = { "flake8" },
-
-            -- eslint language server is used instead of this
-            -- javascript = { "eslint_d" },
-            -- typescript = { "eslint_d" },
-            -- javascript = { "eslint" },
-            -- typescript = { "eslint" },
-
-            -- yaml = { "actionlint" },
-            make = { "checkmake" },
-            dockerfile = { "hadolint" },
-            yaml = { "yamllint" },
-            -- markdown = { "markdownlint-cli2" },
-            -- markdown = { "markdownlint" },
-            terraform = { "tflint" },
-            json = { "jsonlint" },
-            text = { "vale" },
-          }
-
-          vim.api.nvim_create_autocmd({ "BufWritePost" }, {
-            -- vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
-            group = vim.api.nvim_create_augroup("imiljan-lint", { clear = true }),
-            callback = function()
-              if vim.opt_local.modifiable:get() then
-                lint.try_lint()
-                lint.try_lint("codespell")
-              end
-            end,
-          })
+        "<leader>ff",
+        function()
+          require("conform").format({ async = true, lsp_format = "fallback" })
         end,
+        mode = "",
+        desc = "Format File",
       },
     },
-    opts = {},
+    opts = {
+      formatters = {
+        kulala = {
+          command = "kulala-fmt",
+          args = { "format", "$FILENAME" },
+          stdin = false,
+        },
+      },
+      formatters_by_ft = {
+        lua = { "stylua" },
+        python = { "isort", "black" },
+        javascript = { "prettier", stop_after_first = true },
+        typescript = { "prettier", stop_after_first = true },
+        html = { "prettierd", "prettier", stop_after_first = true },
+        json = { "jq", "prettierd", "prettier", stop_after_first = true },
+        jsonc = { "prettierd", "prettier", stop_after_first = true },
+        markdown = { "prettierd", "prettier", stop_after_first = true },
+        -- yaml = { "yamlfmt" },
+        sh = { "shfmt" },
+        bash = { "shfmt" },
+        zsh = { "shfmt" },
+        http = { "kulala" },
+
+        ["*"] = { "codespell" },
+        ["_"] = { "trim_whitespace" },
+      },
+      default_format_opts = {
+        lsp_format = "fallback",
+      },
+      format_on_save = {
+        lsp_format = "fallback",
+        timeout_ms = 500,
+      },
+      notify_on_error = false,
+    },
   },
+  --   },
+  --   opts = {},
+  -- },
+  -- {
+  -- "rshkarin/mason-nvim-lint",
+  -- dependencies = {
+  --   "mason-org/mason.nvim",
+  {
+    "mfussenegger/nvim-lint",
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      local lint = require("lint")
+
+      lint.linters_by_ft = {
+        -- lua = { "luacheck" },
+        python = { "flake8" },
+
+        -- eslint language server is used instead of this
+        -- javascript = { "eslint_d" },
+        -- typescript = { "eslint_d" },
+        -- javascript = { "eslint" },
+        -- typescript = { "eslint" },
+
+        -- yaml = { "actionlint" },
+        make = { "checkmake" },
+        dockerfile = { "hadolint" },
+        yaml = { "yamllint" },
+        -- markdown = { "markdownlint-cli2" },
+        -- markdown = { "markdownlint" },
+        terraform = { "tflint" },
+        json = { "jsonlint" },
+        text = { "vale" },
+      }
+
+      vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+        -- vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+        group = vim.api.nvim_create_augroup("imiljan-lint", { clear = true }),
+        callback = function()
+          if vim.opt_local.modifiable:get() then
+            lint.try_lint()
+            lint.try_lint("codespell")
+          end
+        end,
+      })
+    end,
+  },
+  --   },
+  --   opts = {},
+  -- },
 }

@@ -1,0 +1,194 @@
+return {
+  --   {
+  --     "ibhagwan/fzf-lua",
+  --     dependencies = { "nvim-tree/nvim-web-devicons" },
+  --     opts = function(_, opts)
+  --       local fzf = require("fzf-lua")
+  --       local config = fzf.config
+  --       local actions = fzf.actions
+  --
+  --       -- Quickfix
+  --       config.defaults.keymap.fzf["ctrl-q"] = "select-all+accept"
+  --       config.defaults.keymap.fzf["ctrl-u"] = "half-page-up"
+  --       config.defaults.keymap.fzf["ctrl-d"] = "half-page-down"
+  --       config.defaults.keymap.fzf["ctrl-x"] = "jump"
+  --       config.defaults.keymap.fzf["ctrl-f"] = "preview-page-down"
+  --       config.defaults.keymap.fzf["ctrl-b"] = "preview-page-up"
+  --       config.defaults.keymap.builtin["<c-f>"] = "preview-page-down"
+  --       config.defaults.keymap.builtin["<c-b>"] = "preview-page-up"
+  --       -- Trouble
+  --       config.defaults.actions.files["ctrl-t"] = require("trouble.sources.fzf").actions.open
+  --
+  --       return {
+  --         { "border-fused", "hide" },
+  --         winopts = {
+  --           height = 0.95,
+  --           width = 0.9,
+  --           row = 0.5,
+  --           col = 0.5,
+  --           border = "rounded",
+  --           treesitter = {
+  --             enabled = true,
+  --           },
+  --           preview = {
+  --             default = "bat",
+  --             border = "rounded",
+  --             layout = "flex",
+  --           },
+  --         },
+  --         keymap = {},
+  --         actions = {
+  --           true,
+  --         },
+  --         fzf_opts = {
+  --           ["--no-scrollbar"] = true,
+  --         },
+  --         fzf_colors = true,
+  --         hls = {},
+  --         previewers = {},
+  --         -- SPECIFIC COMMAND/PICKER OPTIONS
+  --         files = {
+  --           previewer = "bat",
+  --           git_icons = true,
+  --           hidden = true,
+  --           no_ignore = false,
+  --
+  --           actions = {
+  --             ["alt-i"] = { actions.toggle_ignore },
+  --             ["alt-h"] = { actions.toggle_hidden },
+  --           },
+  --         },
+  --         git = {
+  --           files = {
+  --             cmd = "git ls-files --exclude-standard --cached --others",
+  --           },
+  --         },
+  --         grep = {
+  --           rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=4096 -e ",
+  --           git_icons = true,
+  --           actions = {
+  --             ["alt-i"] = { actions.toggle_ignore },
+  --             ["alt-h"] = { actions.toggle_hidden },
+  --           },
+  --         },
+  --         buffers = {},
+  --         colorschemes = {},
+  --         lsp = {
+  --           code_actions = {
+  --             previewer = vim.fn.executable("delta") == 1 and "codeaction_native" or nil,
+  --           },
+  --         },
+  --       }
+  --     end,
+  --     config = function(_, opts)
+  --       require("fzf-lua").setup(opts)
+  --       -- Use Snacks UI
+  --       -- require("fzf-lua").register_ui_select(function(_, items)
+  --       --   local min_h, max_h = 0.30, 0.70
+  --       --   local h = (#items + 4) / vim.o.lines
+  --       --   if h < min_h then
+  --       --     h = min_h
+  --       --   elseif h > max_h then
+  --       --     h = max_h
+  --       --   end
+  --       --   return { winopts = { height = h, width = 0.60, row = 0.40 } }
+  --       -- end)
+  --     end,
+  --     keys = {
+  --       {
+  --         "<C-p>",
+  --         function()
+  --           local ok = pcall(require("fzf-lua").git_files, { cwd = vim.fn.getcwd(), silent = false, silent_fail = false })
+  --           if not ok then
+  --             require("fzf-lua").files()
+  --           end
+  --         end,
+  --         desc = " : Git/Project Files",
+  --       },
+  --
+  --       -- Buffers and Files
+  --       -- https://github.com/ibhagwan/fzf-lua?tab=readme-ov-file#buffers-and-files
+  --       { "<leader>sb", "<cmd>FzfLua buffers<cr>", desc = " : Buffers" },
+  --       { "<leader>sf", "<cmd>FzfLua files<cr>", desc = " : Find files" },
+  --       { "<leader>s.", "<cmd>FzfLua oldfiles<cr>", desc = " : Old files" },
+  --       {
+  --         "<leader>/",
+  --         function()
+  --           local opts = {
+  --             winopts = {
+  --               height = 0.6,
+  --               width = 0.5,
+  --               preview = { vertical = "up:70%" },
+  --               -- Disable Treesitter highlighting for the matches.
+  --               treesitter = {
+  --                 enabled = false,
+  --                 fzf_colors = { ["fg"] = { "fg", "CursorLine" }, ["bg"] = { "bg", "Normal" } },
+  --               },
+  --             },
+  --             fzf_opts = {
+  --               ["--layout"] = "reverse",
+  --             },
+  --           }
+  --
+  --           -- Use grep when in normal mode and blines in visual mode since the former doesn't support
+  --           -- searching inside visual selections.
+  --           -- See https://github.com/ibhagwan/fzf-lua/issues/2051
+  --           local mode = vim.api.nvim_get_mode().mode
+  --           if vim.startswith(mode, "n") then
+  --             require("fzf-lua").lgrep_curbuf(opts)
+  --           else
+  --             require("fzf-lua").blines(opts)
+  --           end
+  --         end,
+  --         desc = " : Grep in current buffer",
+  --       },
+  --
+  --       -- Search
+  --       -- https://github.com/ibhagwan/fzf-lua?tab=readme-ov-file#search
+  --       { "<leader>sg", "<cmd>FzfLua live_grep<cr>", desc = " : Live grep" },
+  --       { "<leader>sg", "<cmd>FzfLua grep_visual<cr>", desc = " : Live grep", mode = "x" },
+  --       { "<leader>sw", "<cmd>FzfLua grep_cword<cr>", desc = " : Grep word under cursor" },
+  --       { "<leader>sW", "<cmd>FzfLua grep<cr>", desc = " : Grep with input" },
+  --       {
+  --         "<leader>sD",
+  --         function()
+  --           vim.ui.input({ prompt = "Directory > ", default = vim.uv.cwd() }, function(input)
+  --             if not input or input == "" then
+  --               return
+  --             end
+  --             require("fzf-lua").live_grep({ cwd = input })
+  --           end)
+  --         end,
+  --         desc = " : Live Grep in Directory",
+  --       },
+  --
+  --       -- MISC
+  --       -- https://github.com/ibhagwan/fzf-lua?tab=readme-ov-file#misc
+  --       { "<leader>sr", "<cmd>FzfLua resume<cr>", desc = " : Resume" },
+  --       { "<leader>sa", "<cmd>FzfLua builtin<cr>", desc = " : Builtin" },
+  --       { "<leader>sh", "<cmd>FzfLua helptags<cr>", desc = " : Help tags" },
+  --       { "<leader>sC", "<cmd>FzfLua commands<cr>", desc = " : Commands" },
+  --       { "<leader>sc", "<cmd>FzfLua command_history<cr>", desc = " : Command History" },
+  --       { "<leader>sm", "<cmd>FzfLua marks<cr>", desc = " : Marks" },
+  --       { '<leader>s"', "<cmd>FzfLua registers<cr>", desc = " : Registers" },
+  --       { "<leader>sk", "<cmd>FzfLua keymaps<cr>", desc = " : Keymaps" },
+  --       { "<laeder>cS", "<cmd>FzfLua spell_suggest<cr>", desc = " : Spell Suggestions" },
+  --     },
+  --   },
+  -- {
+  --   "AckslD/nvim-neoclip.lua",
+  --   dependencies = { { "ibhagwan/fzf-lua" } },
+  --   config = function()
+  --     require("neoclip").setup()
+  --   end,
+  --   keys = {
+  --     {
+  --       "<leader>fc",
+  --       function()
+  --         require("neoclip.fzf")()
+  --       end,
+  --       desc = "Clipboard: Fzf Neoclip",
+  --     },
+  --   },
+  -- },
+}

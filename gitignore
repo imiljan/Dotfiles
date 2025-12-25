@@ -1,5 +1,13 @@
 .DS_Store
 .env
 .env.docker
+.env.staging
+.env.qa
+.env.test
+.env.prod
+.env.local.example
 out*
 temp*
+cython_constraint.txt
+.ruby-version
+secrets

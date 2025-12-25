@@ -17,6 +17,7 @@ export EDITOR="nvim"
 export STARSHIP_CONFIG=$XDG_CONFIG_HOME/starship/starship.toml
 export EZA_CONFIG_DIR=$XDG_CONFIG_HOME/eza
 
+
 # https://github.com/zsh-users/zsh-autosuggestions?tab=readme-ov-file#key-bindings
 bindkey '^ ' autosuggest-accept
 
@@ -30,12 +31,19 @@ zle -N chooser-widget
 # bindkey "^[OQ" chooser-widget # ^[OQ == F2
 bindkey "^b" chooser-widget
 
+# PNPM
+# after running: corepack enable
+export COREPACK_ENABLE_STRICT=1
+export PNPM_HOME="/Users/imiljan/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+
 # NVM
 export NVM_DIR="$HOME/.nvm"
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
 [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-
-autoload -U add-zsh-hook
 
 load-nvmrc() {
   local node_version="$(nvm version)"
@@ -55,6 +63,7 @@ load-nvmrc() {
   fi
 }
 
+autoload -U add-zsh-hook
 add-zsh-hook chpwd load-nvmrc
 load-nvmrc
 
@@ -182,6 +191,9 @@ source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 # export CAPACITOR_ANDROID_STUDIO_PATH=~/Applications/Android\ Studio.app
 
 # Python
+# Foy Python artifactory - See secrets
+
+# Add user site-packages directory to PATH
 PYTHON_BIN_PATH="$(python3 -m site --user-base)/bin"
 PATH="$PATH:$PYTHON_BIN_PATH"
 

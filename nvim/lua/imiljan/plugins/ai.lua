@@ -1,14 +1,4 @@
 return {
-  -- {
-  --   "github/copilot.vim",
-  --   config = function()
-  --     vim.keymap.set("i", "<C-\\>", 'copilot#Accept("\\<CR>")', {
-  --       expr = true,
-  --       replace_keycodes = false,
-  --     })
-  --     vim.g.copilot_no_tab_map = true
-  --   end,
-  -- },
   {
     "zbirenbaum/copilot.lua",
     event = "InsertEnter",
@@ -20,7 +10,6 @@ return {
         enabled = true,
         auto_trigger = true,
         keymap = {
-          -- accept = "<C-\\>",
           accept = "<Tab>",
           accept_word = false,
           accept_line = false,
@@ -29,12 +18,11 @@ return {
           dismiss = "<C-e>",
         },
       },
-
-      -- server_opts_overrides = {
-      --   settings = {
-      --     telemetry = false,
-      --   },
-      -- },
+      server_opts_overrides = {
+        settings = {
+          telemetry = false,
+        },
+      },
     },
   },
   {

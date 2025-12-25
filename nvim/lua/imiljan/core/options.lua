@@ -1,8 +1,6 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
-vim.g.enable_ng = 0
-
 vim.g.python3_host_prog = "~/.venvs/.nvim-venv/bin/python"
 
 vim.g.loaded_ruby_provider = 0

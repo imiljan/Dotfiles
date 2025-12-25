@@ -31,11 +31,10 @@ gui:
     defaultFgColor:
       - "#c0caf5"
   nerdFontsVersion: "3"
-
 git:
-  paging:
-    colorArg: always
-    pager: diff-so-fancy
+  pagers:
+    - colorArg: always
+      pager: diff-so-fancy
 
 # git:
 #   paging:

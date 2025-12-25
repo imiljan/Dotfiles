@@ -7,6 +7,7 @@ return {
       bigfile = { enabled = true },
       dashboard = { enabled = false },
       explorer = { enabled = false },
+      gh = { enabled = true },
       indent = {
         enabled = true,
         only_scope = true,
@@ -15,10 +16,7 @@ return {
         scope = { enabled = true },
       },
       input = { enabled = true },
-      picker = {
-        enabled = true,
-        ui_select = true,
-      },
+      picker = { enabled = true, ui_select = true },
       notifier = { enabled = false },
       quickfile = { enabled = true },
       scope = { enabled = true },
@@ -32,24 +30,91 @@ return {
         },
       },
     },
-    -- stylua: ignore
     keys = {
       -- Top Pickers & Explorer
-      { "<leader><space>", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
-      { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
-      { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
+      {
+        "<leader><space>",
+        function()
+          Snacks.picker.smart()
+        end,
+        desc = "Smart Find Files",
+      },
+      -- { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
+      -- { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
       -- GIT
-      { "<leader>gBl", function() Snacks.gitbrowse() end, desc = "Git: Browse REPO (at line)" },
-      { "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
-      { "<leader>ll", function() Snacks.lazygit.log_file() end, desc = "Lazygit Current File History" },
-      { "<leader>lL", function() Snacks.lazygit.log() end, desc = "Lazygit Log (cwd)" },
+      {
+        "<leader>gBl",
+        function()
+          Snacks.gitbrowse()
+        end,
+        desc = "Git: Browse REPO (at line)",
+      },
+      {
+        "<leader>lg",
+        function()
+          Snacks.lazygit()
+        end,
+        desc = "Lazygit",
+      },
+      {
+        "<leader>ll",
+        function()
+          Snacks.lazygit.log_file()
+        end,
+        desc = "Lazygit Current File History",
+      },
+      {
+        "<leader>lL",
+        function()
+          Snacks.lazygit.log()
+        end,
+        desc = "Lazygit Log (cwd)",
+      },
+      -- GH
+      {
+        "<leader>gI",
+        function()
+          Snacks.picker.gh_pr()
+        end,
+        desc = "GitHub Pull Requests (open)",
+      },
 
       -- Other
-      { "<leader>zz", function() Snacks.zen({ width = 160 }) end, desc = "Toggle Zen Mode" },
-      { "<leader>zZ", function() Snacks.zen.zoom() end, desc = "Toggle Zoom" },
-      { "<leader>.", function() Snacks.scratch() end, desc = "Toggle Scratch Buffer", },
-      { "<leader>S", function() Snacks.scratch.select() end, desc = "Select Scratch Buffer", },
-      { "<leader>bd", function() Snacks.bufdelete() end, desc = "Delete Buffer", },
+      {
+        "<leader>zz",
+        function()
+          Snacks.zen({ width = 160 })
+        end,
+        desc = "Toggle Zen Mode",
+      },
+      {
+        "<leader>zZ",
+        function()
+          Snacks.zen.zoom()
+        end,
+        desc = "Toggle Zoom",
+      },
+      {
+        "<leader>.",
+        function()
+          Snacks.scratch()
+        end,
+        desc = "Toggle Scratch Buffer",
+      },
+      {
+        "<leader>S",
+        function()
+          Snacks.scratch.select()
+        end,
+        desc = "Select Scratch Buffer",
+      },
+      {
+        "<leader>bd",
+        function()
+          Snacks.bufdelete()
+        end,
+        desc = "Delete Buffer",
+      },
     },
   },
   {
@@ -136,6 +201,9 @@ return {
         end,
       })
 
+      vim.keymap.set("n", "<leader>aA", function()
+        harpoon:list():prepend()
+      end, { desc = "Harpoon: Prepend file" })
       vim.keymap.set("n", "<leader>aa", function()
         harpoon:list():add()
       end, { desc = "Harpoon: Add file" })
@@ -200,6 +268,13 @@ return {
       environment_scope = "g",
       global_keymaps = false,
       kulala_keymaps = true,
+      ui = {
+        win_opts = {
+          wo = {
+            foldmethod = "manual",
+          },
+        },
+      },
     },
   },
   {
@@ -217,12 +292,35 @@ return {
     "folke/persistence.nvim",
     event = "BufReadPre",
     opts = { options = vim.opt.sessionoptions:get() },
-    -- stylua: ignore
     keys = {
-      { "<leader>qs", function() require("persistence").select() end, desc = "Persistence: Select Session" },
-      { "<leader>qS", function() require("persistence").load() end, desc = "Persistence: Restore Session" },
-      { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Persistence: Restore Last Session" },
-      { "<leader>qd", function() require("persistence").stop() end, desc = "Persistence: Don't Save Current Session" },
+      {
+        "<leader>qs",
+        function()
+          require("persistence").select()
+        end,
+        desc = "Persistence: Select Session",
+      },
+      {
+        "<leader>qS",
+        function()
+          require("persistence").load()
+        end,
+        desc = "Persistence: Restore Session",
+      },
+      {
+        "<leader>ql",
+        function()
+          require("persistence").load({ last = true })
+        end,
+        desc = "Persistence: Restore Last Session",
+      },
+      {
+        "<leader>qd",
+        function()
+          require("persistence").stop()
+        end,
+        desc = "Persistence: Don't Save Current Session",
+      },
     },
   },
   {
@@ -252,7 +350,6 @@ return {
   },
   {
     "linux-cultist/venv-selector.nvim",
-    branch = "regexp",
     cmd = "VenvSelect",
     ft = "python",
     opts = {
@@ -265,6 +362,9 @@ return {
         },
       },
     },
-    keys = { { "<leader>vs", "<cmd>:VenvSelect<cr>", desc = "Select VirtualEnv", ft = "python" } },
+    keys = {
+      { "<leader>vs", "<cmd>:VenvSelect<cr>", desc = "Select VirtualEnv", ft = "python" },
+    },
   },
+  { "b0o/SchemaStore.nvim", lazy = true },
 }

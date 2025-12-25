@@ -6,11 +6,6 @@
     format = ssh
 [commit]
     gpgsign = true
-[color]
-    diff = auto
-    status = auto
-    branch = auto
-    ui = true
 [alias]
     d = diff
     dh = diff HEAD
@@ -45,6 +40,11 @@
     tool = nvimdiff
 [interactive]
     diffFilter = diff-so-fancy --patch
+[color]
+    diff = auto
+    status = auto
+    branch = auto
+    ui = true
 [color "diff-highlight"]
     oldNormal = red bold
     oldHighlight = red bold 52

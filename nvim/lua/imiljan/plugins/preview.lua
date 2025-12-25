@@ -42,7 +42,7 @@ return {
   {
     "vinnymeller/swagger-preview.nvim",
     cmd = { "SwaggerPreviewToggle", "SwaggerPreview", "SwaggerPreviewStop" },
-    build = "npm ci",
+    build = "pnpm i",
     config = true,
   },
 }

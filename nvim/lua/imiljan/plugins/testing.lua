@@ -53,17 +53,70 @@ return {
         },
       })
     end,
-    -- stylua: ignore
     keys = {
-      { "<leader>tr", function() require("neotest").run.run() end, desc = "Test: Run Nearest" },
-      { "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Test: Run File" },
-      { "<leader>ta", function() require("neotest").run.run(vim.uv.cwd()) end, desc = "Test: Run All" },
-      { "<leader>tl", function() require("neotest").run.run_last() end, desc = "Test: Run Last" },
-      { "<leader>ts", function() require("neotest").summary.toggle() end, desc = "Test: Toggle Summary" },
-      { "<leader>tO", function() require("neotest").output_panel.toggle() end, desc = "Test: Toggle Output Panel" },
-      { "<leader>tS", function() require("neotest").run.stop() end, desc = "Test: Stop" },
-      { "<leader>td", function() require("neotest").run.run({ strategy = "dap" }) end, desc = "Test: Debug Nearest" },
-      { "<leader>to", function() require("neotest").output.open({ enter = true, auto_close = true }) end, desc = "Test: Show Output" },
+      {
+        "<leader>tr",
+        function()
+          require("neotest").run.run()
+        end,
+        desc = "Test: Run Nearest",
+      },
+      {
+        "<leader>tf",
+        function()
+          require("neotest").run.run(vim.fn.expand("%"))
+        end,
+        desc = "Test: Run File",
+      },
+      {
+        "<leader>ta",
+        function()
+          require("neotest").run.run(vim.uv.cwd())
+        end,
+        desc = "Test: Run All",
+      },
+      {
+        "<leader>tl",
+        function()
+          require("neotest").run.run_last()
+        end,
+        desc = "Test: Run Last",
+      },
+      {
+        "<leader>ts",
+        function()
+          require("neotest").summary.toggle()
+        end,
+        desc = "Test: Toggle Summary",
+      },
+      {
+        "<leader>tO",
+        function()
+          require("neotest").output_panel.toggle()
+        end,
+        desc = "Test: Toggle Output Panel",
+      },
+      {
+        "<leader>tS",
+        function()
+          require("neotest").run.stop()
+        end,
+        desc = "Test: Stop",
+      },
+      {
+        "<leader>td",
+        function()
+          require("neotest").run.run({ strategy = "dap" })
+        end,
+        desc = "Test: Debug Nearest",
+      },
+      {
+        "<leader>to",
+        function()
+          require("neotest").output.open({ enter = true, auto_close = true })
+        end,
+        desc = "Test: Show Output",
+      },
     },
   },
 }
