@@ -82,13 +82,21 @@ return {
         hl_group = "lualine_c_normal",
       })
 
+      local lint_progress = function()
+        local linters = require("lint").get_running()
+        if #linters == 0 then
+          return "󰦕"
+        end
+        return "󱉶 " .. table.concat(linters, ", ")
+      end
+
       require("lualine").setup({
         options = { theme = "auto", globalstatus = true },
         sections = {
           lualine_a = { "mode" },
           lualine_b = { "branch", "diff" },
           lualine_c = { { "filename", path = 1 }, { symbols.get, cond = symbols.has } },
-          lualine_x = { "kulala" },
+          lualine_x = { { "kulala" }, { lint_progress } },
           lualine_y = { "diagnostics" },
           lualine_z = { "location" },
         },

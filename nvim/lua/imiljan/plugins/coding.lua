@@ -28,6 +28,7 @@ return {
           "jsonls",
           "lua_ls",
           "pyright",
+          "ruff",
           "sqlls",
           "terraformls",
           "ts_ls",
@@ -145,52 +146,59 @@ return {
           -- For list of capabilities
           -- :lua vim.print(vim.lsp.get_active_clients()[1].server_capabilities)
           local client = vim.lsp.get_client_by_id(e.data.client_id)
-          if client then
-            if client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
-              vim.keymap.set("n", "<leader>lh", function()
-                vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({}))
-              end, { buffer = e.buf, desc = "LSP: Toggle Inlay Hints" })
-            end -- end inlay_hint
+          if client == nil then
+            return
+          end
 
-            if client.server_capabilities.documentHighlightProvider then
-              local highlight_augroup = vim.api.nvim_create_augroup("imiljan-LspHighlight", { clear = false })
-              vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-                group = highlight_augroup,
-                buffer = e.buf,
-                callback = vim.lsp.buf.document_highlight,
-              })
+          if client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
+            vim.keymap.set("n", "<leader>lh", function()
+              vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({}))
+            end, { buffer = e.buf, desc = "LSP: Toggle Inlay Hints" })
+          end -- end inlay_hint
 
-              vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-                group = highlight_augroup,
-                buffer = e.buf,
-                callback = vim.lsp.buf.clear_references,
-              })
+          if client.server_capabilities.documentHighlightProvider then
+            local highlight_augroup = vim.api.nvim_create_augroup("imiljan-LspHighlight", { clear = false })
+            vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+              group = highlight_augroup,
+              buffer = e.buf,
+              callback = vim.lsp.buf.document_highlight,
+            })
 
-              vim.api.nvim_create_autocmd("LspDetach", {
-                group = vim.api.nvim_create_augroup("imiljan-LspDetach", { clear = true }),
-                callback = function(e2)
-                  vim.lsp.buf.clear_references()
-                  vim.api.nvim_clear_autocmds({ group = "imiljan-LspHighlight", buffer = e2.buf })
-                end,
-              })
-            end -- end documentHighlightProvider
+            vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+              group = highlight_augroup,
+              buffer = e.buf,
+              callback = vim.lsp.buf.clear_references,
+            })
 
-            -- LSP specific overrides
-            if client.name == "ts_ls" then
-              -- vim.api.nvim_create_autocmd("BufWritePre", {
-              --   group = vim.api.nvim_create_augroup("imiljan-OrganizeImports", {}),
-              --   buffer = e.buf,
-              --   desc = "TypeScript - On Save",
-              --   callback = function(e2)
-              --     -- vim.print("Organizing imports for " .. e2.file .. " buffer")
-              --     ts.organize_imports(e2.buf)
-              --   end,
-              -- })
+            vim.api.nvim_create_autocmd("LspDetach", {
+              group = vim.api.nvim_create_augroup("imiljan-LspDetach", { clear = true }),
+              callback = function(e2)
+                vim.lsp.buf.clear_references()
+                vim.api.nvim_clear_autocmds({ group = "imiljan-LspHighlight", buffer = e2.buf })
+              end,
+            })
+          end -- end documentHighlightProvider
 
-              vim.keymap.set("n", "gs", ts.go_to_source_definition, { buffer = e.buf, desc = "LSP TS: Go To Source Definition" })
-              vim.keymap.set("n", "<leader>rf", ts.rename_file, { buffer = e.buf, desc = "LSP TS: Rename File" })
-            end -- end ts_ls
-          end -- end if client
+          -- LSP specific overrides
+          if client.name == "ts_ls" then
+            -- vim.api.nvim_create_autocmd("BufWritePre", {
+            --   group = vim.api.nvim_create_augroup("imiljan-OrganizeImports", {}),
+            --   buffer = e.buf,
+            --   desc = "TypeScript - On Save",
+            --   callback = function(e2)
+            --     -- vim.print("Organizing imports for " .. e2.file .. " buffer")
+            --     ts.organize_imports(e2.buf)
+            --   end,
+            -- })
+
+            vim.keymap.set("n", "gs", ts.go_to_source_definition, { buffer = e.buf, desc = "LSP TS: Go To Source Definition" })
+            vim.keymap.set("n", "<leader>rf", ts.rename_file, { buffer = e.buf, desc = "LSP TS: Rename File" })
+          end -- end ts_ls
+
+          if client.name == "ruff" then
+            -- Disable hover in favor of Pyright
+            client.server_capabilities.hoverProvider = false
+          end -- end ruff
         end,
       })
     end,
@@ -469,7 +477,15 @@ return {
       },
       formatters_by_ft = {
         lua = { "stylua" },
-        python = { "isort", "black" },
+        python = function(bufnr) -- This does not work with mason-conform.nvim
+          if require("conform").get_formatter_info("ruff_format", bufnr).available then
+            -- vim.print("Using ruff_format for python formatting")
+            return { "ruff_format", "isort" }
+          else
+            -- vim.print("Using black for python formatting")
+            return { "isort", "black" }
+          end
+        end,
         javascript = { "prettier", stop_after_first = true },
         typescript = { "prettier", stop_after_first = true },
         html = { "prettierd", "prettier", stop_after_first = true },
@@ -510,7 +526,10 @@ return {
 
       lint.linters_by_ft = {
         -- lua = { "luacheck" },
-        python = { "flake8" },
+        -- python = { "flake8" },
+        python = {
+          "mypy", --[[ "ruff" ]]
+        },
 
         -- eslint language server is used instead of this
         -- javascript = { "eslint_d" },
@@ -530,7 +549,6 @@ return {
       }
 
       vim.api.nvim_create_autocmd({ "BufWritePost" }, {
-        -- vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
         group = vim.api.nvim_create_augroup("imiljan-lint", { clear = true }),
         callback = function()
           if vim.opt_local.modifiable:get() then
