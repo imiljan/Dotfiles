@@ -1,11 +1,11 @@
 return {
   {
     "numToStr/Comment.nvim",
-    config = function()
-      require("Comment").setup()
-      local ft = require("Comment.ft")
-      ft.set("http", { "#%s", "#%s" })
-    end,
+    -- config = function()
+    --   require("Comment").setup()
+    --   local ft = require("Comment.ft")
+    --   ft.set("http", { "#%s", "#%s" })
+    -- end,
   },
   { "echasnovski/mini.surround", opts = { n_lines = 100 } },
   {
@@ -148,77 +148,6 @@ return {
 
       vim.keymap.set("n", "<leader>fe", builtin.symbols, { desc = "🔭: Emojis" })
       vim.keymap.set("n", "<leader>fc", telescope.extensions.neoclip.default, { desc = "🔭: Clipboard" })
-    end,
-  },
-  {
-    "nvim-neo-tree/neo-tree.nvim",
-    lazy = true,
-    cmd = "Neotree",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-tree/nvim-web-devicons",
-      "MunifTanjim/nui.nvim",
-    },
-    opts = {
-      close_if_last_window = true,
-      source_selector = { winbar = true, statusline = true },
-      filesystem = {
-        filtered_items = {
-          visible = true,
-          hide_dotfiles = false,
-          hide_gitignored = false,
-          hide_by_name = { "node_modules", ".git", ".husky", ".idea", ".vscode" },
-          hide_by_pattern = {},
-          always_show = {},
-          always_show_by_pattern = {},
-          never_show = { ".DS_Store" },
-          never_show_by_pattern = {},
-        },
-        follow_current_file = {
-          enabled = true,
-        },
-        hijack_netrw_behavior = "disabled",
-      },
-      window = {
-        mappings = {
-          ["Y"] = require("imiljan.util.neo-tree").copy_path,
-        },
-      },
-    },
-    config = function(_, opts)
-      require("neo-tree").setup(opts)
-      local events = require("neo-tree.events")
-
-      local function on_move(data)
-        Snacks.rename.on_rename_file(data.source, data.destination)
-      end
-
-      opts.event_handlers = opts.event_handlers or {}
-      vim.list_extend(opts.event_handlers, {
-        { event = events.FILE_MOVED, handler = on_move },
-        { event = events.FILE_RENAMED, handler = on_move },
-      })
-
-      vim.api.nvim_create_autocmd("TermClose", {
-        pattern = "*lazygit",
-        callback = function()
-          if package.loaded["neo-tree.sources.git_status"] then
-            require("neo-tree.sources.git_status").refresh()
-          end
-        end,
-      })
-    end,
-    keys = {
-      {
-        "<C-n>",
-        function()
-          require("neo-tree.command").execute({ toggle = true })
-        end,
-        desc = "NeoTree: Toggle",
-      },
-    },
-    deactivate = function()
-      vim.cmd([[Neotree close]])
     end,
   },
   {

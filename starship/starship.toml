@@ -83,7 +83,18 @@ time_format = "%T"                                      # https://docs.rs/chrono
 style = "bg:#1d2230"
 disabled = false
 
+# [aws]
+# format ='on [$symbol($profile )(\($region\) )]($style)'
+# symbol = "󰸏 "
+# region_aliases = {}
+# profile_aliases = {}
+# # style = ""
+# expiration_symbol = "X"
+# disabled = false
+# force_display = true
+
 [gcloud]
 format = '[ $symbol $project(\($region\))]($style)'
 # format = '[[ $symbol $account(@$domain)(\($region\))](fg:#769ff0 bg:#212736)]($style)'
 symbol = "󱇶"
+project_aliases = { "expense-robot-staging" = "staging", "expense-robot-qa" = "qa", "expense-robot-test" = "test", "expense-robot-prod" = "prod" }

@@ -41,6 +41,8 @@ function M.go_to_source_definition()
   end
 
   if result ~= nil then
+    -- vim.print("result not nil")
+    -- vim.print(reslt)
     vim.lsp.util.show_document(result[1], "utf-8", { reuse_win = true, focus = true })
   else
     vim.print(err)

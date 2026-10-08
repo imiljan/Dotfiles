@@ -37,12 +37,13 @@ return {
             },
           },
           windows = {
-            height = 18,
+            size = 0.3,
             position = "below",
             terminal = {
+              size = 0.5,
               position = "left",
+              -- List of debug adapters for which the terminal should be ALWAYS hidden
               hide = {},
-              start_hidden = false,
             },
           },
           icons = {

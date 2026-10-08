@@ -17,10 +17,15 @@ export EDITOR="nvim"
 export STARSHIP_CONFIG=$XDG_CONFIG_HOME/starship/starship.toml
 export EZA_CONFIG_DIR=$XDG_CONFIG_HOME/eza
 
+# Starship needs an active profile; allow commands and profile switchers to override this default.
+# export AWS_PROFILE="${AWS_PROFILE:-tooling}"
 
 # https://github.com/zsh-users/zsh-autosuggestions?tab=readme-ov-file#key-bindings
 bindkey '^ ' autosuggest-accept
+# Expands history expressions like !! or !$ when you press space
+bindkey ' ' magic-space
 
+# Custom Widgets
 session-widget() { tmux-sessionizer }
 zle -N session-widget
 # bindkey "^[OP" session-widget # ^[OP == F1
@@ -42,30 +47,72 @@ esac
 
 # NVM
 export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+# [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+# [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
+# Smart NVM loading hook
+# Checks if an .nvmrc file exists in the current directory or parent directories
 load-nvmrc() {
-  local node_version="$(nvm version)"
   local nvmrc_path="$(nvm_find_nvmrc)"
 
   if [ -n "$nvmrc_path" ]; then
     local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+    local node_version="$(nvm version)"
 
     if [ "$nvmrc_node_version" = "N/A" ]; then
       nvm install
     elif [ "$nvmrc_node_version" != "$node_version" ]; then
       nvm use
     fi
-  elif [ "$node_version" != "$(nvm version default)" ]; then
+  elif [ "$(nvm version)" != "$(nvm version default)" ]; then
     echo "Reverting to nvm default version"
     nvm use default
   fi
 }
 
+# Lazy load NVM
+# This function replaces itself with the real nvm command upon first use,
+# or if we enter a directory with .nvmrc
+_load_nvm() {
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+}
+
+# Define nvm command to lazy load
+nvm() {
+  unset -f nvm node npm npx yarn pnpm
+  _load_nvm
+  nvm "$@"
+}
+
+# Define other node commands to lazy load nvm first
+for cmd in node npm npx yarn pnpm; do
+  eval "${cmd}() { unset -f nvm node npm npx yarn pnpm; _load_nvm; ${cmd} \"\$@\"; }"
+done
+
+# Check for .nvmrc on directory change, but strictly ONLY if .nvmrc exists
+# to avoid loading nvm unnecessarily
 autoload -U add-zsh-hook
-add-zsh-hook chpwd load-nvmrc
-load-nvmrc
+_check_nvmrc() {
+  if [ -f ".nvmrc" ]; then
+    if ! command -v nvm_find_nvmrc &> /dev/null; then
+      unset -f nvm node npm npx yarn pnpm
+      _load_nvm
+    fi
+    load-nvmrc
+  fi
+}
+add-zsh-hook chpwd _check_nvmrc
+# Run check on startup too
+_check_nvmrc
+
+# pnpm
+export PNPM_HOME="/Users/imiljan/.local/share/pnpm"
+case ":$PATH:" in
+*":$PNPM_HOME/bin:"*) ;;
+*) export PATH="$PNPM_HOME/bin:$PATH" ;;
+esac
+# pnpm end
 
 # Bat
 export BAT_THEME=tokyonight_night
@@ -82,9 +129,9 @@ FZF_DEFAULT_OPTS="
 "
 
 # https://github.com/folke/tokyonight.nvim/blob/main/extras/fzf/tokyonight_night.sh
-# --color=bg+:#283457
-# --color=bg:#16161e
 FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS
+  --color=bg+:#283457
+  --color=bg:#16161e
   --color=border:#27a1b9
   --color=fg:#c0caf5
   --color=gutter:#16161e
@@ -166,8 +213,20 @@ export GPG_TTY=$(tty)
 export FORMAT="ID\t{{.ID}}\nNAME\t{{.Names}}\nIMAGE\t{{.Image}}\nPORTS\t{{.Ports}}\nCOMMAND\t{{.Command}}\nCREATED\t{{.CreatedAt}}\nSTATUS\t{{.Status}}\n"
 
 # GCloud - Add gcloud completion
-source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
-source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+# source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+# source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+
+# Lazy load GCloud
+gcloud() {
+  if [ -f "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc" ]; then
+    source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+    source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+    unset -f gcloud
+    gcloud "$@"
+  else
+    echo "Google Cloud SDK not found"
+  fi
+}
 
 # Java - JEnv
 # eval "$(jenv init -)"
@@ -214,4 +273,21 @@ eval "$(_PIPENV_COMPLETE=zsh_source pipenv)"
 #   eval "$(ngrok completion)"
 # fi
 
+# snowflake
+export SNOWFLAKE_USER="miljan.ignjatovic@perk.com"
+export SNOWFLAKE_ACCOUNT="bg29839.eu-west-1"
 
+# opencode
+export PATH=/Users/imiljan/.opencode/bin:$PATH
+if command -v opencode >/dev/null 2>&1; then
+  source <(opencode --completions zsh)
+fi
+
+#1Password
+# eval "$(op completion zsh)"
+# compdef _op op
+# source /Users/imiljan/.config/op/plugins.sh
+
+export HOMEBREW_NO_UPGRADE_AUTO_UPDATES_CASKS=1
+
+# vim: ft=sh
