@@ -32,9 +32,9 @@ gui:
       - "#c0caf5"
   nerdFontsVersion: "3"
 git:
-  pagers:
+  diffRenderers:
     - colorArg: always
-      pager: diff-so-fancy
+      command: diff-so-fancy
 
 # git:
 #   paging:

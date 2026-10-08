@@ -1,5 +1,3 @@
-FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
-
 if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
@@ -17,10 +15,15 @@ export EDITOR="nvim"
 export STARSHIP_CONFIG=$XDG_CONFIG_HOME/starship/starship.toml
 export EZA_CONFIG_DIR=$XDG_CONFIG_HOME/eza
 
+# Starship needs an active profile; allow commands and profile switchers to override this default.
+# export AWS_PROFILE="${AWS_PROFILE:-tooling}"
 
 # https://github.com/zsh-users/zsh-autosuggestions?tab=readme-ov-file#key-bindings
 bindkey '^ ' autosuggest-accept
+# Expands history expressions like !! or !$ when you press space
+bindkey ' ' magic-space
 
+# Custom Widgets
 session-widget() { tmux-sessionizer }
 zle -N session-widget
 # bindkey "^[OP" session-widget # ^[OP == F1
@@ -34,38 +37,11 @@ bindkey "^b" chooser-widget
 # PNPM
 # after running: corepack enable
 export COREPACK_ENABLE_STRICT=1
-export PNPM_HOME="/Users/imiljan/.local/share/pnpm"
+export PNPM_HOME="$HOME/.local/share/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
-
-# NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-
-load-nvmrc() {
-  local node_version="$(nvm version)"
-  local nvmrc_path="$(nvm_find_nvmrc)"
-
-  if [ -n "$nvmrc_path" ]; then
-    local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
-
-    if [ "$nvmrc_node_version" = "N/A" ]; then
-      nvm install
-    elif [ "$nvmrc_node_version" != "$node_version" ]; then
-      nvm use
-    fi
-  elif [ "$node_version" != "$(nvm version default)" ]; then
-    echo "Reverting to nvm default version"
-    nvm use default
-  fi
-}
-
-autoload -U add-zsh-hook
-add-zsh-hook chpwd load-nvmrc
-load-nvmrc
 
 # Bat
 export BAT_THEME=tokyonight_night
@@ -82,9 +58,9 @@ FZF_DEFAULT_OPTS="
 "
 
 # https://github.com/folke/tokyonight.nvim/blob/main/extras/fzf/tokyonight_night.sh
-# --color=bg+:#283457
-# --color=bg:#16161e
 FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS
+  --color=bg+:#283457
+  --color=bg:#16161e
   --color=border:#27a1b9
   --color=fg:#c0caf5
   --color=gutter:#16161e
@@ -166,19 +142,20 @@ export GPG_TTY=$(tty)
 export FORMAT="ID\t{{.ID}}\nNAME\t{{.Names}}\nIMAGE\t{{.Image}}\nPORTS\t{{.Ports}}\nCOMMAND\t{{.Command}}\nCREATED\t{{.CreatedAt}}\nSTATUS\t{{.Status}}\n"
 
 # GCloud - Add gcloud completion
-source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
-source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+# source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+# source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 
-# Java - JEnv
-# eval "$(jenv init -)"
-# export PATH="$HOME/.jenv/bin:$PATH"
-# export PATH="$HOME/.jenv/plugins:$PATH"
-# export JAVA_HOME="$HOME/.jenv/versions/`jenv version-name`"
-
-# Maven
-# export M2_HOME=/opt/homebrew/Cellar/maven/3.9.9/libexec
-# export M2=$M2_HOME/bin
-# export PATH=$PATH:$M2_HOME/bin
+# Lazy load GCloud
+gcloud() {
+  if [ -f "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc" ]; then
+    source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+    source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+    unset -f gcloud
+    gcloud "$@"
+  else
+    echo "Google Cloud SDK not found"
+  fi
+}
 
 # Android
 # export ANDROID_HOME=$HOME/Library/Android/sdk
@@ -193,25 +170,21 @@ source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 # Python
 # Foy Python artifactory - See secrets
 
-# Add user site-packages directory to PATH
-PYTHON_BIN_PATH="$(python3 -m site --user-base)/bin"
-PATH="$PATH:$PYTHON_BIN_PATH"
-
-#  PyEnv
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-
-# Pipenv completion
-eval "$(_PIPENV_COMPLETE=zsh_source pipenv)"
-
-# Ruby
-# eval "$(rbenv init - zsh)"
-# export PATH="$HOME/.rbenv/bin:$PATH"
-
 # Ngrok
 # if command -v ngrok &>/dev/null; then
 #   eval "$(ngrok completion)"
 # fi
 
+# opencode
+# Completion is a generated file, not sourced at startup. Regenerate after upgrading opencode:
+#   opencode --completions zsh > ~/.oh-my-zsh/custom/completions/_opencode
+export PATH="$HOME/.opencode/bin:$PATH"
 
+#1Password
+# eval "$(op completion zsh)"
+# compdef _op op
+# source /Users/imiljan/.config/op/plugins.sh
+
+export HOMEBREW_NO_UPGRADE_AUTO_UPDATES_CASKS=1
+
+# vim: ft=sh

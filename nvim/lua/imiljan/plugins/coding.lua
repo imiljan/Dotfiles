@@ -12,14 +12,21 @@ return {
       },
       {
         "j-hui/fidget.nvim",
-        opts = { notification = { window = { winblend = 0 } } },
+        opts = {
+          notification = {
+            override_vim_notify = false, -- Automatically override vim.notify() with Fidget
+            window = {
+              winblend = 0,
+            },
+          },
+        },
       },
     },
     config = function()
       require("mason").setup()
       require("mason-lspconfig").setup({
         ensure_installed = {
-          -- "angularls",
+          "angularls",
           "bashls",
           "cssls",
           "docker_compose_language_service",
@@ -35,25 +42,25 @@ return {
           -- "tsgo",
           "yamlls",
         },
-        -- automatic_enable = false,
+        automatic_enable = false,
       })
 
-      -- vim.lsp.enable({
-      --   -- "angularls",
-      --   "bashls",
-      --   "cssls",
-      --   "docker_compose_language_service",
-      --   "eslint",
-      --   "html",
-      --   "jsonls",
-      --   "lua_ls",
-      --   "pyright",
-      --   "sqlls",
-      --   "terraformls",
-      --   "ts_ls",
-      --   -- "tsgo",
-      --   "yamlls",
-      -- })
+      vim.lsp.enable({
+        -- "angularls",
+        "bashls",
+        "cssls",
+        "docker_compose_language_service",
+        "eslint",
+        "html",
+        "jsonls",
+        "lua_ls",
+        "pyright",
+        "sqlls",
+        "terraformls",
+        "ts_ls",
+        -- "tsgo",
+        "yamlls",
+      })
 
       local builtin = require("telescope.builtin")
       local tca = require("tiny-code-action")
@@ -205,11 +212,11 @@ return {
   },
   {
     "nvim-treesitter/nvim-treesitter",
-    dependencies = { "nvim-treesitter/nvim-treesitter-textobjects" },
+    dependencies = { "nvim-treesitter/nvim-treesitter-textobjects", branch = "main" },
+    branch = "main",
     build = ":TSUpdate",
     config = function()
-      require("nvim-treesitter.configs").setup({
-        modules = {},
+      require("nvim-treesitter").setup({
         ensure_installed = {
           "angular",
           "bash",
@@ -231,12 +238,6 @@ return {
           "xml",
           "yaml",
         },
-        sync_install = false,
-        auto_install = true,
-        ignore_install = {},
-        -- :h nvim-treesitter-modules
-        indent = { enable = true },
-        highlight = { enable = true },
         incremental_selection = {
           enable = true,
           keymaps = {
@@ -311,24 +312,26 @@ return {
         },
       })
 
-      local ts_repeat_move = require("nvim-treesitter.textobjects.repeatable_move")
-
-      -- Repeat movement with ; and ,
-      vim.keymap.set({ "n", "x", "o" }, ";", ts_repeat_move.repeat_last_move)
-      vim.keymap.set({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_opposite)
-
-      -- Optionally, make builtin f, F, t, T also repeatable with ; and ,
-      vim.keymap.set({ "n", "x", "o" }, "f", ts_repeat_move.builtin_f_expr, { expr = true })
-      vim.keymap.set({ "n", "x", "o" }, "F", ts_repeat_move.builtin_F_expr, { expr = true })
-      vim.keymap.set({ "n", "x", "o" }, "t", ts_repeat_move.builtin_t_expr, { expr = true })
-      vim.keymap.set({ "n", "x", "o" }, "T", ts_repeat_move.builtin_T_expr, { expr = true })
-
-      vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
-        pattern = { "*.component.html", "*.container.html" },
-        callback = function()
-          vim.treesitter.start(nil, "angular")
-        end,
-      })
+      -- TODO: Review repeatable_move configuration later
+      -- local ok, ts_repeat_move = pcall(require, "nvim-treesitter.textobjects.repeatable_move")
+      -- if ok then
+      --   -- Repeat movement with ; and ,
+      --   vim.keymap.set({ "n", "x", "o" }, ";", ts_repeat_move.repeat_last_move)
+      --   vim.keymap.set({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_opposite)
+      -- end
+      --
+      -- -- Optionally, make builtin f, F, t, T also repeatable with ; and ,
+      -- vim.keymap.set({ "n", "x", "o" }, "f", ts_repeat_move.builtin_f_expr, { expr = true })
+      -- vim.keymap.set({ "n", "x", "o" }, "F", ts_repeat_move.builtin_F_expr, { expr = true })
+      -- vim.keymap.set({ "n", "x", "o" }, "t", ts_repeat_move.builtin_t_expr, { expr = true })
+      -- vim.keymap.set({ "n", "x", "o" }, "T", ts_repeat_move.builtin_T_expr, { expr = true })
+      --
+      -- vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
+      --   pattern = { "*.component.html", "*.container.html" },
+      --   callback = function()
+      --     vim.treesitter.start(nil, "angular")
+      --   end,
+      -- })
     end,
   },
   {
@@ -480,7 +483,8 @@ return {
         python = function(bufnr) -- This does not work with mason-conform.nvim
           if require("conform").get_formatter_info("ruff_format", bufnr).available then
             -- vim.print("Using ruff_format for python formatting")
-            return { "ruff_format", "isort" }
+            -- return { "ruff_format", "isort" }
+            return { "ruff_format" }
           else
             -- vim.print("Using black for python formatting")
             return { "isort", "black" }
@@ -528,7 +532,8 @@ return {
         -- lua = { "luacheck" },
         -- python = { "flake8" },
         python = {
-          "mypy", --[[ "ruff" ]]
+          "mypy",
+          -- "ruff",
         },
 
         -- eslint language server is used instead of this

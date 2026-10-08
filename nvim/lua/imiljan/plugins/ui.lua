@@ -7,22 +7,24 @@ return {
       require("tokyonight").setup({
         style = "night", -- night, storm, day, moon
         light_style = "day",
-        transparent = true,
+        transparent = false,
         terminal_colors = true,
         styles = {
           -- comments = { italic = false },
           -- keywords = { italic = false },
           -- sidebars = "dark",
           -- floats = "dark",
-          comments = { italic = true },
-          keywords = { italic = true },
-          sidebars = "transparent",
-          floats = "transparent",
+          --
+          -- comments = { italic = true },
+          -- keywords = { italic = true },
+          -- sidebars = "transparent",
+          -- floats = "transparent",
         },
         sidebars = { "terminal", "help", "neo-tree" },
         day_brightness = 0.3,
         dim_inactive = true,
-        lualine_bold = false,
+        -- lualine_bold = false,
+        lualine_bold = true,
         on_colors = function() end,
         on_highlights = function() end,
         cache = true,
@@ -90,13 +92,22 @@ return {
         return "󱉶 " .. table.concat(linters, ", ")
       end
 
+      local kulala_env = function()
+        local ft = vim.bo.filetype
+        if ft ~= "http" and ft ~= "rest" then
+          return ""
+        end
+
+        return vim.g.kulala_selected_env or "local"
+      end
+
       require("lualine").setup({
         options = { theme = "auto", globalstatus = true },
         sections = {
           lualine_a = { "mode" },
           lualine_b = { "branch", "diff" },
           lualine_c = { { "filename", path = 1 }, { symbols.get, cond = symbols.has } },
-          lualine_x = { { "kulala" }, { lint_progress } },
+          lualine_x = { { kulala_env }, { lint_progress } },
           lualine_y = { "diagnostics" },
           lualine_z = { "location" },
         },

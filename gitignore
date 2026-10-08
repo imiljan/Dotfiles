@@ -11,3 +11,6 @@ temp*
 cython_constraint.txt
 .ruby-version
 secrets
+.opencode
+
+**/.claude/settings.local.json

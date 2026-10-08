@@ -6,20 +6,71 @@ return {
     opts = {
       bigfile = { enabled = true },
       dashboard = { enabled = false },
-      explorer = { enabled = false },
+      -- Explorer configs
+      -- https://github.com/folke/snacks.nvim/blob/main/lua/snacks/picker/config/sources.lua#L50
+      explorer = { enabled = true },
       gh = { enabled = true },
       indent = {
         enabled = true,
         only_scope = true,
         only_current = true,
         animate = { enabled = false },
-        scope = { enabled = true },
+        filter = function(buf, win)
+          return vim.bo[buf].buftype == "" and vim.bo[buf].filetype ~= "markdown" and vim.b[buf].snacks_indent ~= false and vim.g.snacks_indent ~= false
+        end,
+        scope = {
+          enabled = true,
+          filter = function(buf)
+            return vim.bo[buf].buftype == "" and vim.bo[buf].filetype ~= "markdown" and vim.b[buf].snacks_scope ~= false and vim.g.snacks_scope ~= false
+          end,
+        },
       },
       input = { enabled = true },
-      picker = { enabled = true, ui_select = true },
+      picker = {
+        enabled = true,
+        ui_select = true,
+        sources = {
+          explorer = {
+            hidden = true,
+            ignored = true,
+            win = {
+              input = {
+                keys = {
+                  -- Close on c-n, not on esc
+                  -- https://github.com/folke/snacks.nvim/discussions/1312
+                  ["<Esc>"] = "",
+                  ["<c-n>"] = { "cancel", mode = { "i", "n" } },
+                },
+              },
+              list = {
+                keys = {
+                  ["<Esc>"] = "",
+                  ["<c-n>"] = "cancel",
+                  ["Y"] = "copy_path",
+                },
+              },
+            },
+            actions = {
+              copy_path = function(_, item)
+                -- Copy to system clipbloard
+                -- https://github.com/folke/snacks.nvim/discussions/1372
+                require("imiljan.util.neo-tree").copy_path_snacks(_, item)
+              end,
+            },
+          },
+        },
+      },
       notifier = { enabled = false },
-      quickfile = { enabled = true },
-      scope = { enabled = true },
+      quickfile = {
+        enabled = true,
+        exclude = { "markdown" },
+      },
+      scope = {
+        enabled = true,
+        filter = function(buf)
+          return vim.bo[buf].buftype == "" and vim.bo[buf].filetype ~= "markdown" and vim.b[buf].snacks_scope ~= false and vim.g.snacks_scope ~= false
+        end,
+      },
       scroll = { enabled = false },
       statuscolumn = { enabled = false },
       words = { enabled = false },
@@ -41,6 +92,13 @@ return {
       },
       -- { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
       -- { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
+      {
+        "<C-n>",
+        function()
+          Snacks.explorer()
+        end,
+        desc = "File Explorer",
+      },
       -- GIT
       {
         "<leader>gBl",
