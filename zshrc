@@ -1,9 +1,12 @@
 # OPENSPEC:START
 # OpenSpec shell completions configuration
-fpath=("/Users/imiljan/.oh-my-zsh/custom/completions" $fpath)
-autoload -Uz compinit
-compinit
+fpath=("$HOME/.oh-my-zsh/custom/completions" $fpath)
+# compinit is run once by oh-my-zsh below; running it here too doubled the work.
 # OPENSPEC:END
+
+# Homebrew completions must be on fpath before oh-my-zsh runs compinit.
+# HOMEBREW_PREFIX comes from `brew shellenv` in ~/.zprofile.
+fpath=("${HOMEBREW_PREFIX:-/opt/homebrew}/share/zsh/site-functions" $fpath)
 
 # https://github.com/ohmyzsh/ohmyzsh/wiki/Settings#main-settings
 export ZSH="$HOME/.oh-my-zsh"
@@ -30,8 +33,9 @@ source $HOME/.profile
 source $HOME/.alias
 source $HOME/Dotfiles/secrets
 
-source <(fzf --zsh)
-eval "$(starship init zsh)"
+_cached_source starship-init starship starship init zsh
 
 # PIP_INDEX_URL and UV_DEFAULT_INDEX
 eval $(tk shell-setup)
+
+export PYTHONDONTWRITEBYTECODE=1

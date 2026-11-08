@@ -1,4 +1,4 @@
-FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+# Homebrew completions are added to fpath in zshrc, before oh-my-zsh runs compinit.
 
 if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
@@ -17,6 +17,27 @@ export EDITOR="nvim"
 export STARSHIP_CONFIG=$XDG_CONFIG_HOME/starship/starship.toml
 export EZA_CONFIG_DIR=$XDG_CONFIG_HOME/eza
 
+# Cache the output of slow `eval "$(tool init)"` style commands.
+# The cache is rebuilt when BINARY is newer than it. To force a rebuild: rm -rf ~/.cache/zsh
+#   _cached_init NAME BINARY COMMAND...    write the cache if needed; its path is in $REPLY
+#   _cached_source NAME BINARY COMMAND...  the same, then source it
+# Some scripts (fzf's) break when sourced inside a function; for those use
+#   _cached_init ... && source "$REPLY"
+_cached_init() {
+  local name=$1 bin=$2
+  shift 2
+  REPLY="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/$name.zsh"
+  local bin_path=${commands[$bin]:A}
+  [[ -n $bin_path ]] || return 1
+  if [[ ! -s $REPLY || $bin_path -nt $REPLY ]]; then
+    mkdir -p "${REPLY:h}"
+    "$@" >|"$REPLY" 2>/dev/null || { rm -f "$REPLY"; return 1; }
+  fi
+}
+_cached_source() {
+  _cached_init "$@" && source "$REPLY"
+}
+
 # Starship needs an active profile; allow commands and profile switchers to override this default.
 # export AWS_PROFILE="${AWS_PROFILE:-tooling}"
 
@@ -26,12 +47,25 @@ bindkey '^ ' autosuggest-accept
 bindkey ' ' magic-space
 
 # Custom Widgets
-session-widget() { tmux-sessionizer }
+# Inside Rex ($REX_SESSION is set) use Rex's sessions instead of starting tmux.
+session-widget() {
+  if [[ -n $REX_SESSION ]]; then
+    rex-sessionizer
+  else
+    tmux-sessionizer
+  fi
+}
 zle -N session-widget
 # bindkey "^[OP" session-widget # ^[OP == F1
 bindkey "^f" session-widget
 
-chooser-widget() { tmux-chooser }
+chooser-widget() {
+  if [[ -n $REX_SESSION ]]; then
+    zle -M "In Rex, use cmd+k to switch sessions"
+  else
+    tmux-chooser
+  fi
+}
 zle -N chooser-widget
 # bindkey "^[OQ" chooser-widget # ^[OQ == F2
 bindkey "^b" chooser-widget
@@ -39,7 +73,7 @@ bindkey "^b" chooser-widget
 # PNPM
 # after running: corepack enable
 export COREPACK_ENABLE_STRICT=1
-export PNPM_HOME="/Users/imiljan/.local/share/pnpm"
+export PNPM_HOME="$HOME/.local/share/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
@@ -106,96 +140,11 @@ add-zsh-hook chpwd _check_nvmrc
 # Run check on startup too
 _check_nvmrc
 
-# pnpm
-export PNPM_HOME="/Users/imiljan/.local/share/pnpm"
-case ":$PATH:" in
-*":$PNPM_HOME/bin:"*) ;;
-*) export PATH="$PNPM_HOME/bin:$PATH" ;;
-esac
-# pnpm end
-
 # Bat
 export BAT_THEME=tokyonight_night
 
-# FZF
-FZF_DEFAULT_OPTS="
-  --height 90%
-  --tmux 90%,80%
-  --highlight-line
-  --info=inline-right
-  --ansi
-  --layout=reverse
-  --border
-"
-
-# https://github.com/folke/tokyonight.nvim/blob/main/extras/fzf/tokyonight_night.sh
-FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS
-  --color=bg+:#283457
-  --color=bg:#16161e
-  --color=border:#27a1b9
-  --color=fg:#c0caf5
-  --color=gutter:#16161e
-  --color=header:#ff9e64
-  --color=hl+:#2ac3de
-  --color=hl:#2ac3de
-  --color=info:#545c7e
-  --color=marker:#ff007c
-  --color=pointer:#ff007c
-  --color=prompt:#2ac3de
-  --color=query:#c0caf5:regular
-  --color=scrollbar:#27a1b9
-  --color=separator:#ff9e64
-  --color=spinner:#ff007c
-"
-
-# https://github.com/junegunn/fzf?tab=readme-ov-file#key-bindings-for-command-line
-PERVIEW_BIND="--bind 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up'"
-# PERVIEW_BIND="--bind 'ctrl-y:preview-up,ctrl-e:preview-down,ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up'"
-
-export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
-export FZF_DEFAULT_OPTS
-
-# CTRL-T For Files and Directories
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always --line-range :500 {}' $PERVIEW_BIND"
-
-# --bind 'ctrl-y:execute-silent(pbcopy <<< {})+abort'
-# CTRL-R For History
-export FZF_CTRL_R_OPTS="
-  --preview 'echo {}' --preview-window up:3:hidden:wrap
-  --bind 'ctrl-/:toggle-preview'
-  --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'
-  --color header:italic
-  --header 'Press CTRL-Y to copy command into clipboard; CTRL-/ for preview'
-  $PERVIEW_BIND"
-
-# ALT-C for Directories
-export FZF_ALT_C_COMMAND="fd --type d --hidden --strip-cwd-prefix --exclude .git"
-export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200' $PERVIEW_BIND"
-
-# https://github.com/junegunn/fzf?tab=readme-ov-file#settings
-export FZF_COMPLETION_OPTS='--border --info=inline'
-
-_fzf_compgen_path() {
-  fd --hidden --follow --exclude ".git" . "$1"
-}
-
-_fzf_compgen_dir() {
-  fd --type d --hidden --follow --exclude ".git" . "$1"
-}
-
-_fzf_comprun() {
-  local command=$1
-  shift
-
-  case "$command" in
-    cd)           fzf --preview 'eza --tree --color=always {} | head -200'   "$@" ;;
-    export|unset) fzf --preview "eval 'echo \$'{}"                           "$@" ;;
-    ssh)          fzf --preview 'dig {}'                                     "$@" ;;
-    *)            fzf --preview "bat -n --color=always --line-range :500 {}" "$@" ;;
-  esac
-}
-# END FZF
+# FZF: options, helpers and key bindings live in ~/Dotfiles/zsh/fzf.zsh
+source "$HOME/Dotfiles/zsh/fzf.zsh"
 
 # OpenSSL
 # export PATH="/opt/homebrew/opt/openssl@1.1/bin:$PATH"
@@ -252,17 +201,19 @@ gcloud() {
 # Python
 # Foy Python artifactory - See secrets
 
-# Add user site-packages directory to PATH
-PYTHON_BIN_PATH="$(python3 -m site --user-base)/bin"
-PATH="$PATH:$PYTHON_BIN_PATH"
+# Add user site-packages bin directories to PATH.
+# Was `python3 -m site --user-base` (a Python start on every shell). With pyenv's Python that
+# is ~/.local (already on PATH); with Homebrew's it is ~/Library/Python/<version>.
+for _d in "$HOME"/Library/Python/*/bin(N); do PATH="$PATH:$_d"; done
+unset _d
 
 #  PyEnv
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+_cached_source pyenv-init pyenv pyenv init - zsh
 
 # Pipenv completion
-eval "$(_PIPENV_COMPLETE=zsh_source pipenv)"
+_cached_source pipenv-completion pipenv env _PIPENV_COMPLETE=zsh_source pipenv
 
 # Ruby
 # eval "$(rbenv init - zsh)"
@@ -273,15 +224,9 @@ eval "$(_PIPENV_COMPLETE=zsh_source pipenv)"
 #   eval "$(ngrok completion)"
 # fi
 
-# snowflake
-export SNOWFLAKE_USER="miljan.ignjatovic@perk.com"
-export SNOWFLAKE_ACCOUNT="bg29839.eu-west-1"
-
 # opencode
-export PATH=/Users/imiljan/.opencode/bin:$PATH
-if command -v opencode >/dev/null 2>&1; then
-  source <(opencode --completions zsh)
-fi
+export PATH="$HOME/.opencode/bin:$PATH"
+_cached_source opencode-completion opencode opencode --completions zsh
 
 #1Password
 # eval "$(op completion zsh)"
