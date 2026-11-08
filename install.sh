@@ -5,12 +5,12 @@
 ########## Variables ##########
 dir=~/Dotfiles                                    # Dotfiles directory
 olddir=~/Dotfiles_old                             # Backup directory for existing configs
-files="zshrc profile gitconfig gitignore vimrc ideavimrc alias" # Top-level files to link
+files="zprofile zshrc profile gitconfig gitignore vimrc ideavimrc alias" # Top-level files to link
 
 config=~/.config                                  # XDG config directory
-dirs="aerospace bat borders btop eza ghostty lazygit nvim starship" # Directories to link into ~/.config
+dirs="aerospace bat borders btop eza ghostty lazygit nvim rex starship" # Directories to link into ~/.config
 
-bins="fix-tilde irg tmux-chooser tmux-sessionizer" # Scripts to link into ~/.local/bin
+bins="fix-tilde irg project-dirs rex-sessionizer tmux-chooser tmux-sessionizer" # Scripts to link into ~/.local/bin
 ##########
 
 echo -e "\nStarting installation...\n"
@@ -29,8 +29,13 @@ else
 	echo "Homebrew is already installed."
 fi
 
+# A fresh install doesn't put brew on this script's PATH.
+if ! command -v brew &>/dev/null && [ -x /opt/homebrew/bin/brew ]; then
+	eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
 echo "Installing brew packages from Brewfile..."
-brew bundle install --no-lock
+brew bundle install
 
 # 2. Backup & Prepare Directories
 echo -e "\n=== Step 2: Preparing Directories ==="
@@ -57,7 +62,13 @@ done
 echo -e "\n=== Step 4: Symlinking Config Directories ==="
 for d in $dirs; do
 	echo "Linking $d configuration..."
-	rm -rf "$config/$d"
+	if [ -L "$config/$d" ]; then
+		rm "$config/$d" # an old symlink; nothing to keep
+	elif [ -e "$config/$d" ]; then
+		mkdir -p "$olddir/config"
+		mv "$config/$d" "$olddir/config/$d.$(date +%Y%m%d%H%M%S)"
+		echo "  - Backed up existing $d to $olddir/config"
+	fi
 	ln -s $dir/"$d" $config/"$d"
 done
 

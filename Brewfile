@@ -96,6 +96,8 @@ brew "nvm"
 brew "openblas"
 # Development kit for the Java programming language
 brew "openjdk@17"
+# Python dev workflow (virtualenv + Pipfile)
+brew "pipenv"
 # Fast, disk space efficient package manager
 brew "pnpm@10", link: true
 # PDF rendering library (based on the xpdf-3.0 code base)
