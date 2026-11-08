@@ -1,49 +1,42 @@
 #!/usr/bin/env bash
 
 switch_to() {
-	if [[ -z $TMUX ]]; then
-		tmux attach-session -t $1
-	else
-		tmux switch-client -t $1
-	fi
+  if [[ -z $TMUX ]]; then
+    tmux attach-session -t $1
+  else
+    tmux switch-client -t $1
+  fi
 }
 
 if [[ $# -eq 1 ]]; then
-	selected=$1
+  selected=$1
 else
-	selected=$(
-		find \
-			~/Code \
-			~/Code/expense-robot \
-			~/Code/expense-robot/backend \
-			~/Code/expense-robot/python-functions \
-			~/Dotfiles \
-			~ \
-			-mindepth 1 -maxdepth 1 -type d |
-			fzf \
-				--preview 'eza --tree --level=1 --icons --color=always {} | head -200' \
-				--bind 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up'
-	)
+  selected=$(
+    "$(dirname "${BASH_SOURCE[0]}")/project-dirs" |
+      fzf \
+        --preview 'eza --tree --level=1 --icons --color=always {} | head -200' \
+        --bind 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up'
+  )
 fi
 
 if [[ -z $selected ]]; then
-	exit 0
+  exit 0
 fi
 
 selected_name=$(basename "$selected" | tr . _)
 tmux_running=$(pgrep tmux)
 
 if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
-	tmux new-session -s "Dotfiles" -c "~/Dotfiles" # Always create a session for Dotfiles
-	tmux new-session -s "$selected_name" -c "$selected"
-	switch_to $selected_name
-	exit 0
+  tmux new-session -s "Dotfiles" -c "$HOME/Dotfiles" # Always create a session for Dotfiles
+  tmux new-session -s "$selected_name" -c "$selected"
+  switch_to $selected_name
+  exit 0
 fi
 
 if ! tmux has-session -t "$selected_name" 2>/dev/null; then
-	tmux new-session -d -s "$selected_name" -c "$selected"
-	# tmux new-window -d -t "$selected_name": -c "$selected"
-	# tmux send-keys -t "$selected_name":1.1 'vim' Enter
+  tmux new-session -d -s "$selected_name" -c "$selected"
+  # tmux new-window -d -t "$selected_name": -c "$selected"
+  # tmux send-keys -t "$selected_name":1.1 'vim' Enter
 fi
 
 switch_to $selected_name

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Prints project directories, one per line, for the sessionizers and `ccd`.
+# Edit the roots here; every picker uses this list.
+
+roots=(
+  "$HOME/Code"
+  "$HOME/Code/expense-robot"
+  "$HOME/Code/expense-robot/backend"
+  "$HOME/Code/expense-robot/python-functions"
+  "$HOME/Code/personal"
+  "$HOME/Dotfiles"
+  "$HOME"
+)
+
+for root in "${roots[@]}"; do
+  [[ -d $root ]] && find "$root" -mindepth 1 -maxdepth 1 -type d
+done

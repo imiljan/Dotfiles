@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Rex port of tmux-sessionizer.
+#   rex-sessionizer             pick a project dir with fzf and open its session
+#   rex-sessionizer DIR         open DIR's session
+#   rex-sessionizer --out FILE  pick a dir and write it to FILE (used by ctrl+a f,
+#                               whose Rex action then switches the session itself)
+#
+# Opening a session from the command line (the first two forms) needs Remote Control
+# on in Rex Settings > Rex Server; ctrl+a f and the ctrl+a D/E/T/F keys do not.
+
+# Rex's floating terminal may not have Homebrew on PATH.
+for p in /opt/homebrew/bin /usr/local/bin "$HOME/.local/bin"; do
+  [[ -d $p && ":$PATH:" != *":$p:"* ]] && PATH="$p:$PATH"
+done
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+rex_bin="${REX_BIN_DIR:+$REX_BIN_DIR/}rex"
+
+out=""
+if [[ $1 == "--out" ]]; then
+  out=$2
+  shift 2
+fi
+
+if [[ $# -eq 1 ]]; then
+  selected=$1
+else
+  selected=$(
+    "$here/project-dirs" |
+      fzf \
+        --preview 'eza --tree --level=1 --icons --color=always {} | head -200' \
+        --bind 'ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up'
+  )
+fi
+
+if [[ -n $out ]]; then
+  if [[ -e $out ]]; then
+    # The waiting Rex action reads this; a lone newline means "cancelled".
+    printf '%s\n' "$selected" >"$out"
+    exit 0
+  fi
+  # The action gave up waiting (it has 30 seconds); fall back to the CLI.
+fi
+
+[[ -z $selected ]] && exit 0
+exec "$rex_bin" do sessionize dir="$selected" >/dev/null
